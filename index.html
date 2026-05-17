@@ -47,39 +47,60 @@ body {
 
 /* ===== DESKTOP LAYOUT ===== */
 @media (min-width: 768px) {
-  body { background: var(--cream); align-items: stretch; padding: 0; }
-  #app { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+  body { background: #e8f4fb; align-items: stretch; }
+
+  #app {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    max-width: 100%;
+  }
 
   #desktop-sidebar {
     display: flex !important;
     position: fixed;
     left: 0; top: 0;
-    width: 300px;
+    width: 280px;
     height: 100vh;
     background: linear-gradient(180deg, var(--sky-dark) 0%, #1a5f8a 100%);
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 24px;
+    padding: 32px 20px;
     text-align: center;
     z-index: 100;
-    gap: 16px;
+    gap: 14px;
+    overflow-y: auto;
   }
 
   #screens-wrapper {
-    margin-left: 300px;
+    margin-left: 280px;
     flex: 1;
+    position: relative;
+    min-height: 100vh;
+    background: var(--cream);
+  }
+
+  /* Screens inside wrapper need proper stacking */
+  #screens-wrapper .screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    min-height: 100vh;
+    max-width: 100%;
+  }
+
+  #screens-wrapper .screen.active {
     position: relative;
   }
 
-  .screen {
-    max-width: 640px;
-    margin: 0 auto;
-  }
-
-  .welcome-header, .select-header, .intro-header, .gameplay-header { padding-top: 40px; }
+  .welcome-header, .select-header, .intro-header, .gameplay-header { padding-top: 36px; }
 
   #splash { display: none !important; }
+
+  /* Wider content areas on desktop */
+  .recipe-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .david-container { width: 160px; height: 210px; }
 }
 
 /* ===== SCREENS ===== */
@@ -745,12 +766,7 @@ body {
   width: calc(100% - 40px);
   box-shadow: 0 4px 24px rgba(0,0,0,0.2);
 }
-.ending-credit {
-  color: rgba(255,255,255,0.4);
-  font-size: 11px;
-  text-align: center;
-  padding: 0 20px 40px;
-}
+
 
 /* ===== CONFETTI ===== */
 .confetti-piece {
@@ -787,7 +803,7 @@ body {
     <div id="sidebarCount" style="color:white;font-size:13px;margin-top:8px;font-weight:700">0 / 5 resep</div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%" id="sidebarRecipes"></div>
-  <div style="margin-top:auto;color:rgba(255,255,255,0.3);font-size:11px;padding-top:24px">Ilustrasi oleh Pipit · 2026</div>
+  
 </div>
 
 <div id="screens-wrapper">
@@ -936,7 +952,7 @@ body {
     <div class="signature">— dari semua yang menyayangimu 💙</div>
   </div>
   <button class="btn-share" onclick="shareGame()">Bagikan Game Ini 🔗</button>
-  <div class="ending-credit">Ilustrasi karakter oleh Pipit · Chef's Lab 2026</div>
+  
 </div>
 
 </div>
@@ -1092,9 +1108,15 @@ function showScreen(id) {
   });
   const el = document.getElementById(id);
   el.style.display = 'flex';
-  requestAnimationFrame(() => { el.classList.add('active'); });
+  requestAnimationFrame(() => {
+    el.classList.add('active');
+    // Scroll to top
+    const wrapper = document.getElementById('screens-wrapper');
+    if (wrapper) wrapper.scrollTop = 0;
+    window.scrollTo(0, 0);
+  });
   state.currentScreen = id;
-  if (id === 'recipe-select') updateRecipeGrid();
+  if (id === 'recipe-select') { updateRecipeGrid(); updateSidebarProgress(); }
   if (id === 'ending') launchConfetti();
 }
 
@@ -1115,6 +1137,8 @@ function initSplash() {
   }
   // Skip splash on desktop
   if (window.innerWidth >= 768) {
+    // On desktop, hide splash immediately and show welcome
+    document.getElementById('splash').style.display = 'none';
     showScreen('welcome');
     updateSidebarProgress();
   } else {
