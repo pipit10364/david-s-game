@@ -38,11 +38,48 @@ body {
 
 #app {
   width: 100%;
-  max-width: 480px;
+  max-width: 100%;
   min-height: 100vh;
   background: var(--cream);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+}
+
+/* ===== DESKTOP LAYOUT ===== */
+@media (min-width: 768px) {
+  body { background: var(--cream); align-items: stretch; padding: 0; }
+  #app { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+
+  #desktop-sidebar {
+    display: flex !important;
+    position: fixed;
+    left: 0; top: 0;
+    width: 300px;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--sky-dark) 0%, #1a5f8a 100%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+    z-index: 100;
+    gap: 16px;
+  }
+
+  #screens-wrapper {
+    margin-left: 300px;
+    flex: 1;
+    position: relative;
+  }
+
+  .screen {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .welcome-header, .select-header, .intro-header, .gameplay-header { padding-top: 40px; }
+
+  #splash { display: none !important; }
 }
 
 /* ===== SCREENS ===== */
@@ -737,6 +774,24 @@ body {
 <body>
 <div id="app">
 
+<!-- DESKTOP SIDEBAR -->
+<div id="desktop-sidebar" style="display:none">
+  <div style="font-size:60px;margin-bottom:8px">🧪</div>
+  <div style="font-family:'Fredoka One',cursive;font-size:28px;color:white;margin-bottom:4px">Chef's Lab</div>
+  <div style="color:rgba(255,255,255,0.7);font-size:13px;font-style:italic;margin-bottom:24px">Where Chemistry Meets Comfort Food</div>
+  <div id="sidebar-progress" style="width:100%;background:rgba(255,255,255,0.15);border-radius:20px;padding:16px;margin-bottom:20px">
+    <div style="color:rgba(255,255,255,0.6);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Progress</div>
+    <div style="background:rgba(255,255,255,0.2);border-radius:10px;height:8px;overflow:hidden">
+      <div id="sidebarBar" style="background:var(--gold);height:100%;border-radius:10px;width:0%;transition:width 0.5s"></div>
+    </div>
+    <div id="sidebarCount" style="color:white;font-size:13px;margin-top:8px;font-weight:700">0 / 5 resep</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%" id="sidebarRecipes"></div>
+  <div style="margin-top:auto;color:rgba(255,255,255,0.3);font-size:11px;padding-top:24px">Ilustrasi oleh Pipit · 2026</div>
+</div>
+
+<div id="screens-wrapper">
+
 <!-- SPLASH -->
 <div id="splash" class="screen active">
   <div class="splash-bubbles" id="splashBubbles"></div>
@@ -759,8 +814,8 @@ body {
   <div class="welcome-card">
     <div class="greeting">Heyy, Chef David! 👋</div>
     <div class="emoji-row">🎓🧪🍳🎸</div>
-    <p>Selamat atas kelulusanmu dari Chemical Engineering, University of Toronto!</p>
-    <p style="margin-top:10px">Kamu udah buktiin kalau sains dan dapur itu bisa jalan berdua. Sekarang, tunjukkan keahlianmu sebagai <strong>Chef Kimia</strong> terbaik! 👨‍🍳</p>
+    <p>Selamat atas kelulusanmu dari Materials Science, University of Toronto!</p>
+    <p style="margin-top:10px">Kamu udah buktiin kalau sains dan dapur itu bisa jalan berdua. Sekarang, tunjukkan keahlianmu sebagai <strong>Chef Materials</strong> terbaik! 👨‍🍳</p>
   </div>
   <button class="btn-primary" onclick="showScreen('recipe-select')">Mulai Masak! 🍳</button>
 </div>
@@ -876,7 +931,7 @@ body {
     </p>
     <p style="margin-top:10px">
       Makasih udah jadi inspirasi buat banyak orang. Selamat atas kelulusanmu!
-      Dunia menunggu <em>Chef Kimia</em> terbaik kami. 🌍✨
+      Dunia menunggu <em>Chef Materials</em> terbaik kami. 🌍✨
     </p>
     <div class="signature">— dari semua yang menyayangimu 💙</div>
   </div>
@@ -885,6 +940,7 @@ body {
 </div>
 
 </div>
+</div><!-- /screens-wrapper -->
 
 <script>
 // ===== DATA =====
@@ -970,7 +1026,7 @@ const RECIPES = [
     chemTitle: "Ekstraksi & Emulsifikasi!",
     chemDesc: "Air hangat mengekstrak katekin, kafein, dan theanine dari matcha powder. Saat di-whisk, protein dan lemak dalam matcha membentuk emulsi yang menstabilkan foam — mirip cara membuat cappuccino tapi pakai sains teh!",
     chemAnim: "matcha",
-    funFact: "L-Theanine dalam matcha bekerja sinergis dengan kafein — bikin kamu alert tapi tetap calm, tanpa anxiety seperti kopi. Ini yang bikin matcha lebih "smooth" dibanding kopi biasa!",
+    funFact: "L-Theanine dalam matcha bekerja sinergis dengan kafein — bikin kamu alert tapi tetap calm, tanpa anxiety seperti kopi. Ini yang bikin matcha lebih 'smooth' dibanding kopi biasa!",
     doneMsg: "Matcha Drink-nya cantik banget! Layer hijau dan putih = art chemistry. 🍵"
   },
   {
@@ -1057,7 +1113,13 @@ function initSplash() {
     `;
     container.appendChild(b);
   }
-  setTimeout(() => showScreen('welcome'), 2500);
+  // Skip splash on desktop
+  if (window.innerWidth >= 768) {
+    showScreen('welcome');
+    updateSidebarProgress();
+  } else {
+    setTimeout(() => showScreen('welcome'), 2500);
+  }
 }
 
 // ===== RECIPE GRID =====
@@ -1329,6 +1391,7 @@ function showRecipeComplete() {
   if (!state.completedRecipes.includes(r.id)) {
     state.completedRecipes.push(r.id);
     localStorage.setItem('chefslab_completed', JSON.stringify(state.completedRecipes));
+  updateSidebarProgress();
   }
   document.getElementById('completeFoodEmoji').textContent = r.emoji;
   document.getElementById('completeTitle').textContent = r.name + ' Selesai!';
@@ -1393,8 +1456,28 @@ function shareGame() {
   }
 }
 
+// ===== SIDEBAR =====
+function updateSidebarProgress() {
+  const mainRecipes = RECIPES.filter(r => !r.secret);
+  const done = state.completedRecipes.filter(id => !RECIPES.find(r=>r.id===id)?.secret).length;
+  const pct = (done / mainRecipes.length) * 100;
+  const bar = document.getElementById('sidebarBar');
+  const count = document.getElementById('sidebarCount');
+  if (bar) bar.style.width = pct + '%';
+  if (count) count.textContent = done + ' / ' + mainRecipes.length + ' resep';
+  
+  const grid = document.getElementById('sidebarRecipes');
+  if (grid) {
+    grid.innerHTML = mainRecipes.map(r => {
+      const isDone = state.completedRecipes.includes(r.id);
+      return `<div style="background:rgba(255,255,255,${isDone?'0.2':'0.08'});border-radius:10px;padding:8px 4px;text-align:center;font-size:20px;transition:all 0.3s">${r.emoji}${isDone ? '<div style=\'font-size:10px;color:var(--green);margin-top:2px\'>✓</div>' : ''}</div>`;
+    }).join('');
+  }
+}
+
 // ===== INIT =====
 initSplash();
+updateSidebarProgress();
 </script>
 </body>
 </html>
