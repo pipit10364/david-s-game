@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Chef's Lab 🍵 Matcha Cafe</title>
+<title>Chef's Lab 🍵 — David's Matcha Cafe</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -14,941 +14,1557 @@
   --cream: #fdf6e3;
   --brown: #8b5e3c;
   --gold: #f0c040;
+  --gold-dark: #c89820;
   --red: #e05555;
   --sky: #5bb8e8;
   --white: #ffffff;
   --ink: #1e2a1a;
-  --shadow: 0 4px 20px rgba(45,90,27,0.2);
 }
+
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
-html, body { width:100%; height:100%; overflow:hidden; background:#1a3a0a; }
-body { display:flex; justify-content:center; align-items:center; font-family:'Nunito',sans-serif; }
 
-#game-wrap {
-  width: 100%;
-  max-width: 480px;
-  height: 100vh;
-  max-height: 860px;
-  position: relative;
-  overflow: hidden;
-  background: #e8f5d0;
+html, body {
+  width:100%; height:100%;
+  overflow:hidden;
+  background:#0a1f05;
+  font-family:'Nunito',sans-serif;
 }
 
-/* ===== SCREENS ===== */
+/* ORIENTATION GATE */
+#orient-gate {
+  display:none;
+  position:fixed; inset:0; z-index:9999;
+  background:#0a1f05;
+  flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:16px;
+  color:white;
+  text-align:center;
+  padding:32px;
+}
+#orient-gate .rotate-icon { font-size:64px; animation:rotateHint 1.5s ease-in-out infinite; }
+#orient-gate p { font-family:'Fredoka One',cursive; font-size:22px; color:rgba(255,255,255,0.85); }
+@keyframes rotateHint {
+  0%,100%{ transform:rotate(0deg); }
+  50%{ transform:rotate(90deg); }
+}
+
+/* Detect portrait on mobile */
+@media (max-aspect-ratio: 1/1) and (max-width: 900px) {
+  #orient-gate { display:flex; }
+  #app { display:none; }
+}
+
+#app {
+  width:100vw; height:100vh;
+  position:relative;
+  overflow:hidden;
+}
+
+/* ====== SCREENS ====== */
 .screen {
-  position: absolute;
-  inset: 0;
-  display: none;
-  flex-direction: column;
+  position:absolute; inset:0;
+  display:none; flex-direction:column;
 }
-.screen.active { display: flex; }
+.screen.active { display:flex; }
 
-/* ===== TITLE SCREEN ===== */
+/* ====== TITLE SCREEN ====== */
 #screen-title {
-  background: linear-gradient(170deg, #1a4a0a 0%, #2d7a1a 50%, #4aaa2a 100%);
-  justify-content: center;
+  background: linear-gradient(135deg, #0d2e05 0%, #1a5a0a 40%, #2d8a18 100%);
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 0;
   overflow: hidden;
 }
-.title-deco {
-  position: absolute;
-  font-size: 80px;
-  opacity: 0.06;
-  pointer-events: none;
+
+.title-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 20px;
 }
-.title-logo {
-  text-align: center;
-  padding: 20px;
-  animation: titlePop .7s cubic-bezier(0.34,1.56,0.64,1) both;
+
+.title-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
 }
-.title-logo .logo-icon { font-size: 72px; display: block; }
+
 .title-logo h1 {
   font-family: 'Fredoka One', cursive;
-  font-size: 48px;
+  font-size: clamp(36px, 6vw, 64px);
   color: white;
-  text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
   line-height: 1;
 }
+.title-logo .icon { font-size: clamp(48px, 8vw, 80px); display:block; margin-bottom:8px; }
 .title-logo .sub {
-  font-size: 13px;
-  color: rgba(255,255,255,0.7);
+  font-size: clamp(11px, 1.5vw, 15px);
+  color: rgba(255,255,255,0.65);
   font-style: italic;
-  margin-top: 4px;
+  margin-top:6px;
 }
-.cafe-badge {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255,255,255,0.3);
+
+.cafe-card {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.25);
   border-radius: 20px;
-  padding: 16px 28px;
+  padding: 18px 28px;
   text-align: center;
-  margin: 16px 24px;
-  animation: titlePop .7s .2s cubic-bezier(0.34,1.56,0.64,1) both;
+  width: 100%;
+  max-width: 280px;
 }
-.cafe-badge .cafe-name {
+.cafe-card .name {
   font-family: 'Fredoka One', cursive;
-  font-size: 26px;
+  font-size: clamp(18px, 2.5vw, 26px);
   color: var(--gold);
 }
-.cafe-badge .cafe-sub { color: rgba(255,255,255,0.8); font-size: 13px; }
-.david-title {
-  width: 160px;
-  height: 200px;
-  margin: 8px auto;
-  animation: davidFloat 3s ease-in-out infinite, titlePop .7s .1s cubic-bezier(0.34,1.56,0.64,1) both;
-  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
-}
-.david-title img { width:100%; height:100%; object-fit:contain; }
+.cafe-card .sub { color: rgba(255,255,255,0.7); font-size:12px; margin-top:3px; }
+
 .btn-start {
-  background: linear-gradient(135deg, var(--gold), #d4a020);
+  background: linear-gradient(135deg, var(--gold), #d49820);
   color: var(--ink);
   border: none;
   border-radius: 50px;
-  padding: 16px 48px;
+  padding: 14px 40px;
   font-family: 'Fredoka One', cursive;
-  font-size: 22px;
+  font-size: clamp(16px, 2.5vw, 22px);
   cursor: pointer;
-  margin: 8px 24px;
-  box-shadow: 0 6px 20px rgba(240,192,64,0.5);
-  transition: transform .15s;
-  animation: titlePop .7s .3s cubic-bezier(0.34,1.56,0.64,1) both;
-  width: calc(100% - 48px);
+  box-shadow: 0 6px 24px rgba(240,192,64,0.5);
+  transition: transform .15s, box-shadow .15s;
+  width: 100%;
+  max-width: 280px;
 }
-.btn-start:active { transform: scale(0.96); }
+.btn-start:hover { transform:scale(1.04); box-shadow:0 8px 28px rgba(240,192,64,0.6); }
+.btn-start:active { transform:scale(0.97); }
 
-/* ===== LEVEL INTRO ===== */
-#screen-intro {
-  background: linear-gradient(160deg, #1a4a0a, #3a8a1a);
-  justify-content: center;
-  align-items: center;
-  padding: 32px 24px;
-  gap: 16px;
-}
-.intro-level-badge {
-  background: var(--gold);
-  color: var(--ink);
-  font-family: 'Fredoka One', cursive;
-  font-size: 14px;
-  padding: 6px 18px;
-  border-radius: 20px;
-}
-.intro-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 32px;
-  color: white;
-  text-align: center;
-}
-.intro-david {
-  width: 140px; height: 180px;
-  margin: 0 auto;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.4));
+.title-david {
+  width: clamp(160px, 25vw, 280px);
+  height: clamp(200px, 32vw, 360px);
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0,0,0,0.4));
   animation: davidFloat 3s ease-in-out infinite;
 }
-.intro-david img { width:100%; height:100%; object-fit:contain; }
-.intro-card {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 18px;
-  padding: 18px;
-  width: 100%;
-}
-.intro-card .intro-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.85);
-  font-size: 14px;
-}
-.intro-card .intro-row:last-child { border-bottom: none; }
-.intro-card .intro-row span:last-child {
-  font-weight: 800;
-  color: var(--gold);
-}
-.menu-preview {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.menu-chip {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 12px;
-  padding: 8px 14px;
-  font-size: 20px;
-  text-align: center;
-}
-.menu-chip .menu-chip-name {
-  font-size: 11px;
-  color: rgba(255,255,255,0.7);
-  margin-top: 2px;
-}
-.btn-play {
-  background: var(--green-light);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 16px 40px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 22px;
-  cursor: pointer;
-  width: 100%;
-  box-shadow: 0 4px 16px rgba(123,193,66,0.4);
+
+.title-deco {
+  position:absolute;
+  font-size: clamp(48px, 8vw, 100px);
+  opacity:0.05;
+  pointer-events:none;
 }
 
-/* ===== GAME SCREEN ===== */
-#screen-game {
-  background: #d4eeaa;
+/* ====== LEVEL INTRO ====== */
+#screen-intro {
+  background: linear-gradient(160deg, #0d2a05, #1a5a0a, #0d2a15);
+  flex-direction: row;
+  align-items: center;
+  padding: 32px 48px;
+  gap: 40px;
+}
+
+.intro-left {
+  flex: 1;
+  display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+.intro-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--ink);
+  font-family:'Fredoka One',cursive;
+  font-size:13px;
+  padding:5px 16px;
+  border-radius:20px;
+  width:fit-content;
+}
+
+.intro-title {
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(22px, 3.5vw, 36px);
+  color:white;
+  line-height:1.2;
+}
+
+.intro-stats {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius:16px;
+  padding:16px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.intro-stat-row {
+  display:flex;
+  justify-content:space-between;
+  color:rgba(255,255,255,0.8);
+  font-size:14px;
+  padding:4px 0;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.intro-stat-row:last-child { border:none; }
+.intro-stat-row span:last-child { font-weight:800; color:var(--gold); }
+
+.intro-menu-label { color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
+.menu-chips { display:flex; gap:10px; flex-wrap:wrap; }
+.menu-chip {
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:12px;
+  padding:10px 14px;
+  text-align:center;
+  font-size: clamp(18px, 2.5vw, 26px);
+}
+.menu-chip-name { font-size:10px; color:rgba(255,255,255,0.65); margin-top:3px; }
+
+.btn-play {
+  background: var(--green-light);
+  color:white;
+  border:none;
+  border-radius:50px;
+  padding:14px 36px;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(16px, 2vw, 20px);
+  cursor:pointer;
+  width:100%;
+  box-shadow:0 4px 16px rgba(123,193,66,0.4);
+  transition:transform .15s;
+}
+.btn-play:active { transform:scale(0.97); }
+
+.intro-david {
+  width: clamp(120px, 18vw, 200px);
+  height: clamp(150px, 24vw, 260px);
+  object-fit:contain;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,0.4));
+  animation:davidFloat 3s ease-in-out infinite;
+}
+
+/* ====== COOKING STAGE ====== */
+#screen-cooking {
+  position:relative;
+  overflow:hidden;
+}
+
+.cooking-bg {
+  position:absolute; inset:0;
+  background: #f5e6c8;
+}
+.cooking-bg img {
+  width:100%; height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+
+.cooking-overlay {
+  position:absolute; inset:0;
+  background: rgba(0,0,0,0.35);
+}
+
+.cooking-ui {
+  position:absolute; inset:0;
+  display:flex;
+  flex-direction:column;
+  padding: 16px 24px 20px;
+}
+
+.cooking-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.cooking-title-box {
+  background: rgba(0,0,0,0.5);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:14px;
+  padding:10px 20px;
+  text-align:center;
+}
+.cooking-title-box .label { font-size:10px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1.5px; }
+.cooking-title-box .menu-name { font-family:'Fredoka One',cursive; font-size: clamp(16px, 2.5vw, 24px); color:var(--gold); }
+
+.cooking-david {
+  width: clamp(60px, 8vw, 90px);
+  height: clamp(75px, 10vw, 115px);
+  object-fit:contain;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  animation:davidFloat 3s ease-in-out infinite;
+}
+
+.cooking-main {
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: clamp(16px, 3vw, 40px);
+}
+
+/* Recipe steps shown at top */
+.recipe-steps {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:16px;
+  padding:16px;
+  min-width: clamp(140px, 18vw, 200px);
+}
+.recipe-label { font-size:10px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px; }
+.recipe-step {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 8px;
+  border-radius:10px;
+  transition:all 0.3s;
+  font-size: clamp(12px, 1.5vw, 14px);
+  color:rgba(255,255,255,0.5);
+}
+.recipe-step.completed { color: var(--green-light); background:rgba(123,193,66,0.15); }
+.recipe-step.current { color: var(--gold); background:rgba(240,192,64,0.2); font-weight:800; }
+.recipe-step .step-num {
+  width:20px; height:20px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:800;
+  flex-shrink:0;
+}
+.recipe-step.completed .step-num { background:var(--green-light); color:white; }
+.recipe-step.current .step-num { background:var(--gold); color:var(--ink); }
+.recipe-step .step-img { width:28px; height:28px; object-fit:contain; }
+.recipe-step .step-name { flex:1; line-height:1.2; }
+
+/* Bowl area */
+.bowl-area {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+.bowl-wrapper {
+  width: clamp(90px, 12vw, 140px);
+  height: clamp(90px, 12vw, 140px);
+  background: rgba(255,255,255,0.15);
+  border:3px solid rgba(255,255,255,0.3);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size: clamp(36px, 5vw, 56px);
+  box-shadow:0 0 30px rgba(240,192,64,0.2);
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
+}
+.bowl-wrapper.correct {
+  border-color: var(--green-light);
+  box-shadow:0 0 30px rgba(123,193,66,0.5);
+  animation: bowlPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.bowl-wrapper.wrong {
+  border-color: var(--red);
+  box-shadow:0 0 30px rgba(224,85,85,0.5);
+  animation: bowlShake 0.4s ease;
+}
+.bowl-contents {
+  display:flex; flex-wrap:wrap;
+  gap:4px; padding:8px;
+  justify-content:center; align-items:center;
+}
+.bowl-ingredient {
+  width: clamp(24px, 3vw, 36px);
+  height: clamp(24px, 3vw, 36px);
+  object-fit:contain;
+  animation:ingredientPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.bowl-hint {
+  font-size:11px;
+  color:rgba(255,255,255,0.6);
+  font-style:italic;
+  text-align:center;
+}
+
+/* Ingredients to tap */
+.ingredients-grid {
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(8px, 1.5vw, 14px);
+  max-width: clamp(200px, 26vw, 280px);
+}
+.ingredient-btn {
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius:14px;
+  padding: clamp(8px, 1.2vw, 14px);
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  transition:all 0.15s;
+  position:relative;
+  overflow:hidden;
+}
+.ingredient-btn:hover { background:rgba(255,255,255,0.2); transform:scale(1.04); }
+.ingredient-btn:active { transform:scale(0.94); }
+.ingredient-btn.used { opacity:0.35; pointer-events:none; }
+.ingredient-btn.highlight {
+  border-color: var(--gold);
+  background:rgba(240,192,64,0.2);
+  animation:pulse 1s ease-in-out infinite;
+}
+.ingredient-btn img {
+  width: clamp(36px, 5vw, 56px);
+  height: clamp(36px, 5vw, 56px);
+  object-fit:contain;
+}
+.ingredient-btn .ing-name {
+  font-size: clamp(9px, 1.1vw, 12px);
+  color:rgba(255,255,255,0.8);
+  font-weight:700;
+  text-align:center;
+  line-height:1.2;
+}
+
+/* Cooking feedback */
+.cooking-feedback {
+  position:absolute;
+  bottom:0; left:0; right:0;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(12px);
+  padding:20px 40px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  border-top:2px solid rgba(255,255,255,0.1);
+}
+.cooking-feedback.show { transform:translateY(0); }
+.cooking-feedback.success { border-top-color: var(--green-light); }
+.cooking-feedback.fail { border-top-color: var(--red); }
+.feedback-icon { font-size: clamp(28px, 4vw, 44px); flex-shrink:0; }
+.feedback-text { flex:1; }
+.feedback-text .fb-title { font-family:'Fredoka One',cursive; font-size: clamp(14px, 2vw, 20px); color:white; }
+.feedback-text .fb-sub { font-size: clamp(11px, 1.4vw, 14px); color:rgba(255,255,255,0.7); line-height:1.5; margin-top:4px; }
+.btn-feedback {
+  background: var(--gold);
+  color:var(--ink);
+  border:none;
+  border-radius:50px;
+  padding:10px 24px;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(13px, 1.8vw, 17px);
+  cursor:pointer;
+  flex-shrink:0;
+  transition:transform .15s;
+}
+.btn-feedback:active { transform:scale(0.96); }
+
+/* Mistakes indicator */
+.mistakes-row {
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  margin-top:8px;
+}
+.mistake-heart { font-size: clamp(14px, 2vw, 20px); transition:all 0.3s; }
+.mistake-heart.lost { filter:grayscale(1); opacity:0.4; }
+
+/* Progress bar */
+.cooking-progress {
+  background:rgba(255,255,255,0.1);
+  border-radius:20px;
+  height:6px;
+  margin-top:8px;
+  overflow:hidden;
+}
+.cooking-progress-fill {
+  height:100%;
+  background: linear-gradient(90deg, var(--green-light), var(--gold));
+  border-radius:20px;
+  transition:width 0.4s ease;
+}
+
+/* ====== CHEMISTRY SCREEN ====== */
+#screen-chem {
+  background: linear-gradient(160deg, #050f02, #0f2a05, #050f12);
+  flex-direction:row;
+  align-items:center;
+  padding:32px 60px;
+  gap:40px;
+}
+
+.chem-left {
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+}
+.chem-badge {
+  background: rgba(123,193,66,0.2);
+  border:1px solid rgba(123,193,66,0.4);
+  color:var(--green-light);
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  padding:6px 16px;
+  border-radius:20px;
+}
+.chem-david {
+  width: clamp(100px, 14vw, 160px);
+  height: clamp(130px, 18vw, 200px);
+  object-fit:contain;
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,0.5));
+}
+
+.chem-right {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.chem-formula-box {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(123,193,66,0.3);
+  border-radius:20px;
+  padding:24px 28px;
+}
+.chem-formula {
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(13px, 1.8vw, 18px);
+  color:var(--gold);
+  margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+.chem-formula-box h3 {
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(18px, 2.5vw, 26px);
+  color:var(--green-light);
+  margin-bottom:10px;
+}
+.chem-formula-box p {
+  color:rgba(255,255,255,0.8);
+  font-size: clamp(12px, 1.5vw, 15px);
+  line-height:1.75;
+}
+.btn-chem-next {
+  background:var(--green-light);
+  color:white;
+  border:none;
+  border-radius:50px;
+  padding:14px 40px;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(16px, 2vw, 20px);
+  cursor:pointer;
+  align-self:flex-start;
+  box-shadow:0 4px 16px rgba(123,193,66,0.3);
+  transition:transform .15s;
+}
+.btn-chem-next:active { transform:scale(0.97); }
+
+/* ====== SERVING STAGE ====== */
+#screen-game {
+  background:#b8e8a0;
+  flex-direction:column;
+  overflow:hidden;
 }
 
 /* HUD */
 .hud {
   background: var(--green-dark);
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  z-index: 10;
+  padding: 8px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  z-index:10;
+  min-height:44px;
 }
-.hud-hearts { display: flex; gap: 4px; font-size: 22px; }
-.hud-score {
-  font-family: 'Fredoka One', cursive;
-  font-size: 20px;
-  color: var(--gold);
-}
+.hud-left { display:flex; align-items:center; gap:12px; }
+.hud-hearts { display:flex; gap:3px; font-size: clamp(16px, 2.5vw, 22px); }
+.hud-score { font-family:'Fredoka One',cursive; font-size: clamp(16px, 2.5vw, 22px); color:var(--gold); }
 .hud-level {
-  font-size: 13px;
-  color: rgba(255,255,255,0.7);
-  background: rgba(255,255,255,0.1);
-  padding: 4px 10px;
-  border-radius: 10px;
+  font-size:12px; color:rgba(255,255,255,0.7);
+  background:rgba(255,255,255,0.1);
+  padding:3px 10px; border-radius:10px;
 }
 
-/* CAFE SCENE */
+/* GAME AREA: left=menu bar, center=scene, right=david+prep */
+.game-body {
+  flex:1;
+  display:flex;
+  overflow:hidden;
+  min-height:0;
+}
+
+/* LEFT: Menu bar */
+.menu-sidebar {
+  background: rgba(30,50,20,0.95);
+  width: clamp(80px, 10vw, 110px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:10px 6px;
+  gap:8px;
+  flex-shrink:0;
+  border-right:1px solid rgba(255,255,255,0.08);
+  overflow-y:auto;
+}
+.menu-sidebar-label {
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:rgba(255,255,255,0.4);
+  text-align:center;
+}
+.menu-btn {
+  background:rgba(255,255,255,0.08);
+  border:2px solid rgba(255,255,255,0.15);
+  border-radius:14px;
+  padding:8px 6px;
+  cursor:pointer;
+  width:100%;
+  text-align:center;
+  transition:all 0.15s;
+  position:relative;
+  overflow:hidden;
+}
+.menu-btn:active { transform:scale(0.93); }
+.menu-btn.disabled { opacity:0.35; pointer-events:none; }
+.menu-btn.preparing { border-color:var(--gold); background:rgba(240,192,64,0.15); }
+.menu-btn img {
+  width: clamp(36px, 5vw, 52px);
+  height: clamp(36px, 5vw, 52px);
+  object-fit:contain;
+  display:block;
+  margin:0 auto 4px;
+}
+.menu-btn .btn-name {
+  font-size: clamp(8px, 1vw, 11px);
+  color:rgba(255,255,255,0.8);
+  line-height:1.2;
+}
+.menu-btn .prep-bar {
+  position:absolute;
+  bottom:0; left:0;
+  height:3px;
+  background:var(--gold);
+  transition:width 0.1s linear;
+  border-radius:0 0 12px 12px;
+}
+
+/* CENTER: Cafe scene */
 .cafe-scene {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  min-height: 0;
+  flex:1;
+  position:relative;
+  overflow:hidden;
+  min-width:0;
 }
 
-/* Sky + ground */
-.cafe-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #b8e4f0 0%, #d4eeaa 60%, #a8cc6a 100%);
+.cafe-bg-layer {
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, #b0d8f5 0%, #d4eea8 55%, #8aba50 100%);
 }
 
-/* Cafe background SVG elements */
-.cafe-counter {
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  height: 45%;
-  background: linear-gradient(180deg, #8b6a3e 0%, #6b4a2a 100%);
-  border-radius: 0;
-}
-.cafe-counter::before {
-  content: '';
-  position: absolute;
-  top: -8px; left: 0; right: 0;
-  height: 18px;
-  background: #a07840;
-  border-radius: 8px 8px 0 0;
+/* SVG background scene */
+.cafe-scene svg.bg-svg {
+  position:absolute;
+  top:0; left:0;
+  width:100%; height:100%;
+  pointer-events:none;
 }
 
-/* Matcha decor */
-.cafe-plant {
-  position: absolute;
-  font-size: 36px;
-  bottom: 40%;
+/* Customer tables */
+.tables-row {
+  position:absolute;
+  top: 12%;
+  left: 10px; right: 10px;
+  height: 50%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-around;
 }
 
-/* Counter items */
-.counter-item {
-  position: absolute;
-  font-size: 28px;
-  bottom: 30%;
-}
-
-/* CUSTOMERS AREA */
-.customers-area {
-  position: absolute;
-  bottom: 42%;
-  left: 0; right: 0;
-  height: 80px;
-  display: flex;
-  align-items: flex-end;
-  padding: 0 10px;
-  gap: 6px;
-  flex-direction: row-reverse;
-}
-
-.customer-slot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  transition: transform 0.4s ease;
+.customer-spot {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  position:relative;
 }
 
 /* Patience bar */
-.patience-bar-wrap {
-  width: 52px;
-  height: 6px;
-  background: rgba(0,0,0,0.2);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-bottom: 2px;
+.patience-wrap {
+  width: clamp(48px, 6vw, 68px);
+  height:5px;
+  background:rgba(0,0,0,0.2);
+  border-radius:3px;
+  overflow:hidden;
 }
-.patience-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.1s linear, background 0.3s;
+.patience-fill {
+  height:100%;
+  border-radius:3px;
+  transition:width 0.1s linear, background 0.3s;
 }
 
 /* Order bubble */
 .order-bubble {
-  background: white;
-  border-radius: 10px;
-  padding: 4px 8px;
-  font-size: 18px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  margin-bottom: 3px;
-  position: relative;
-  animation: bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  background:white;
+  border-radius:10px;
+  padding:4px 8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  position:relative;
+  animation:bubblePop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  display:flex; align-items:center; gap:4px;
 }
 .order-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: white;
+  content:'';
+  position:absolute;
+  bottom:-5px; left:50%;
+  transform:translateX(-50%);
+  border:5px solid transparent;
+  border-top-color:white;
+}
+.order-bubble img {
+  width: clamp(24px, 3vw, 36px);
+  height: clamp(24px, 3vw, 36px);
+  object-fit:contain;
 }
 
 /* Customer sprite */
-.customer-img {
-  width: 52px;
-  height: 68px;
-  object-fit: contain;
-  object-position: bottom;
-}
-.customer-img-placeholder {
-  width: 52px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
+.customer-sprite {
+  width: clamp(52px, 7vw, 80px);
+  height: clamp(70px, 9vw, 105px);
+  object-fit:contain;
+  object-position:bottom;
+  animation:customerEntry 0.4s ease;
 }
 
-/* DAVID */
-.david-game {
-  position: absolute;
-  bottom: 28%;
-  right: 12px;
-  width: 70px;
-  height: 100px;
-  transition: transform 0.2s;
+/* Counter bar */
+.counter-bar {
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height: clamp(60px, 10vh, 90px);
+  background: linear-gradient(180deg, #8b6a3e 0%, #6b4a2a 100%);
 }
-.david-game.cooking { animation: davidCook 0.4s ease-in-out infinite alternate; }
-.david-game img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: bottom;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-}
-
-/* PREP STATION */
-.prep-station {
-  position: absolute;
-  bottom: 43%;
-  right: 90px;
-  width: 54px;
-  height: 54px;
-  background: rgba(255,255,255,0.9);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  transition: all 0.3s;
-}
-.prep-station.active {
-  background: var(--green-pale);
-  transform: scale(1.1);
-}
-.prep-station .prep-progress {
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-.prep-station .prep-fill {
-  position: absolute;
-  bottom: 0; left: 0;
-  width: 100%;
-  background: rgba(74,140,42,0.4);
-  transition: height 0.1s linear;
+.counter-bar::before {
+  content:'';
+  position:absolute;
+  top:-8px; left:0; right:0;
+  height:16px;
+  background:#a07840;
+  border-radius:8px 8px 0 0;
 }
 
 /* Ready order on counter */
-.ready-order {
-  position: absolute;
-  bottom: 44%;
-  right: 85px;
-  background: var(--gold);
-  border-radius: 10px;
-  padding: 6px 10px;
-  font-size: 22px;
-  box-shadow: 0 3px 12px rgba(240,192,64,0.5);
-  animation: readyPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  cursor: pointer;
-  z-index: 5;
+.ready-tray {
+  position:absolute;
+  bottom: clamp(62px, 10vh, 92px);
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--gold);
+  border-radius:12px;
+  padding:8px 14px;
+  display:flex; align-items:center; gap:6px;
+  box-shadow:0 4px 16px rgba(240,192,64,0.6);
+  animation:readyPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  cursor:pointer;
+  z-index:5;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(11px, 1.5vw, 15px);
+  color:var(--ink);
+}
+.ready-tray img {
+  width: clamp(28px, 4vw, 44px);
+  height: clamp(28px, 4vw, 44px);
+  object-fit:contain;
 }
 
-/* MENU BAR */
-.menu-bar {
-  background: var(--green-dark);
-  padding: 8px 10px 12px;
-  flex-shrink: 0;
-}
-.menu-bar-label {
-  text-align: center;
-  color: rgba(255,255,255,0.5);
-  font-size: 11px;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.menu-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-.menu-btn {
-  flex: 1;
-  max-width: 100px;
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.2);
-  border-radius: 14px;
-  padding: 10px 6px 8px;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.menu-btn:active { transform: scale(0.94); }
-.menu-btn.disabled { opacity: 0.4; pointer-events: none; }
-.menu-btn.preparing {
-  border-color: var(--gold);
-  background: rgba(240,192,64,0.15);
-}
-.menu-btn .btn-emoji { font-size: 28px; display: block; }
-.menu-btn .btn-name {
-  font-size: 10px;
-  color: rgba(255,255,255,0.8);
-  margin-top: 3px;
-  line-height: 1.2;
-}
-.menu-btn .prep-bar {
-  position: absolute;
-  bottom: 0; left: 0;
-  height: 3px;
-  background: var(--gold);
-  transition: width 0.1s linear;
+/* RIGHT: David area */
+.david-sidebar {
+  width: clamp(80px, 11vw, 120px);
+  background: rgba(30,50,20,0.6);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  padding:10px 6px 20px;
+  gap:10px;
+  flex-shrink:0;
+  border-left:1px solid rgba(255,255,255,0.08);
+  position:relative;
 }
 
-/* ===== CHEMISTRY SCREEN ===== */
-#screen-chem {
-  background: linear-gradient(160deg, #0f1f05, #1a3a0a, #0f2a15);
-  justify-content: center;
-  align-items: center;
-  padding: 32px 24px;
-  gap: 16px;
+.david-serving {
+  width: clamp(60px, 9vw, 100px);
+  height: clamp(80px, 12vw, 130px);
+  object-fit:contain;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,0.3));
 }
-.chem-badge {
-  background: rgba(123,193,66,0.2);
-  border: 1px solid rgba(123,193,66,0.4);
-  color: var(--green-light);
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  padding: 6px 16px;
-  border-radius: 20px;
-}
-.chem-david {
-  width: 120px; height: 150px;
-  margin: 0 auto;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
-}
-.chem-david img { width:100%; height:100%; object-fit:contain; }
-.chem-formula-box {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(123,193,66,0.3);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
-  width: 100%;
-}
-.chem-formula {
-  font-family: 'Fredoka One', cursive;
-  font-size: 16px;
-  color: var(--gold);
-  margin-bottom: 10px;
-}
-.chem-formula-box h3 {
-  font-family: 'Fredoka One', cursive;
-  font-size: 22px;
-  color: var(--green-light);
-  margin-bottom: 8px;
-}
-.chem-formula-box p {
-  color: rgba(255,255,255,0.8);
-  font-size: 13px;
-  line-height: 1.7;
-}
-.btn-chem-next {
-  background: var(--green-light);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 16px 40px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 20px;
-  cursor: pointer;
-  width: 100%;
-  box-shadow: 0 4px 16px rgba(123,193,66,0.3);
+.david-serving.cooking { animation:davidCook 0.4s ease-in-out infinite alternate; }
+
+.david-status {
+  font-size:9px;
+  color:rgba(255,255,255,0.6);
+  text-align:center;
+  font-style:italic;
 }
 
-/* ===== LEVEL COMPLETE ===== */
+/* ====== LEVEL COMPLETE ====== */
 #screen-complete {
-  background: linear-gradient(160deg, #1a4a0a, #3aaa1a);
-  justify-content: center;
-  align-items: center;
-  padding: 32px 24px;
-  gap: 14px;
+  background: linear-gradient(160deg, #0a2505, #1a6010, #0a2010);
+  flex-direction:row;
+  align-items:center;
+  padding:32px 60px;
+  gap:40px;
 }
-.complete-stars { font-size: 48px; text-align: center; }
-.complete-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 36px;
-  color: white;
-  text-align: center;
+.complete-left {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  align-items:flex-start;
 }
-.complete-score {
-  font-family: 'Fredoka One', cursive;
-  font-size: 28px;
-  color: var(--gold);
-  text-align: center;
+.complete-stars { font-size: clamp(32px, 5vw, 56px); }
+.complete-title { font-family:'Fredoka One',cursive; font-size: clamp(24px, 4vw, 42px); color:white; }
+.complete-score { font-family:'Fredoka One',cursive; font-size: clamp(18px, 2.5vw, 28px); color:var(--gold); }
+.btn-next {
+  background:var(--gold);
+  color:var(--ink);
+  border:none;
+  border-radius:50px;
+  padding:14px 36px;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(16px, 2vw, 20px);
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(240,192,64,0.5);
+  transition:transform .15s;
+}
+.btn-next:active { transform:scale(0.97); }
+.complete-right {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
 }
 .complete-david {
-  width: 150px; height: 190px;
-  margin: 0 auto;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.3));
-  animation: davidFloat 3s ease-in-out infinite;
-}
-.complete-david img { width:100%; height:100%; object-fit:contain; }
-.btn-next-level {
-  background: var(--gold);
-  color: var(--ink);
-  border: none;
-  border-radius: 50px;
-  padding: 16px 40px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 22px;
-  cursor: pointer;
-  width: 100%;
-  box-shadow: 0 4px 20px rgba(240,192,64,0.5);
+  width: clamp(130px, 18vw, 210px);
+  height: clamp(165px, 23vw, 270px);
+  object-fit:contain;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+  animation:davidFloat 3s ease-in-out infinite;
 }
 
-/* ===== GAME OVER ===== */
+/* ====== GAME OVER ====== */
 #screen-gameover {
-  background: linear-gradient(160deg, #3a0a0a, #6a1a1a);
-  justify-content: center;
-  align-items: center;
-  padding: 32px 24px;
-  gap: 14px;
+  background: linear-gradient(160deg, #2a0505, #5a1010);
+  flex-direction:row;
+  align-items:center;
+  padding:32px 60px;
+  gap:40px;
 }
-.gameover-emoji { font-size: 64px; text-align: center; animation: shake 0.5s ease; }
-.gameover-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 36px;
-  color: white;
-  text-align: center;
-}
-.gameover-msg { color: rgba(255,255,255,0.7); font-size: 14px; text-align: center; }
+.gameover-emoji { font-size: clamp(48px, 7vw, 80px); }
+.gameover-title { font-family:'Fredoka One',cursive; font-size: clamp(24px, 4vw, 42px); color:white; }
+.gameover-msg { color:rgba(255,255,255,0.7); font-size: clamp(12px, 1.6vw, 16px); }
 .btn-retry {
-  background: var(--red);
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 16px 40px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 22px;
-  cursor: pointer;
-  width: 100%;
+  background:var(--red);
+  color:white;
+  border:none;
+  border-radius:50px;
+  padding:14px 36px;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(16px, 2vw, 20px);
+  cursor:pointer;
+  transition:transform .15s;
 }
+.btn-retry:active { transform:scale(0.97); }
 
-/* ===== CAFE COMPLETE ===== */
+/* ====== CAFE COMPLETE ====== */
 #screen-cafe-complete {
-  background: linear-gradient(160deg, #1a4a0a, #4aaa2a);
-  justify-content: center;
-  align-items: center;
-  padding: 32px 24px;
-  gap: 14px;
-  overflow: hidden;
+  background: linear-gradient(160deg, #0a2505, #1a8010, #0a3010);
+  flex-direction:row;
+  align-items:center;
+  padding:32px 60px;
+  gap:40px;
+  overflow:hidden;
 }
-.cc-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 32px;
-  color: white;
-  text-align: center;
-  line-height: 1.2;
+.cc-left {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
-.cc-subtitle { color: var(--gold); font-size: 15px; text-align: center; font-weight: 800; }
+.cc-title { font-family:'Fredoka One',cursive; font-size: clamp(24px, 4vw, 42px); color:white; line-height:1.2; }
+.cc-sub { color:var(--gold); font-size: clamp(13px, 1.8vw, 18px); font-weight:800; }
+.cc-fact {
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:16px;
+  padding:18px;
+  color:rgba(255,255,255,0.85);
+  font-size: clamp(12px, 1.5vw, 15px);
+  line-height:1.7;
+}
+.btn-home {
+  background:var(--gold);
+  color:var(--ink);
+  border:none;
+  border-radius:50px;
+  padding:14px 36px;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(16px, 2vw, 20px);
+  cursor:pointer;
+  align-self:flex-start;
+  box-shadow:0 4px 20px rgba(240,192,64,0.5);
+  transition:transform .15s;
+}
+.btn-home:active { transform:scale(0.97); }
+.cc-right {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
 .cc-david {
-  width: 160px; height: 200px;
-  margin: 0 auto;
-  animation: davidFloat 3s ease-in-out infinite;
-  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.3));
-}
-.cc-david img { width:100%; height:100%; object-fit:contain; }
-.cc-fact-card {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 18px;
-  padding: 18px;
-  text-align: center;
-  width: 100%;
-}
-.cc-fact-card p { color: rgba(255,255,255,0.85); font-size: 13px; line-height: 1.7; }
-.btn-cc {
-  background: var(--gold);
-  color: var(--ink);
-  border: none;
-  border-radius: 50px;
-  padding: 16px 40px;
-  font-family: 'Fredoka One', cursive;
-  font-size: 22px;
-  cursor: pointer;
-  width: 100%;
-  box-shadow: 0 4px 20px rgba(240,192,64,0.5);
+  width: clamp(130px, 18vw, 210px);
+  height: clamp(165px, 23vw, 270px);
+  object-fit:contain;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+  animation:davidFloat 3s ease-in-out infinite;
 }
 
-/* ===== ANIMATIONS ===== */
-@keyframes titlePop {
-  from { transform: scale(0.7); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-@keyframes davidFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-@keyframes davidCook {
-  from { transform: rotate(-3deg) translateY(0); }
-  to { transform: rotate(3deg) translateY(-3px); }
-}
-@keyframes bubblePop {
-  from { transform: scale(0); }
-  to { transform: scale(1); }
-}
-@keyframes readyPop {
-  from { transform: scale(0) rotate(-10deg); }
-  to { transform: scale(1) rotate(0); }
-}
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px) rotate(-3deg); }
-  75% { transform: translateX(8px) rotate(3deg); }
-}
-@keyframes customerWalk {
-  from { transform: translateX(80px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-@keyframes customerLeave {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(100px); opacity: 0; }
-}
-@keyframes customerHappy {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-@keyframes floatUp {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-50px); opacity: 0; }
-}
-@keyframes confettiFall {
-  from { transform: translateY(-20px) rotate(0); opacity: 1; }
-  to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-}
-@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
-
-/* Notification popups */
+/* ====== FLOAT TEXTS & EFFECTS ====== */
 .float-text {
-  position: absolute;
-  font-family: 'Fredoka One', cursive;
-  font-size: 20px;
-  pointer-events: none;
-  z-index: 50;
-  animation: floatUp 1s ease forwards;
+  position:absolute;
+  font-family:'Fredoka One',cursive;
+  font-size: clamp(16px, 2.5vw, 24px);
+  pointer-events:none;
+  z-index:50;
+  animation:floatUp 1.2s ease forwards;
+  white-space:nowrap;
 }
 .confetti-piece {
-  position: fixed;
-  pointer-events: none;
-  z-index: 999;
-  animation: confettiFall linear forwards;
+  position:fixed;
+  pointer-events:none;
+  z-index:999;
+  border-radius:3px;
+}
+.toast {
+  position:fixed;
+  top: 60px; left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.85);
+  color:white;
+  padding:10px 22px;
+  border-radius:20px;
+  font-size: clamp(12px, 1.5vw, 15px);
+  font-weight:700;
+  z-index:100;
+  white-space:nowrap;
+  animation:floatUp 2.5s ease forwards;
+  pointer-events:none;
 }
 
-/* Toast */
-.toast {
-  position: absolute;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  z-index: 100;
-  white-space: nowrap;
-  animation: floatUp 2s ease forwards;
-  pointer-events: none;
-}
+/* ====== ANIMATIONS ====== */
+@keyframes davidFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes davidCook { from{transform:rotate(-4deg) translateY(0)} to{transform:rotate(4deg) translateY(-4px)} }
+@keyframes bubblePop { from{transform:scale(0)} to{transform:scale(1)} }
+@keyframes readyPop { from{transform:translateX(-50%) scale(0) rotate(-10deg)} to{transform:translateX(-50%) scale(1) rotate(0)} }
+@keyframes customerEntry { from{transform:translateX(60px);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes floatUp { from{transform:translateY(0);opacity:1} to{transform:translateY(-60px);opacity:0} }
+@keyframes bowlPop { from{transform:scale(0.8)} to{transform:scale(1)} }
+@keyframes bowlShake { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-6deg)} 75%{transform:rotate(6deg)} }
+@keyframes ingredientPop { from{transform:scale(0) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+@keyframes pulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 rgba(240,192,64,0.3)} 50%{transform:scale(1.04);box-shadow:0 0 16px rgba(240,192,64,0.5)} }
+@keyframes confettiFall { from{opacity:1} to{transform:translateY(100vh) rotate(720deg);opacity:0} }
+@keyframes titlePop { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
 </style>
 </head>
 <body>
-<div id="game-wrap">
 
-<!-- TITLE SCREEN -->
+<!-- Orientation gate for portrait mobile -->
+<div id="orient-gate">
+  <div class="rotate-icon">📱</div>
+  <p>Rotate your device<br>to landscape mode!</p>
+  <p style="font-size:14px;color:rgba(255,255,255,0.5);font-family:Nunito">Putar HP ke mode landscape ya!</p>
+</div>
+
+<div id="app">
+
+<!-- ===== TITLE ===== -->
 <div id="screen-title" class="screen active">
-  <div class="title-deco" style="top:5%;left:5%">🍵</div>
-  <div class="title-deco" style="top:10%;right:8%">⚗️</div>
-  <div class="title-deco" style="bottom:15%;left:10%">🌿</div>
-  <div class="title-deco" style="bottom:20%;right:5%">🧪</div>
-
-  <div style="flex:1"></div>
-  <div class="title-logo">
-    <span class="logo-icon">🧪</span>
-    <h1>Chef's Lab</h1>
-    <p class="sub">Where Chemistry Meets Comfort Food</p>
+  <div class="title-deco" style="top:10%;left:5%">🍵</div>
+  <div class="title-deco" style="top:15%;right:8%">⚗️</div>
+  <div class="title-deco" style="bottom:12%;left:12%">🌿</div>
+  <div class="title-deco" style="bottom:18%;right:6%">🧪</div>
+  <div class="title-left">
+    <div class="title-logo">
+      <span class="icon">🧪</span>
+      <h1>Chef's Lab</h1>
+      <p class="sub">Where Chemistry Meets Comfort Food</p>
+    </div>
+    <div class="cafe-card">
+      <div class="name">🍵 Matcha Cafe</div>
+      <div class="sub">Phase 1 — David's Journey</div>
+    </div>
+    <button class="btn-start" onclick="G.startGame()">Mulai Bekerja! 🍵</button>
   </div>
-  <div class="cafe-badge">
-    <div class="cafe-name">🍵 Matcha Cafe</div>
-    <div class="cafe-sub">Phase 1 — David's Journey Begins</div>
+  <div class="title-right">
+    <img class="title-david"
+      src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png"
+      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div style=font-size:120px;text-align:center>👨‍🍳</div>')"
+      alt="David">
   </div>
-  <div class="david-title">
-    <img src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png"
-         onerror="this.style.display='none';this.parentElement.innerHTML='<div style=font-size:80px;text-align:center>👨‍🍳</div>'"
-         alt="David">
-  </div>
-  <button class="btn-start" onclick="G.startGame()">Mulai Bekerja! 🍵</button>
-  <div style="flex:0.5"></div>
 </div>
 
-<!-- LEVEL INTRO -->
+<!-- ===== LEVEL INTRO ===== -->
 <div id="screen-intro" class="screen">
-  <div class="intro-level-badge" id="intro-badge">Level 1</div>
-  <div class="intro-title" id="intro-title">Magang Hari Pertama</div>
-  <div class="intro-david">
-    <img src="https://raw.githubusercontent.com/pipit10364/David/main/david%20thinking.png"
-         onerror="this.style.display='none';this.parentElement.innerHTML='<div style=font-size:80px;text-align:center>🤔</div>'"
-         alt="David thinking">
+  <div class="intro-left">
+    <div class="level-badge" id="intro-badge">Level 1</div>
+    <div class="intro-title" id="intro-title">Magang Hari Pertama</div>
+    <div class="intro-stats">
+      <div class="intro-stat-row"><span>👥 Pelanggan</span><span id="intro-customers">6</span></div>
+      <div class="intro-stat-row"><span>⏱ Waktu sabar</span><span id="intro-patience">18 detik</span></div>
+      <div class="intro-stat-row"><span>🍵 Menu</span><span id="intro-menu-count">1 item</span></div>
+    </div>
+    <div class="intro-menu-label">Menu hari ini:</div>
+    <div class="menu-chips" id="intro-menu-chips"></div>
+    <button class="btn-play" onclick="G.startCookingStage()">Gas! 🔥</button>
   </div>
-  <div class="intro-card">
-    <div class="intro-row"><span>Pelanggan</span><span id="intro-customers">6</span></div>
-    <div class="intro-row"><span>Waktu sabar</span><span id="intro-patience">18 detik</span></div>
-    <div class="intro-row"><span>Menu</span><span id="intro-menu-count">1 item</span></div>
+  <div class="intro-right">
+    <img class="intro-david"
+      src="https://raw.githubusercontent.com/pipit10364/David/main/david%20thinking.png"
+      onerror="this.style.display='none'"
+      alt="David">
   </div>
-  <div style="color:rgba(255,255,255,0.7);font-size:13px">Menu hari ini:</div>
-  <div class="menu-preview" id="intro-menu-preview"></div>
-  <button class="btn-play" onclick="G.startLevel()">Gas! 🔥</button>
 </div>
 
-<!-- GAME SCREEN -->
+<!-- ===== COOKING STAGE ===== -->
+<div id="screen-cooking" class="screen">
+  <div class="cooking-bg">
+    <img id="cooking-bg-img"
+      src="https://raw.githubusercontent.com/pipit10364/David/main/Matcha%20pantry%20cooking.png"
+      onerror="this.style.background='#c8a870'"
+      alt="Kitchen">
+  </div>
+  <div class="cooking-overlay"></div>
+  <div class="cooking-ui">
+    <!-- Header -->
+    <div class="cooking-header">
+      <div class="cooking-title-box">
+        <div class="label">🧑‍🍳 Sesi Masak</div>
+        <div class="menu-name" id="cook-menu-name">Matcha Latte Es</div>
+      </div>
+      <img class="cooking-david"
+        src="https://raw.githubusercontent.com/pipit10364/David/main/david%20masak%20nerdy.png"
+        onerror="this.style.display='none'"
+        alt="David">
+    </div>
+
+    <!-- Main cooking area -->
+    <div class="cooking-main">
+      <!-- Recipe steps (left) -->
+      <div class="recipe-steps">
+        <div class="recipe-label">📋 Resep</div>
+        <div id="recipe-steps-list"></div>
+        <div class="cooking-progress">
+          <div class="cooking-progress-fill" id="cook-progress-fill" style="width:0%"></div>
+        </div>
+        <div class="mistakes-row" id="cook-mistakes"></div>
+      </div>
+
+      <!-- Bowl (center) -->
+      <div class="bowl-area">
+        <div class="bowl-wrapper" id="cook-bowl">
+          <div class="bowl-contents" id="bowl-contents">
+            <span style="font-size:clamp(28px,4vw,44px)">🫙</span>
+          </div>
+        </div>
+        <div class="bowl-hint" id="bowl-hint">Tap bahan sesuai urutan resep!</div>
+      </div>
+
+      <!-- Ingredients (right) -->
+      <div class="ingredients-grid" id="ingredients-grid"></div>
+    </div>
+  </div>
+
+  <!-- Feedback panel -->
+  <div class="cooking-feedback" id="cook-feedback">
+    <div class="feedback-icon" id="fb-icon">✅</div>
+    <div class="feedback-text">
+      <div class="fb-title" id="fb-title">Mantap!</div>
+      <div class="fb-sub" id="fb-sub">Penjelasan kimia...</div>
+    </div>
+    <button class="btn-feedback" id="btn-feedback" onclick="G.feedbackNext()">Lanjut ➜</button>
+  </div>
+</div>
+
+<!-- ===== CHEMISTRY SCREEN ===== -->
+<div id="screen-chem" class="screen">
+  <div class="chem-left">
+    <div class="chem-badge">⚗️ Chemistry Moment!</div>
+    <img class="chem-david"
+      src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha%20circle.png"
+      onerror="this.src='https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png'"
+      alt="David aha">
+  </div>
+  <div class="chem-right">
+    <div class="chem-formula-box">
+      <div class="chem-formula" id="chem-formula"></div>
+      <h3 id="chem-title"></h3>
+      <p id="chem-desc"></p>
+    </div>
+    <button class="btn-chem-next" onclick="G.afterChem()">Sip, lanjut masak! ➜</button>
+  </div>
+</div>
+
+<!-- ===== SERVING STAGE ===== -->
 <div id="screen-game" class="screen">
   <div class="hud">
-    <div class="hud-hearts" id="hud-hearts">❤️❤️❤️</div>
-    <div class="hud-level" id="hud-level">Level 1</div>
-    <div class="hud-score" id="hud-score">0</div>
+    <div class="hud-left">
+      <div class="hud-hearts" id="hud-hearts">❤️❤️❤️</div>
+      <div class="hud-level" id="hud-level">Level 1</div>
+    </div>
+    <div class="hud-score" id="hud-score">⭐ 0</div>
   </div>
+  <div class="game-body">
+    <!-- Menu sidebar -->
+    <div class="menu-sidebar">
+      <div class="menu-sidebar-label">TAP MASAK</div>
+      <div id="menu-btns-container"></div>
+    </div>
+    <!-- Scene -->
+    <div class="cafe-scene" id="cafe-scene">
+      <div class="cafe-bg-layer"></div>
+      <!-- Background SVG -->
+      <svg class="bg-svg" viewBox="0 0 700 450" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sky -->
+        <rect width="700" height="200" fill="#b0d8f5" opacity="0.6"/>
+        <!-- Trees -->
+        <ellipse cx="60" cy="120" rx="35" ry="45" fill="#5aaa30" opacity="0.7"/>
+        <rect x="53" y="155" width="14" height="35" fill="#8b5e3c" opacity="0.7"/>
+        <ellipse cx="640" cy="110" rx="40" ry="50" fill="#4a9a28" opacity="0.7"/>
+        <rect x="633" y="150" width="14" height="40" fill="#8b5e3c" opacity="0.7"/>
+        <!-- Cafe sign top center -->
+        <rect x="250" y="20" width="200" height="60" rx="8" fill="#2d5a1b"/>
+        <rect x="254" y="24" width="192" height="52" rx="6" fill="#3a7a22"/>
+        <text x="350" y="44" text-anchor="middle" font-size="11" fill="#f0c040" font-family="serif" font-weight="bold">🍵 MATCHA CAFE</text>
+        <text x="350" y="62" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.7)" font-family="sans-serif">Chef David's Lab</text>
+        <!-- Shelves -->
+        <rect x="120" y="60" width="140" height="7" rx="3" fill="#8b6a3e" opacity="0.9"/>
+        <rect x="440" y="60" width="140" height="7" rx="3" fill="#8b6a3e" opacity="0.9"/>
+        <!-- Matcha jars -->
+        <rect x="128" y="40" width="22" height="22" rx="4" fill="#4a8c2a"/>
+        <text x="139" y="55" text-anchor="middle" font-size="9" fill="white">抹茶</text>
+        <rect x="156" y="42" width="20" height="20" rx="4" fill="#2d5a1b"/>
+        <rect x="184" y="38" width="24" height="24" rx="4" fill="#6aaa3a"/>
+        <rect x="215" y="40" width="20" height="22" rx="4" fill="#3a7a22"/>
+        <!-- Teapot right shelf -->
+        <ellipse cx="480" cy="50" rx="18" ry="14" fill="#7bb35a"/>
+        <path d="M498 50 Q515 44 515 54" stroke="#7bb35a" stroke-width="3" fill="none"/>
+        <rect x="468" y="36" width="8" height="10" rx="2" fill="#5a9a3a"/>
+        <!-- Ground/grass -->
+        <rect x="0" y="280" width="700" height="170" fill="#88bb48" opacity="0.4"/>
+        <!-- Tiles floor inside -->
+        <rect x="0" y="250" width="700" height="60" fill="rgba(200,230,160,0.3)"/>
+      </svg>
 
-  <div class="cafe-scene" id="cafe-scene">
-    <!-- Background -->
-    <div class="cafe-bg"></div>
+      <!-- Customer tables area -->
+      <div class="tables-row" id="tables-row"></div>
 
-    <!-- Cafe decor SVG -->
-    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" viewBox="0 0 480 500">
-      <!-- Sky -->
-      <rect width="480" height="220" fill="#b8e4f0" opacity="0.5"/>
-      <!-- Shelves on wall -->
-      <rect x="20" y="60" width="160" height="8" rx="4" fill="#8b6a3e" opacity="0.8"/>
-      <rect x="300" y="60" width="160" height="8" rx="4" fill="#8b6a3e" opacity="0.8"/>
-      <!-- Matcha cans on shelf -->
-      <rect x="30" y="40" width="24" height="22" rx="4" fill="#4a8c2a"/>
-      <rect x="32" y="42" width="20" height="10" rx="2" fill="#5aaa3a"/>
-      <text x="42" y="50" text-anchor="middle" font-size="8" fill="white">抹茶</text>
-      <rect x="60" y="42" width="22" height="20" rx="4" fill="#2d5a1b"/>
-      <rect x="96" y="38" width="26" height="24" rx="4" fill="#6aaa3a"/>
-      <!-- Teapot -->
-      <ellipse cx="340" cy="50" rx="18" ry="15" fill="#7bb35a"/>
-      <path d="M 358 50 Q 375 45 375 55" stroke="#7bb35a" stroke-width="3" fill="none"/>
-      <rect x="328" y="35" width="8" height="10" rx="2" fill="#5a9a3a"/>
-      <!-- Menu board -->
-      <rect x="180" y="30" width="120" height="80" rx="6" fill="#2d4a1b"/>
-      <rect x="184" y="34" width="112" height="72" rx="4" fill="#3a6a2a"/>
-      <text x="240" y="52" text-anchor="middle" font-size="10" fill="#f0c040" font-weight="bold">MATCHA CAFE</text>
-      <text x="240" y="68" text-anchor="middle" font-size="9" fill="white">🧊 Latte Es   8k</text>
-      <text x="240" y="82" text-anchor="middle" font-size="9" fill="white">☕ Latte Panas 8k</text>
-      <text x="240" y="96" text-anchor="middle" font-size="9" fill="white">🍰 Cake       12k</text>
-    </svg>
-
-    <!-- Counter decor -->
-    <div class="cafe-counter"></div>
-    <div class="cafe-plant" style="left:12px">🌿</div>
-    <div class="cafe-plant" style="left:50px">🎋</div>
-    <div class="counter-item" style="left:30px">⚗️</div>
-    <div class="counter-item" style="left:70px">🫖</div>
-
-    <!-- Customers queue -->
-    <div class="customers-area" id="customers-area"></div>
-
-    <!-- Ready order (appears when prepared) -->
-    <div class="ready-order" id="ready-order" style="display:none" onclick="G.serveOrder()"></div>
-
-    <!-- Prep station -->
-    <div class="prep-station" id="prep-station">
-      <span id="prep-icon">🍵</span>
-      <div class="prep-progress">
-        <div class="prep-fill" id="prep-fill" style="height:0%"></div>
+      <!-- Ready tray -->
+      <div id="ready-tray" style="display:none" onclick="G.serveOrder()">
+        <img id="ready-tray-img" src="" alt="ready">
+        <span id="ready-tray-label">Siap serve!</span>
       </div>
-    </div>
 
-    <!-- David -->
-    <div class="david-game" id="david-game">
-      <img id="david-img"
-           src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png"
-           onerror="this.style.display='none';this.parentElement.innerHTML='<div style=font-size:60px;text-align:center>👨‍🍳</div>'"
-           alt="David">
+      <!-- Counter bar -->
+      <div class="counter-bar"></div>
     </div>
-  </div>
-
-  <!-- Menu bar -->
-  <div class="menu-bar">
-    <div class="menu-bar-label">Tap untuk masak 👇</div>
-    <div class="menu-buttons" id="menu-buttons"></div>
+    <!-- David sidebar -->
+    <div class="david-sidebar">
+      <div class="david-status" id="david-status">Siap masak!</div>
+      <img class="david-serving" id="david-serving-img"
+        src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png"
+        onerror="this.style.display='none'"
+        alt="David">
+    </div>
   </div>
 </div>
 
-<!-- CHEMISTRY MOMENT -->
-<div id="screen-chem" class="screen">
-  <div class="chem-badge">⚗️ Chemistry Moment!</div>
-  <div class="chem-david">
-    <img src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png"
-         onerror="this.style.display='none';this.parentElement.innerHTML='<div style=font-size:80px;text-align:center>🤓</div>'"
-         alt="David aha">
-  </div>
-  <div class="chem-formula-box">
-    <div class="chem-formula" id="chem-formula"></div>
-    <h3 id="chem-title"></h3>
-    <p id="chem-desc"></p>
-  </div>
-  <button class="btn-chem-next" onclick="G.afterChem()">Sip, lanjut! ➜</button>
-</div>
-
-<!-- LEVEL COMPLETE -->
+<!-- ===== LEVEL COMPLETE ===== -->
 <div id="screen-complete" class="screen">
-  <div class="complete-stars" id="complete-stars">⭐⭐⭐</div>
-  <div class="complete-title" id="complete-title">Level Selesai!</div>
-  <div class="complete-score" id="complete-score-text"></div>
-  <div class="complete-david">
-    <img src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png"
-         onerror="this.style.display='none'"
-         alt="David">
+  <div class="complete-left">
+    <div class="complete-stars" id="complete-stars">⭐⭐⭐</div>
+    <div class="complete-title" id="complete-title">Level Selesai!</div>
+    <div class="complete-score" id="complete-score-text">Score: 0</div>
+    <button class="btn-next" id="btn-next-level" onclick="G.nextLevel()">Level Berikutnya ➜</button>
   </div>
-  <button class="btn-next-level" id="btn-next-level" onclick="G.nextLevel()">Level Berikutnya ➜</button>
+  <div class="complete-right">
+    <img class="complete-david"
+      src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png"
+      onerror="this.style.display='none'"
+      alt="David">
+  </div>
 </div>
 
-<!-- GAME OVER -->
+<!-- ===== GAME OVER ===== -->
 <div id="screen-gameover" class="screen">
-  <div class="gameover-emoji">😰</div>
-  <div class="gameover-title">Semua pelanggan kabur!</div>
-  <div class="gameover-msg" id="gameover-msg">Latihan lagi ya, Chef David!</div>
-  <div class="complete-david" style="margin:8px auto">
-    <img src="https://raw.githubusercontent.com/pipit10364/David/main/david%20thinking.png"
-         onerror="this.style.display='none'" alt="David">
+  <div style="flex:1;display:flex;flex-direction:column;gap:16px;justify-content:center">
+    <div class="gameover-emoji">😰</div>
+    <div class="gameover-title">Semua pelanggan kabur!</div>
+    <div class="gameover-msg" id="gameover-msg">Semangat, Chef! Coba lagi ya.</div>
+    <button class="btn-retry" onclick="G.retryLevel()">Coba Lagi 🔄</button>
   </div>
-  <button class="btn-retry" onclick="G.retryLevel()">Coba Lagi 🔄</button>
+  <div style="flex:0 0 auto">
+    <img class="complete-david"
+      src="https://raw.githubusercontent.com/pipit10364/David/main/david%20thinking.png"
+      onerror="this.style.display='none'"
+      alt="David">
+  </div>
 </div>
 
-<!-- CAFE COMPLETE -->
+<!-- ===== CAFE COMPLETE ===== -->
 <div id="screen-cafe-complete" class="screen">
-  <div class="cc-title">Matcha Cafe<br>Cleared! 🎉</div>
-  <div class="cc-subtitle">David lulus dari Matcha Cafe!</div>
-  <div class="cc-david">
-    <img src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png"
-         onerror="this.style.display='none'" alt="David">
+  <div class="cc-left">
+    <div class="cc-title">🎉 Matcha Cafe<br>Selesai!</div>
+    <div class="cc-sub">David lulus dari Matcha Cafe!</div>
+    <div class="cc-fact">
+      Matcha mengandung <strong>L-Theanine</strong> yang bekerja sinergis dengan kafein —
+      bikin <em>alert</em> tapi tetap calm. Ini kenapa matcha jadi minuman favorit para
+      Materials Scientist di sela-sela eksperimen! 🧪
+    </div>
+    <div style="font-family:'Fredoka One',cursive;font-size:clamp(18px,2.5vw,26px);color:var(--gold)" id="cc-total-score">Total: 0</div>
+    <button class="btn-home" onclick="G.goTitle()">Main Lagi 🔁</button>
   </div>
-  <div class="cc-fact-card">
-    <p>Matcha mengandung L-Theanine yang bekerja sinergis dengan kafein — bikin <em>alert</em> tapi tetap calm. Ini yang bikin matcha jadi minuman favorit para Materials Scientist di sela-sela eksperimen! 🧪</p>
+  <div class="cc-right">
+    <img class="cc-david"
+      src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png"
+      onerror="this.style.display='none'"
+      alt="David">
+    <div style="font-size:clamp(28px,4vw,48px);text-align:center">🎓✨</div>
   </div>
-  <div class="complete-score" id="cc-total-score">Total Score: 0</div>
-  <button class="btn-cc" onclick="G.goTitle()">Main Lagi 🔁</button>
 </div>
 
-</div><!-- /game-wrap -->
+</div><!-- /app -->
 
 <script>
-// ===== CONSTANTS =====
+// ============================================================
+// ASSETS
+// ============================================================
 const RAW = 'https://raw.githubusercontent.com/pipit10364/David/main/';
+const ENC = s => s.replace(/ /g,'%20');
 
-const DAVID_IMGS = {
-  idle:    RAW + 'David%20mempersilakan.png',
-  cooking: RAW + 'david%20masak.png',
-  aha:     RAW + 'David%20aha.png',
-  thinking:RAW + 'david%20thinking.png',
+const DAVID = {
+  idle:    RAW + ENC('David mempersilakan.png'),
+  cooking: RAW + ENC('david masak.png'),
+  cookNerdy: RAW + ENC('david masak nerdy.png'),
+  aha:     RAW + ENC('David aha.png'),
+  ahaCircle: RAW + ENC('David aha circle.png'),
+  thinking: RAW + ENC('david thinking.png'),
+};
+
+const INGREDIENTS = {
+  matcha:      { name:'Matcha', img: RAW + ENC('Matcha.png') },
+  matcha2:     { name:'Matcha Bubuk', img: RAW + ENC('Matcha (2).png') },
+  susu:        { name:'Susu', img: RAW + ENC('susu.png') },
+  susu2:       { name:'Susu Cair', img: RAW + ENC('susu (2).png') },
+  gula:        { name:'Gula', img: RAW + ENC('Gula.png') },
+  garam:       { name:'Garam', img: RAW + ENC('Garam.png') },
+  telor:       { name:'Telur', img: RAW + ENC('telor.png') },
+  kuningTelor: { name:'Kuning Telur', img: RAW + ENC('Kuning Telor.png') },
+  tepungKetan: { name:'Tepung Ketan', img: RAW + ENC('tepung ketan.png') },
+};
+
+const MENUS = {
+  'es-matcha': {
+    name: 'Es Matcha Latte',
+    emoji: '🧊',
+    img: RAW + ENC('es matcha.png'),
+    prepTime: 1400,
+    recipe: ['matcha', 'susu', 'gula'],
+    chemFact: {
+      formula: 'Matcha + H₂O (70°C) → Katekin + L-Theanine',
+      title: 'Suhu Ekstraksi Matcha',
+      desc: 'Air >80°C merusak L-Theanine yang bikin matcha smooth dan calm. Suhu ideal 70°C untuk ekstraksi sempurna! Itulah kenapa matcha latte yang enak pakai suhu yang tepat — bukan sekadar tuang air panas. 🌡️'
+    }
+  },
+  'hangat-matcha': {
+    name: 'Matcha Latte Hangat',
+    emoji: '☕',
+    img: RAW + ENC('matcha hangat.png'),
+    prepTime: 1500,
+    recipe: ['matcha', 'susu2', 'gula'],
+    chemFact: {
+      formula: 'Protein Susu + Panas → Denaturasi → Foam',
+      title: 'Denaturasi Protein Susu',
+      desc: 'Saat susu dipanaskan 60–70°C, protein kasein mengalami denaturasi parsial. Inilah yang menciptakan tekstur creamy dan foam yang stabil di atas latte! Proses kimia yang bikin matcha latte hangat terasa berbeda. ☕'
+    }
+  },
+  'matcha-cake': {
+    name: 'Matcha Cake',
+    emoji: '🍰',
+    img: RAW + ENC('matcha cake.png'),
+    prepTime: 2200,
+    recipe: ['tepungKetan', 'kuningTelor', 'gula', 'matcha2'],
+    chemFact: {
+      formula: 'Tepung + Telur + Panas → Maillard Reaction → Kerak Cake',
+      title: 'Reaksi Maillard',
+      desc: 'Ketika adonan dipanggang, asam amino dari telur bereaksi dengan gula melalui Reaksi Maillard — menciptakan warna cokelat keemasan dan aroma harum yang khas! Ini beda dengan karamelisasi ya. 🎂'
+    }
+  },
+  'matcha-smoothie': {
+    name: 'Matcha Smoothie',
+    emoji: '🥤',
+    img: RAW + ENC('matcha smoothies.png'),
+    prepTime: 1800,
+    recipe: ['matcha', 'susu2', 'gula', 'garam'],
+    chemFact: {
+      formula: 'Matcha + Katekin + Antioksidan → Radikal Bebas ↓',
+      title: 'Antioksidan Matcha',
+      desc: 'Matcha mengandung EGCG (Epigallocatechin Gallate) — antioksidan 137x lebih kuat dari green tea biasa! Molekulnya menangkap radikal bebas sehingga melindungi sel. Ini yang bikin matcha superfood. 🌿'
+    }
+  },
 };
 
 const CUSTOMERS = [1,2,3,4,5,6,7,8];
-const CUST_STATES = ['Neutral','Happy','Angry','Sad'];
+
 function custImg(n, state) {
-  return RAW + `Costumer%20${n}%20-%20${state}.png`;
+  return RAW + ENC(`Costumer ${n} - ${state}.png`);
 }
 
-const MENU = {
-  'matcha-es':    { name:'Matcha Latte Es',   emoji:'🧊', color:'#a8d8f8', prepTime:1400 },
-  'matcha-panas': { name:'Matcha Latte Panas', emoji:'☕', color:'#c8e6a0', prepTime:1400 },
-  'matcha-cake':  { name:'Matcha Cake',        emoji:'🍰', color:'#d4eea0', prepTime:2000 },
-  'matcha-smoothie':{ name:'Matcha Smoothie',  emoji:'🥤', color:'#b8f0c8', prepTime:1800 },
+// ============================================================
+// LEVELS CONFIG
+// ============================================================
+const LEVELS = [
+  {
+    level:1, name:'Magang Hari Pertama 🌱',
+    customers:6, menus:['es-matcha'],
+    patience:18000, spawn:4500, maxQ:3, pts:100
+  },
+  {
+    level:2, name:'Mulai Ramai ☕',
+    customers:9, menus:['es-matcha','hangat-matcha'],
+    patience:14000, spawn:3500, maxQ:4, pts:130
+  },
+  {
+    level:3, name:'Rush Hour! 🔥',
+    customers:13, menus:['es-matcha','hangat-matcha','matcha-cake'],
+    patience:10000, spawn:2800, maxQ:4, pts:160
+  },
+];
+
+// ============================================================
+// COOKING STAGE LOGIC
+// ============================================================
+const COOK = {
+  menuId: null,
+  recipe: [],
+  currentStep: 0,
+  mistakes: 0,
+  maxMistakes: 3,
+  allMenusForLevel: [],
+  menuIndex: 0,
+
+  init(levelMenus) {
+    this.allMenusForLevel = levelMenus;
+    this.menuIndex = 0;
+    this.startMenu(levelMenus[0]);
+  },
+
+  startMenu(menuId) {
+    this.menuId = menuId;
+    const menu = MENUS[menuId];
+    this.recipe = [...menu.recipe];
+    this.currentStep = 0;
+    this.mistakes = 0;
+    this.renderCookingScreen();
+  },
+
+  renderCookingScreen() {
+    const menu = MENUS[this.menuId];
+    document.getElementById('cook-menu-name').textContent = menu.name;
+    document.getElementById('cook-feedback').classList.remove('show');
+
+    // Recipe steps
+    const stepsList = document.getElementById('recipe-steps-list');
+    stepsList.innerHTML = this.recipe.map((ingId, i) => {
+      const ing = INGREDIENTS[ingId];
+      const cls = i < this.currentStep ? 'completed' : i === this.currentStep ? 'current' : '';
+      return `<div class="recipe-step ${cls}">
+        <div class="step-num">${i < this.currentStep ? '✓' : i+1}</div>
+        <img class="step-img" src="${ing.img}" onerror="this.style.display='none'" alt="${ing.name}">
+        <div class="step-name">${ing.name}</div>
+      </div>`;
+    }).join('');
+
+    // Progress
+    const pct = (this.currentStep / this.recipe.length) * 100;
+    document.getElementById('cook-progress-fill').style.width = pct + '%';
+
+    // Mistakes hearts
+    const mistakesEl = document.getElementById('cook-mistakes');
+    mistakesEl.innerHTML = Array.from({length: this.maxMistakes}, (_,i) =>
+      `<span class="mistake-heart ${i < this.mistakes ? 'lost' : ''}">❤️</span>`
+    ).join('');
+
+    // Bowl reset
+    document.getElementById('bowl-contents').innerHTML = '<span style="font-size:clamp(28px,4vw,44px)">🫙</span>';
+    document.getElementById('bowl-hint').textContent = `Tap bahan ke-1: ${INGREDIENTS[this.recipe[0]].name}`;
+    document.getElementById('cook-bowl').className = 'bowl-wrapper';
+
+    // Shuffle ingredients for display (all unique ingredients in recipe + 1-2 distractors)
+    const recipeSet = [...new Set(this.recipe)];
+    const allIng = Object.keys(INGREDIENTS);
+    const distractors = allIng.filter(k => !recipeSet.includes(k)).slice(0, 2);
+    const displayIngs = [...recipeSet, ...distractors].sort(() => Math.random() - 0.5);
+
+    const grid = document.getElementById('ingredients-grid');
+    grid.innerHTML = displayIngs.map(ingId => {
+      const ing = INGREDIENTS[ingId];
+      return `<button class="ingredient-btn" id="ing-btn-${ingId}" onclick="COOK.tapIngredient('${ingId}')">
+        <img src="${ing.img}" onerror="this.style.fontSize='32px';this.outerHTML='<span style=font-size:32px>${ing.name[0]}</span>'" alt="${ing.name}">
+        <div class="ing-name">${ing.name}</div>
+      </button>`;
+    }).join('');
+
+    // Highlight the correct current ingredient
+    this.highlightCurrent();
+  },
+
+  highlightCurrent() {
+    document.querySelectorAll('.ingredient-btn').forEach(b => b.classList.remove('highlight'));
+    if (this.currentStep < this.recipe.length) {
+      const currentIngId = this.recipe[this.currentStep];
+      const btn = document.getElementById(`ing-btn-${currentIngId}`);
+      // Don't always highlight — that'd be too easy. Only after a mistake.
+    }
+  },
+
+  tapIngredient(ingId) {
+    if (this.currentStep >= this.recipe.length) return;
+    const expected = this.recipe[this.currentStep];
+
+    if (ingId === expected) {
+      // Correct!
+      const ing = INGREDIENTS[ingId];
+      const bowl = document.getElementById('cook-bowl');
+      bowl.classList.remove('wrong');
+      bowl.classList.add('correct');
+      setTimeout(() => bowl.classList.remove('correct'), 500);
+
+      // Add to bowl visually
+      const contents = document.getElementById('bowl-contents');
+      if (this.currentStep === 0) contents.innerHTML = '';
+      contents.innerHTML += `<img class="bowl-ingredient" src="${ing.img}" onerror="this.remove()" alt="${ing.name}">`;
+
+      this.currentStep++;
+
+      // Update recipe steps display
+      const stepsList = document.getElementById('recipe-steps-list');
+      const steps = stepsList.querySelectorAll('.recipe-step');
+      steps.forEach((s, i) => {
+        s.className = 'recipe-step' + (i < this.currentStep ? ' completed' : i === this.currentStep ? ' current' : '');
+        if (i < this.currentStep) {
+          const numEl = s.querySelector('.step-num');
+          if (numEl) numEl.textContent = '✓';
+        }
+      });
+
+      // Progress
+      const pct = (this.currentStep / this.recipe.length) * 100;
+      document.getElementById('cook-progress-fill').style.width = pct + '%';
+
+      if (this.currentStep < this.recipe.length) {
+        document.getElementById('bowl-hint').textContent = `Tap bahan ke-${this.currentStep+1}: ${INGREDIENTS[this.recipe[this.currentStep]].name}`;
+      }
+
+      if (this.currentStep >= this.recipe.length) {
+        // All done!
+        setTimeout(() => COOK.onSuccess(), 600);
+      }
+    } else {
+      // Wrong!
+      this.mistakes++;
+      const bowl = document.getElementById('cook-bowl');
+      bowl.classList.add('wrong');
+      setTimeout(() => bowl.classList.remove('wrong'), 500);
+
+      // Update hearts
+      const mistakesEl = document.getElementById('cook-mistakes');
+      const hearts = mistakesEl.querySelectorAll('.mistake-heart');
+      hearts.forEach((h, i) => {
+        if (i < this.mistakes) h.classList.add('lost');
+      });
+
+      // Highlight correct ingredient after mistake
+      const correctBtn = document.getElementById(`ing-btn-${this.recipe[this.currentStep]}`);
+      if (correctBtn) {
+        correctBtn.classList.add('highlight');
+        setTimeout(() => correctBtn.classList.remove('highlight'), 1500);
+      }
+
+      if (this.mistakes >= this.maxMistakes) {
+        setTimeout(() => COOK.onFail(), 600);
+      } else {
+        document.getElementById('bowl-hint').textContent = `Salah! Hint: ${INGREDIENTS[this.recipe[this.currentStep]].name} 💡`;
+      }
+    }
+  },
+
+  onSuccess() {
+    const menu = MENUS[this.menuId];
+    const fb = document.getElementById('cook-feedback');
+    fb.className = 'cooking-feedback show success';
+    document.getElementById('fb-icon').textContent = '✅';
+    document.getElementById('fb-title').textContent = `${menu.name} berhasil dibuat!`;
+    document.getElementById('fb-sub').textContent = `Keren! Sekarang David akan jelasin ilmu kimianya... 🧪`;
+    document.getElementById('btn-feedback').textContent = 'Lihat chemistry moment! ⚗️';
+    G.feedbackMode = 'chem';
+  },
+
+  onFail() {
+    const menu = MENUS[this.menuId];
+    const fb = document.getElementById('cook-feedback');
+    fb.className = 'cooking-feedback show fail';
+    document.getElementById('fb-icon').textContent = '❌';
+    document.getElementById('fb-title').textContent = `Aduh, urutannya salah!`;
+    document.getElementById('fb-sub').textContent = `${menu.name} gagal. David kasih hint dulu ya...`;
+    document.getElementById('btn-feedback').textContent = 'Coba lagi! 🔄';
+    G.feedbackMode = 'retry-cook';
+  },
 };
 
-const LEVELS = [
-  { level:1, name:'Magang Hari Pertama 🌱', customers:6,  menu:['matcha-es'],                          patience:18000, spawn:4500, maxQ:3, pts:100 },
-  { level:2, name:'Mulai Ramai ☕',         customers:9,  menu:['matcha-es','matcha-panas'],            patience:14000, spawn:3500, maxQ:4, pts:130 },
-  { level:3, name:'Rush Hour! 🔥',          customers:13, menu:['matcha-es','matcha-panas','matcha-cake'], patience:10000, spawn:2800, maxQ:4, pts:160 },
-];
-
-const CHEM_FACTS = [
-  { formula:'Matcha + H₂O (70°C) → Katekin', title:'Suhu Ekstraksi', desc:'Air terlalu panas (>80°C) merusak L-Theanine yang bikin matcha smooth. Suhu ideal 70°C untuk ekstraksi sempurna!' },
-  { formula:'Whisking → Protein + Udara → Foam', title:'Emulsifikasi Foam', desc:'Gerakan W saat whisking memecah protein matcha jadi mikro-gelembung yang stabil. Itulah rahasia foam yang cantik!' },
-];
-
-// ===== GAME STATE =====
+// ============================================================
+// MAIN GAME OBJECT
+// ============================================================
 const G = {
-  level: 0,
+  levelIdx: 0,
   hearts: 3,
   score: 0,
   totalScore: 0,
@@ -962,387 +1578,422 @@ const G = {
   prepStart: 0,
   readyItem: null,
   spawnTimer: null,
-  gameLoopTimer: null,
+  gameLoop: null,
   isRunning: false,
+  feedbackMode: 'chem',
+  cookedMenus: new Set(),
 
-  // ---- SCREENS ----
+  // ---------- SCREENS ----------
   show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-'+id).classList.add('active');
+    document.getElementById('screen-' + id).classList.add('active');
   },
 
-  // ---- START ----
+  // ---------- GAME START ----------
   startGame() {
-    G.level = 0;
-    G.totalScore = 0;
-    G.showLevelIntro();
+    this.levelIdx = 0;
+    this.totalScore = 0;
+    this.cookedMenus = new Set();
+    this.showLevelIntro();
   },
 
   showLevelIntro() {
-    const lvl = LEVELS[G.level];
+    const lvl = LEVELS[this.levelIdx];
     document.getElementById('intro-badge').textContent = `Level ${lvl.level}`;
     document.getElementById('intro-title').textContent = lvl.name;
     document.getElementById('intro-customers').textContent = lvl.customers;
     document.getElementById('intro-patience').textContent = (lvl.patience/1000) + ' detik';
-    document.getElementById('intro-menu-count').textContent = lvl.menu.length + ' item';
-    const prev = document.getElementById('intro-menu-preview');
-    prev.innerHTML = lvl.menu.map(m =>
-      `<div class="menu-chip">${MENU[m].emoji}<div class="menu-chip-name">${MENU[m].name}</div></div>`
-    ).join('');
-    G.show('intro');
+    document.getElementById('intro-menu-count').textContent = lvl.menus.length + ' menu';
+
+    const chips = document.getElementById('intro-menu-chips');
+    chips.innerHTML = lvl.menus.map(mId => {
+      const m = MENUS[mId];
+      return `<div class="menu-chip">
+        <img src="${m.img}" style="width:clamp(28px,4vw,40px);height:clamp(28px,4vw,40px);object-fit:contain" onerror="this.outerHTML='<span style=font-size:28px>${m.emoji}</span>'" alt="${m.name}">
+        <div class="menu-chip-name">${m.name}</div>
+      </div>`;
+    }).join('');
+
+    this.show('intro');
   },
 
-  startLevel() {
-    const lvl = LEVELS[G.level];
-    G.hearts = 3;
-    G.score = 0;
-    G.customers = [];
-    G.nextCustId = 0;
-    G.custSpawned = 0;
-    G.custServed = 0;
-    G.custFailed = 0;
-    G.preparing = false;
-    G.prepItem = null;
-    G.readyItem = null;
-    G.isRunning = true;
+  // ---------- COOKING STAGE ----------
+  startCookingStage() {
+    const lvl = LEVELS[this.levelIdx];
+    // Only show cooking for menus not yet cooked
+    const newMenus = lvl.menus.filter(m => !this.cookedMenus.has(m));
+    if (newMenus.length === 0) {
+      // All already cooked, go straight to serving
+      this.startServing();
+      return;
+    }
+    COOK.init(newMenus);
+    this.show('cooking');
+  },
 
-    G.updateHUD();
-    G.renderMenuButtons();
-    G.setDavid('idle');
-    document.getElementById('ready-order').style.display = 'none';
-    document.getElementById('prep-station').classList.remove('active');
-    document.getElementById('prep-fill').style.height = '0%';
-    document.getElementById('customers-area').innerHTML = '';
+  feedbackNext() {
+    if (this.feedbackMode === 'chem') {
+      // Show chemistry screen
+      const menu = MENUS[COOK.menuId];
+      document.getElementById('chem-formula').textContent = menu.chemFact.formula;
+      document.getElementById('chem-title').textContent = menu.chemFact.title;
+      document.getElementById('chem-desc').textContent = menu.chemFact.desc;
+      this.show('chem');
+    } else if (this.feedbackMode === 'retry-cook') {
+      COOK.startMenu(COOK.menuId);
+    }
+  },
 
-    G.show('game');
+  afterChem() {
+    // Mark this menu as cooked
+    this.cookedMenus.add(COOK.menuId);
+    COOK.menuIndex++;
+
+    if (COOK.menuIndex < COOK.allMenusForLevel.length) {
+      // More menus to cook
+      COOK.startMenu(COOK.allMenusForLevel[COOK.menuIndex]);
+      this.show('cooking');
+    } else {
+      // All menus cooked, start serving!
+      this.startServing();
+    }
+  },
+
+  // ---------- SERVING / GAME ----------
+  startServing() {
+    const lvl = LEVELS[this.levelIdx];
+    this.hearts = 3;
+    this.score = 0;
+    this.customers = [];
+    this.nextCustId = 0;
+    this.custSpawned = 0;
+    this.custServed = 0;
+    this.custFailed = 0;
+    this.preparing = false;
+    this.prepItem = null;
+    this.readyItem = null;
+    this.isRunning = true;
+
+    this.updateHUD();
+    this.buildMenuButtons();
+    this.clearReadyTray();
+    document.getElementById('david-status').textContent = 'Siap serve!';
+    this.setDavidImg('idle');
+
+    this.show('game');
+    this.renderCustomerArea();
 
     // Spawn first customer immediately
-    setTimeout(() => G.spawnCustomer(), 500);
-    G.spawnTimer = setInterval(() => {
-      if (G.custSpawned < lvl.customers && G.customers.length < lvl.maxQ) {
-        G.spawnCustomer();
+    setTimeout(() => this.spawnCustomer(), 500);
+    this.spawnTimer = setInterval(() => {
+      if (this.custSpawned < lvl.customers && this.customers.length < lvl.maxQ && this.isRunning) {
+        this.spawnCustomer();
       }
     }, lvl.spawn);
 
-    G.gameLoopTimer = setInterval(() => G.gameLoop(), 100);
+    this.gameLoop = setInterval(() => this.tick(), 100);
   },
 
-  // ---- GAME LOOP ----
-  gameLoop() {
-    if (!G.isRunning) return;
-    const now = Date.now();
-    const lvl = LEVELS[G.level];
+  buildMenuButtons() {
+    const lvl = LEVELS[this.levelIdx];
+    const container = document.getElementById('menu-btns-container');
+    container.innerHTML = lvl.menus.map(mId => {
+      const m = MENUS[mId];
+      return `<button class="menu-btn" id="mbtn-${mId}" onclick="G.startPrep('${mId}')">
+        <img src="${m.img}" onerror="this.outerHTML='<span style=font-size:32px>${m.emoji}</span>'" alt="${m.name}">
+        <div class="btn-name">${m.name}</div>
+        <div class="prep-bar" id="pbar-${mId}" style="width:0%"></div>
+      </button>`;
+    }).join('');
+  },
+
+  spawnCustomer() {
+    const lvl = LEVELS[this.levelIdx];
+    if (this.custSpawned >= lvl.customers) return;
+    if (this.customers.length >= lvl.maxQ) return;
+
+    const custNum = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
+    const menuId = lvl.menus[Math.floor(Math.random() * lvl.menus.length)];
+    const cust = {
+      id: this.nextCustId++,
+      custNum,
+      menuId,
+      patience: lvl.patience,
+      maxPatience: lvl.patience,
+      state: 'Neutral',
+    };
+    this.customers.push(cust);
+    this.custSpawned++;
+    this.renderCustomerArea();
+  },
+
+  tick() {
+    if (!this.isRunning) return;
+    const lvl = LEVELS[this.levelIdx];
+    const dt = 100;
+
+    // Tick patience
+    for (let i = this.customers.length - 1; i >= 0; i--) {
+      const c = this.customers[i];
+      c.patience -= dt;
+      if (c.patience <= 0) {
+        // Customer left angry
+        c.patience = 0;
+        this.custFailed++;
+        this.hearts--;
+        this.updateHUD();
+        this.showFloat('😤 -1 ❤️', true);
+        this.customers.splice(i, 1);
+        this.renderCustomerArea();
+
+        if (this.hearts <= 0) {
+          this.gameOver();
+          return;
+        }
+      }
+    }
 
     // Update patience bars
-    G.customers.forEach(c => {
-      if (c.state !== 'waiting') return;
-      const elapsed = now - c.arriveTime;
-      c.patience = Math.max(0, 1 - elapsed / lvl.patience);
-      const fillEl = document.getElementById('pbar-'+c.id);
-      if (fillEl) {
-        fillEl.style.width = (c.patience*100) + '%';
-        const pct = c.patience;
-        fillEl.style.background = pct > 0.6 ? '#5bc48a' : pct > 0.3 ? '#f0c040' : '#e05555';
-      }
-      if (c.patience <= 0) {
-        G.customerLeft(c);
+    this.customers.forEach(c => {
+      const pct = (c.patience / c.maxPatience) * 100;
+      const fill = document.getElementById(`pfill-${c.id}`);
+      if (fill) {
+        fill.style.width = pct + '%';
+        fill.style.background = pct > 60 ? '#7bc142' : pct > 30 ? '#f0c040' : '#e05555';
       }
     });
 
-    // Update prep progress
-    if (G.preparing && G.prepItem) {
-      const elapsed = now - G.prepStart;
-      const progress = Math.min(1, elapsed / MENU[G.prepItem].prepTime);
-      document.getElementById('prep-fill').style.height = (progress*100) + '%';
-      if (progress >= 1) {
-        G.finishPrep();
+    // Prep progress
+    if (this.preparing && this.prepItem) {
+      const elapsed = Date.now() - this.prepStart;
+      const menu = MENUS[this.prepItem];
+      const pct = Math.min(100, (elapsed / menu.prepTime) * 100);
+      const pbar = document.getElementById(`pbar-${this.prepItem}`);
+      if (pbar) pbar.style.width = pct + '%';
+
+      if (elapsed >= menu.prepTime) {
+        this.prepDone();
       }
     }
 
-    // Check level end
-    const lvlDef = LEVELS[G.level];
-    if (G.custServed + G.custFailed >= lvlDef.customers && G.customers.length === 0) {
-      G.endLevel();
+    // Check win condition
+    const lvl2 = LEVELS[this.levelIdx];
+    if (this.custServed + this.custFailed >= lvl2.customers && this.customers.length === 0) {
+      if (this.hearts > 0) {
+        this.levelComplete();
+      }
     }
   },
 
-  // ---- SPAWN CUSTOMER ----
-  spawnCustomer() {
-    const lvl = LEVELS[G.level];
-    if (G.custSpawned >= lvl.customers) return;
-    if (G.customers.length >= lvl.maxQ) return;
+  startPrep(menuId) {
+    if (this.preparing || this.readyItem) return;
+    this.preparing = true;
+    this.prepItem = menuId;
+    this.prepStart = Date.now();
 
-    const id = G.nextCustId++;
-    const type = CUSTOMERS[Math.floor(Math.random()*CUSTOMERS.length)];
-    const order = lvl.menu[Math.floor(Math.random()*lvl.menu.length)];
-
-    const cust = { id, type, order, patience:1, state:'waiting', arriveTime:Date.now() };
-    G.customers.push(cust);
-    G.custSpawned++;
-    G.renderCustomers();
+    const btn = document.getElementById(`mbtn-${menuId}`);
+    if (btn) btn.classList.add('preparing');
+    this.setDavidImg('cooking');
+    document.getElementById('david-status').textContent = 'Lagi masak...';
   },
 
-  // ---- RENDER CUSTOMERS ----
-  renderCustomers() {
-    const area = document.getElementById('customers-area');
-    area.innerHTML = '';
-    G.customers.forEach((c, i) => {
-      const slot = document.createElement('div');
-      slot.className = 'customer-slot';
-      slot.id = 'cslot-'+c.id;
-      slot.style.animation = 'customerWalk 0.4s ease';
+  prepDone() {
+    this.preparing = false;
+    this.readyItem = this.prepItem;
 
-      const imgState = c.patience > 0.5 ? 'Neutral' : c.patience > 0.25 ? 'Sad' : 'Angry';
+    const btn = document.getElementById(`mbtn-${this.prepItem}`);
+    if (btn) { btn.classList.remove('preparing'); btn.classList.add('disabled'); }
+    const pbar = document.getElementById(`pbar-${this.prepItem}`);
+    if (pbar) pbar.style.width = '0%';
 
-      slot.innerHTML = `
-        <div class="patience-bar-wrap">
-          <div class="patience-bar-fill" id="pbar-${c.id}" style="width:100%;background:#5bc48a"></div>
-        </div>
-        <div class="order-bubble">${MENU[c.order].emoji}</div>
-        <img class="customer-img"
-          src="${custImg(c.type, imgState)}"
-          onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div class=customer-img-placeholder>👤</div>')"
-          alt="customer" id="cimg-${c.id}">
-      `;
-      area.appendChild(slot);
-    });
-  },
+    this.prepItem = null;
+    this.setDavidImg('idle');
+    document.getElementById('david-status').textContent = 'Siap diserve!';
 
-  // ---- MENU PREPARE ----
-  renderMenuButtons() {
-    const lvl = LEVELS[G.level];
-    const bar = document.getElementById('menu-buttons');
-    bar.innerHTML = lvl.menu.map(m => `
-      <div class="menu-btn" id="mbtn-${m}" onclick="G.prepareItem('${m}')">
-        <span class="btn-emoji">${MENU[m].emoji}</span>
-        <div class="btn-name">${MENU[m].name}</div>
-        <div class="prep-bar" id="pb-${m}" style="width:0%"></div>
-      </div>
-    `).join('');
-  },
+    // Show ready tray
+    const menu = MENUS[this.readyItem];
+    const tray = document.getElementById('ready-tray');
+    const trayImg = document.getElementById('ready-tray-img');
+    const trayLabel = document.getElementById('ready-tray-label');
+    trayImg.src = menu.img;
+    trayImg.onerror = () => { trayImg.style.display='none'; };
+    trayLabel.textContent = menu.name;
+    tray.style.display = 'flex';
 
-  prepareItem(itemId) {
-    if (G.preparing || G.readyItem) return;
-    if (G.customers.length === 0) return;
-    G.preparing = true;
-    G.prepItem = itemId;
-    G.prepStart = Date.now();
-    G.setDavid('cooking');
-
-    document.getElementById('prep-station').classList.add('active');
-    document.getElementById('prep-icon').textContent = MENU[itemId].emoji;
-
-    // Disable all buttons
-    document.querySelectorAll('.menu-btn').forEach(b => b.classList.add('disabled'));
-    document.getElementById('mbtn-'+itemId)?.classList.remove('disabled');
-    document.getElementById('mbtn-'+itemId)?.classList.add('preparing');
-  },
-
-  finishPrep() {
-    const item = G.prepItem;
-    G.preparing = false;
-    G.prepItem = null;
-    G.readyItem = item;
-    G.setDavid('idle');
-
-    document.getElementById('prep-station').classList.remove('active');
-    document.getElementById('prep-fill').style.height = '0%';
-    document.querySelectorAll('.menu-btn').forEach(b => {
-      b.classList.remove('disabled','preparing');
-    });
-
-    // Show ready order
-    const ro = document.getElementById('ready-order');
-    ro.textContent = MENU[item].emoji;
-    ro.style.display = 'block';
-    ro.style.background = MENU[item].color;
-
-    // Auto-serve after brief delay
-    setTimeout(() => { if (G.readyItem) G.serveOrder(); }, 300);
+    this.showFloat('✅ Siap!');
   },
 
   serveOrder() {
-    if (!G.readyItem || G.customers.length === 0) return;
-    const frontCust = G.customers[0];
-    const item = G.readyItem;
-    G.readyItem = null;
-    document.getElementById('ready-order').style.display = 'none';
-
-    if (frontCust.order === item) {
-      // Correct!
-      G.score += LEVELS[G.level].pts;
-      G.custServed++;
-      G.showFloatText('+' + LEVELS[G.level].pts, '#f0c040');
-      G.customerHappy(frontCust);
+    if (!this.readyItem) return;
+    // Find first matching customer
+    const idx = this.customers.findIndex(c => c.menuId === this.readyItem);
+    if (idx !== -1) {
+      const c = this.customers[idx];
+      const patiencePct = c.patience / c.maxPatience;
+      const bonus = patiencePct > 0.7 ? 1.5 : patiencePct > 0.4 ? 1.0 : 0.7;
+      const pts = Math.round(LEVELS[this.levelIdx].pts * bonus);
+      this.score += pts;
+      this.updateHUD();
+      this.showFloat(`+${pts} ⭐`, false);
+      this.customers.splice(idx, 1);
+      this.custServed++;
+      this.renderCustomerArea();
     } else {
-      // Wrong order - wasted, give to customer anyway (they'll be less happy)
-      G.score += Math.floor(LEVELS[G.level].pts * 0.3);
-      G.custServed++;
-      G.showFloatText('Wrong order! +' + Math.floor(LEVELS[G.level].pts*0.3), '#e05555');
-      G.customerHappy(frontCust, false);
-    }
-    G.updateHUD();
-  },
-
-  customerHappy(c, correct=true) {
-    const slot = document.getElementById('cslot-'+c.id);
-    if (slot) {
-      const img = document.getElementById('cimg-'+c.id);
-      if (img) img.src = custImg(c.type, correct ? 'Happy' : 'Sad');
-      slot.style.animation = 'customerHappy 0.5s ease, customerLeave 0.5s 0.5s ease forwards';
-    }
-    G.customers = G.customers.filter(cu => cu.id !== c.id);
-    setTimeout(() => G.renderCustomers(), 600);
-  },
-
-  customerLeft(c) {
-    G.hearts--;
-    G.custFailed++;
-    G.customers = G.customers.filter(cu => cu.id !== c.id);
-
-    const slot = document.getElementById('cslot-'+c.id);
-    if (slot) {
-      const img = document.getElementById('cimg-'+c.id);
-      if (img) img.src = custImg(c.type, 'Angry');
-      slot.style.animation = 'customerLeave 0.5s ease forwards';
+      // Wrong order, show hint
+      this.showToast('Nggak ada yang order ' + MENUS[this.readyItem].name + '!');
     }
 
-    G.showFloatText('Kabur! 😤', '#e05555');
-    G.updateHUD();
+    // Re-enable prep button
+    const btn = document.getElementById(`mbtn-${this.readyItem}`);
+    if (btn) btn.classList.remove('disabled');
+    this.clearReadyTray();
+    this.readyItem = null;
+  },
 
-    if (G.hearts <= 0) {
-      setTimeout(() => G.gameOver(), 600);
-      return;
+  clearReadyTray() {
+    document.getElementById('ready-tray').style.display = 'none';
+  },
+
+  renderCustomerArea() {
+    const lvl = LEVELS[this.levelIdx];
+    const area = document.getElementById('tables-row');
+    area.innerHTML = '';
+
+    // Create slots for maxQ customers
+    const slots = Math.min(lvl.maxQ, 5);
+    for (let i = 0; i < slots; i++) {
+      const c = this.customers[i];
+      const slot = document.createElement('div');
+      slot.className = 'customer-spot';
+
+      if (c) {
+        const pct = (c.patience / c.maxPatience) * 100;
+        const pBarColor = pct > 60 ? '#7bc142' : pct > 30 ? '#f0c040' : '#e05555';
+        const menu = MENUS[c.menuId];
+
+        slot.innerHTML = `
+          <div class="patience-wrap">
+            <div class="patience-fill" id="pfill-${c.id}" style="width:${pct}%;background:${pBarColor}"></div>
+          </div>
+          <div class="order-bubble">
+            <img src="${menu.img}" onerror="this.outerHTML='<span>${menu.emoji}</span>'" alt="${menu.name}" style="width:clamp(24px,3vw,36px);height:clamp(24px,3vw,36px);object-fit:contain">
+          </div>
+          <img class="customer-sprite"
+            src="${custImg(c.custNum, c.state)}"
+            onerror="this.outerHTML='<span style=font-size:clamp(36px,5vw,56px)>🧑</span>'"
+            alt="Customer">
+        `;
+      } else {
+        // Empty slot
+        slot.innerHTML = `<div style="width:clamp(52px,7vw,80px);height:clamp(70px,9vw,105px);opacity:0.15;border:2px dashed rgba(255,255,255,0.3);border-radius:8px"></div>`;
+      }
+      area.appendChild(slot);
     }
-    setTimeout(() => G.renderCustomers(), 600);
   },
 
-  // ---- HUD ----
-  updateHUD() {
-    const hearts = ['❤️','❤️','❤️'].map((h,i) => i < G.hearts ? h : '🖤').join('');
-    document.getElementById('hud-hearts').textContent = hearts;
-    document.getElementById('hud-score').textContent = G.score;
-    document.getElementById('hud-level').textContent = 'Level ' + (G.level+1);
-  },
-
-  // ---- DAVID ----
-  setDavid(state) {
-    const img = document.getElementById('david-img');
-    const wrap = document.getElementById('david-game');
+  setDavidImg(state) {
+    const img = document.getElementById('david-serving-img');
     if (!img) return;
-    img.src = DAVID_IMGS[state] || DAVID_IMGS.idle;
-    if (state === 'cooking') wrap.classList.add('cooking');
-    else wrap.classList.remove('cooking');
+    const map = { idle: DAVID.idle, cooking: DAVID.cooking };
+    img.src = map[state] || DAVID.idle;
+    if (state === 'cooking') {
+      img.parentElement.querySelector('.david-serving')?.classList.add('cooking');
+    } else {
+      img.classList.remove('cooking');
+    }
   },
 
-  // ---- FLOAT TEXT ----
-  showFloatText(text, color='white') {
+  updateHUD() {
+    const hearts = ['❤️','❤️','❤️'].map((h,i) => i < this.hearts ? h : '🖤').join('');
+    document.getElementById('hud-hearts').textContent = hearts;
+    document.getElementById('hud-score').textContent = '⭐ ' + this.score;
+    document.getElementById('hud-level').textContent = `Level ${LEVELS[this.levelIdx].level}`;
+  },
+
+  showFloat(text, isNeg = false) {
     const el = document.createElement('div');
     el.className = 'float-text';
     el.textContent = text;
-    el.style.color = color;
-    el.style.left = (Math.random()*40+30) + '%';
-    el.style.top = '50%';
+    el.style.left = (30 + Math.random()*40) + '%';
+    el.style.top = (40 + Math.random()*20) + '%';
+    el.style.color = isNeg ? '#ff6666' : '#f0c040';
     document.getElementById('cafe-scene').appendChild(el);
-    setTimeout(() => el.remove(), 1100);
+    setTimeout(() => el.remove(), 1300);
   },
 
   showToast(msg) {
     const t = document.createElement('div');
     t.className = 'toast';
     t.textContent = msg;
-    document.getElementById('game-wrap').appendChild(t);
-    setTimeout(() => t.remove(), 2000);
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2600);
   },
 
-  // ---- END LEVEL ----
-  endLevel() {
-    G.isRunning = false;
-    clearInterval(G.spawnTimer);
-    clearInterval(G.gameLoopTimer);
+  gameOver() {
+    this.isRunning = false;
+    clearInterval(this.spawnTimer);
+    clearInterval(this.gameLoop);
+    this.show('gameover');
+    document.getElementById('gameover-msg').textContent = `Score kamu: ${this.score} ⭐ — Semangat, coba lagi ya!`;
+  },
 
-    G.totalScore += G.score;
+  levelComplete() {
+    this.isRunning = false;
+    clearInterval(this.spawnTimer);
+    clearInterval(this.gameLoop);
+    this.totalScore += this.score;
+    this.spawnConfetti();
 
-    // Stars
-    const pct = G.custServed / (G.custServed + G.custFailed);
-    const stars = pct >= 0.9 ? '⭐⭐⭐' : pct >= 0.7 ? '⭐⭐' : '⭐';
+    const stars = this.hearts === 3 ? '⭐⭐⭐' : this.hearts === 2 ? '⭐⭐☆' : '⭐☆☆';
     document.getElementById('complete-stars').textContent = stars;
-    document.getElementById('complete-title').textContent =
-      pct >= 0.9 ? 'Sempurna! 🌟' : pct >= 0.7 ? 'Bagus! 👍' : 'Bisa lebih baik!';
-    document.getElementById('complete-score-text').textContent =
-      `Score: ${G.score} | Served: ${G.custServed}/${LEVELS[G.level].customers}`;
+    document.getElementById('complete-title').textContent = `Level ${LEVELS[this.levelIdx].level} Selesai!`;
+    document.getElementById('complete-score-text').textContent = `Score: ${this.score} ⭐`;
 
-    const isLast = G.level === LEVELS.length - 1;
-    document.getElementById('btn-next-level').textContent = isLast ? 'Selesai! 🎓' : 'Level Berikutnya ➜';
-
-    // Show chem fact between levels 1→2 and 2→3
-    if (!isLast) {
-      setTimeout(() => G.showChemFact(), 500);
+    if (this.levelIdx < LEVELS.length - 1) {
+      document.getElementById('btn-next-level').textContent = 'Level Berikutnya ➜';
     } else {
-      setTimeout(() => G.show('complete'), 500);
+      document.getElementById('btn-next-level').textContent = 'Selesaikan Matcha Cafe! 🎓';
     }
-  },
-
-  showChemFact() {
-    const fact = CHEM_FACTS[Math.min(G.level, CHEM_FACTS.length-1)];
-    document.getElementById('chem-formula').textContent = fact.formula;
-    document.getElementById('chem-title').textContent = fact.title;
-    document.getElementById('chem-desc').textContent = fact.desc;
-    G.show('chem');
-  },
-
-  afterChem() {
-    G.show('complete');
+    this.show('complete');
   },
 
   nextLevel() {
-    if (G.level >= LEVELS.length - 1) {
-      G.cafeComplete();
-      return;
+    if (this.levelIdx < LEVELS.length - 1) {
+      this.levelIdx++;
+      this.showLevelIntro();
+    } else {
+      document.getElementById('cc-total-score').textContent = `Total Score: ${this.totalScore} ⭐`;
+      this.show('cafe-complete');
     }
-    G.level++;
-    G.showLevelIntro();
   },
 
-  cafeComplete() {
-    document.getElementById('cc-total-score').textContent = 'Total Score: ' + G.totalScore;
-    G.show('cafe-complete');
-    G.launchConfetti();
+  retryLevel() {
+    this.cookedMenus.clear();
+    this.showLevelIntro();
   },
 
-  // ---- GAME OVER ----
-  gameOver() {
-    G.isRunning = false;
-    clearInterval(G.spawnTimer);
-    clearInterval(G.gameLoopTimer);
-    const msgs = [
-      'David panik tapi tetap semangat! 💪',
-      'Matcha kehabisan, pelanggan ngambek. Latihan lagi!',
-      'Rush hour terlalu lebat... Tapi David ga nyerah!'
-    ];
-    document.getElementById('gameover-msg').textContent = msgs[G.level] || msgs[0];
-    G.show('gameover');
+  goTitle() {
+    this.show('title');
   },
 
-  retryLevel() { G.showLevelIntro(); },
-  goTitle()    { G.level = 0; G.show('title'); },
-
-  // ---- CONFETTI ----
-  launchConfetti() {
-    const colors = ['#f0c040','#5bb8e8','#e05555','#5bc48a','#ffffff','#7bc142'];
-    for (let i = 0; i < 80; i++) {
-      setTimeout(() => {
-        const p = document.createElement('div');
-        p.className = 'confetti-piece';
-        const c = colors[Math.floor(Math.random()*colors.length)];
-        p.style.cssText = `left:${Math.random()*100}%;background:${c};
-          width:${Math.random()*10+5}px;height:${Math.random()*10+5}px;
-          border-radius:${Math.random()>.5?'50%':'2px'};
-          animation-duration:${Math.random()*3+2}s;
-          animation-delay:${Math.random()*.5}s;`;
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 5000);
-      }, i*40);
+  spawnConfetti() {
+    const colors = ['#f0c040','#7bc142','#5bb8e8','#ff6b6b','#c77dff','#ffffff'];
+    for (let i = 0; i < 40; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        width:${6+Math.random()*8}px;
+        height:${6+Math.random()*8}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        left:${Math.random()*100}vw;
+        top:-20px;
+        position:fixed;
+        z-index:999;
+        animation:confettiFall ${1.5+Math.random()*2}s linear ${Math.random()*0.8}s forwards;
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
     }
   },
 };
