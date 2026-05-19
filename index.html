@@ -49,11 +49,7 @@ html, body {
   50%{ transform:rotate(90deg); }
 }
 
-/* Detect portrait on mobile */
-@media (max-aspect-ratio: 1/1) and (max-width: 900px) {
-  #orient-gate { display:flex; }
-  #app { display:none; }
-}
+/* orientation handled by JS only */
 
 #app {
   width:100vw; height:100vh;
@@ -1997,6 +1993,25 @@ const G = {
     }
   },
 };
+// ============================================================
+// ORIENTATION CHECK — only block on mobile portrait
+// ============================================================
+function checkOrientation() {
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isPortrait = window.innerWidth < window.innerHeight;
+  const gate = document.getElementById('orient-gate');
+  const app = document.getElementById('app');
+  if (isMobile && isPortrait) {
+    gate.style.display = 'flex';
+    app.style.display = 'none';
+  } else {
+    gate.style.display = 'none';
+    app.style.display = 'block';
+  }
+}
+checkOrientation();
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
 </script>
 </body>
 </html>
