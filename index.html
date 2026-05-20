@@ -28,6 +28,9 @@ html, body {
   overflow:hidden;
   background:#0a1f05;
   font-family:'Nunito',sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 /* ORIENTATION GATE */
@@ -52,9 +55,11 @@ html, body {
 /* orientation handled by JS only */
 
 #app {
-  width:100vw; height:100vh;
+  width:960px; height:540px;
   position:relative;
   overflow:hidden;
+  /* JS will apply transform:scale() to fit the viewport */
+  transform-origin: center center;
 }
 
 /* ====== SCREENS ====== */
@@ -70,7 +75,6 @@ html, body {
   overflow: hidden;
   flex-direction: row;
   align-items: stretch;
-  justify-content: flex-start;
 }
 #title-bg {
   position: absolute; inset: 0;
@@ -87,39 +91,37 @@ html, body {
   position: relative;
   z-index: 2;
   flex-shrink: 0;
-  width: clamp(120px, 28vw, 380px);
+  width: 320px;
   align-self: flex-end;
   object-fit: contain;
   object-position: bottom;
-  /* keep it pinned to bottom of its flex column */
-  margin-top: auto;
-  animation: davidFloat 3s ease-in-out infinite;
   order: 2;
+  animation: davidFloat 3s ease-in-out infinite;
 }
 .title-center {
   position: relative;
   z-index: 3;
   flex: 1;
   min-width: 0;
+  order: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: clamp(8px, 1.8vh, 18px);
+  gap: 14px;
   text-align: left;
-  padding: clamp(20px, 4vw, 56px) clamp(16px, 3vw, 40px);
-  order: 1;
+  padding: 40px 36px;
 }
-.title-icon { font-size: clamp(28px, 4vw, 68px); line-height: 1; }
+.title-icon { font-size: 44px; line-height: 1; }
 .title-h1 {
   font-family: 'Fredoka One', cursive;
-  font-size: clamp(28px, 5vw, 72px);
+  font-size: 52px;
   color: #fff;
   text-shadow: 0 4px 24px rgba(0,0,0,0.6);
   line-height: 1;
 }
 .title-sub {
-  font-size: clamp(10px, 1.4vw, 16px);
+  font-size: 14px;
   color: rgba(255,255,255,0.65);
   font-style: italic;
 }
@@ -128,24 +130,24 @@ html, body {
   border: 1.5px solid rgba(255,255,255,0.25);
   backdrop-filter: blur(10px);
   border-radius: 16px;
-  padding: clamp(6px,1.2vh,14px) clamp(14px,2.5vw,32px);
+  padding: 10px 24px;
   display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
   width: 100%;
 }
 .title-cafe-badge .t-name {
   font-family: 'Fredoka One', cursive;
-  font-size: clamp(13px, 2vw, 26px);
+  font-size: 22px;
   color: var(--gold);
 }
-.title-cafe-badge .t-sub { color: rgba(255,255,255,0.6); font-size: clamp(9px, 1vw, 13px); }
+.title-cafe-badge .t-sub { color: rgba(255,255,255,0.6); font-size: 12px; }
 .btn-start {
   background: linear-gradient(135deg, var(--gold), #d49820);
   color: var(--ink);
   border: none;
   border-radius: 50px;
-  padding: clamp(8px,1.5vh,16px) clamp(20px,3.5vw,52px);
+  padding: 13px 40px;
   font-family: 'Fredoka One', cursive;
-  font-size: clamp(14px, 2vw, 24px);
+  font-size: 20px;
   cursor: pointer;
   box-shadow: 0 6px 24px rgba(240,192,64,0.5);
   transition: transform .15s, box-shadow .15s;
@@ -162,8 +164,8 @@ html, body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: clamp(10px,2vh,36px) clamp(14px,3vw,56px);
-  gap: clamp(10px,2vw,40px);
+  padding: 24px 40px;
+  gap: 24px;
   overflow: hidden;
 }
 .intro-left {
@@ -171,7 +173,7 @@ html, body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(5px,1vh,16px);
+  gap: 10px;
 }
 .intro-right {
   display: flex;
@@ -185,14 +187,14 @@ html, body {
   background: var(--gold);
   color: var(--ink);
   font-family:'Fredoka One',cursive;
-  font-size: clamp(11px,1.3vw,14px);
+  font-size: 13px;
   padding:4px 14px;
   border-radius:20px;
   width:fit-content;
 }
 .intro-title {
   font-family:'Fredoka One',cursive;
-  font-size: clamp(18px, 3vw, 34px);
+  font-size: 28px;
   color:white;
   line-height:1.2;
 }
@@ -200,7 +202,7 @@ html, body {
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.2);
   border-radius:14px;
-  padding: clamp(10px,1.5vh,16px) clamp(12px,2vw,20px);
+  padding: 12px 16px;
   display:flex;
   flex-direction:column;
   gap:6px;
@@ -209,7 +211,7 @@ html, body {
   display:flex;
   justify-content:space-between;
   color:rgba(255,255,255,0.8);
-  font-size: clamp(11px,1.3vw,14px);
+  font-size: 13px;
   padding:3px 0;
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
@@ -221,7 +223,7 @@ html, body {
   background:rgba(255,255,255,0.12);
   border:1px solid rgba(255,255,255,0.25);
   border-radius:12px;
-  padding: clamp(6px,1vh,10px) clamp(10px,1.5vw,14px);
+  padding: 8px 12px;
   text-align:center;
 }
 .menu-chip-name { font-size:10px; color:rgba(255,255,255,0.65); margin-top:2px; }
@@ -230,9 +232,9 @@ html, body {
   color:white;
   border:none;
   border-radius:50px;
-  padding: clamp(10px,1.5vh,14px) clamp(24px,3vw,36px);
+  padding: 12px 28px;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(14px, 1.8vw, 20px);
+  font-size: 18px;
   cursor:pointer;
   width:100%;
   box-shadow:0 4px 16px rgba(123,193,66,0.4);
@@ -240,8 +242,8 @@ html, body {
 }
 .btn-play:active { transform:scale(0.97); }
 .intro-david {
-  width: clamp(80px, 18vh, 200px);
-  height: clamp(100px, 24vh, 260px);
+  width: 160px;
+  height: 210px;
   object-fit:contain;
   filter:drop-shadow(0 6px 18px rgba(0,0,0,0.4));
   animation:davidFloat 3s ease-in-out infinite;
@@ -279,7 +281,7 @@ html, body {
   position:absolute; inset:0;
   display:flex;
   flex-direction:column;
-  padding: clamp(8px,1.5vh,16px) clamp(12px,2.5vw,24px) clamp(10px,2vh,20px);
+  padding: 16px 24px 20px;
 }
 
 .cooking-header {
@@ -298,11 +300,11 @@ html, body {
   text-align:center;
 }
 .cooking-title-box .label { font-size:10px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1.5px; }
-.cooking-title-box .menu-name { font-family:'Fredoka One',cursive; font-size: clamp(16px, 2.5vw, 24px); color:var(--gold); }
+.cooking-title-box .menu-name { font-family:'Fredoka One',cursive; font-size: 20px; color:var(--gold); }
 
 .cooking-david {
-  width: clamp(60px, 8vw, 90px);
-  height: clamp(75px, 10vw, 115px);
+  width: 80px;
+  height: 100px;
   object-fit:contain;
   filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));
   animation:davidFloat 3s ease-in-out infinite;
@@ -313,7 +315,7 @@ html, body {
   display:flex;
   align-items:center;
   justify-content:center;
-  gap: clamp(16px, 3vw, 40px);
+  gap: 28px;
 }
 
 /* Recipe steps shown at top */
@@ -326,7 +328,7 @@ html, body {
   border:1px solid rgba(255,255,255,0.15);
   border-radius:16px;
   padding:16px;
-  min-width: clamp(140px, 18vw, 200px);
+  min-width: 175px;
 }
 .recipe-label { font-size:10px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px; }
 .recipe-step {
@@ -336,7 +338,7 @@ html, body {
   padding:6px 8px;
   border-radius:10px;
   transition:all 0.3s;
-  font-size: clamp(12px, 1.5vw, 14px);
+  font-size: 13px;
   color:rgba(255,255,255,0.5);
 }
 .recipe-step.completed { color: var(--green-light); background:rgba(123,193,66,0.15); }
@@ -362,13 +364,13 @@ html, body {
   gap:12px;
 }
 .bowl-wrapper {
-  width: clamp(90px, 12vw, 140px);
-  height: clamp(90px, 12vw, 140px);
+  width: 130px;
+  height: 130px;
   background: rgba(255,255,255,0.15);
   border:3px solid rgba(255,255,255,0.3);
   border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: 48px;
   box-shadow:0 0 30px rgba(240,192,64,0.2);
   transition:all 0.3s;
   position:relative;
@@ -390,8 +392,8 @@ html, body {
   justify-content:center; align-items:center;
 }
 .bowl-ingredient {
-  width: clamp(24px, 3vw, 36px);
-  height: clamp(24px, 3vw, 36px);
+  width: 32px;
+  height: 32px;
   object-fit:contain;
   animation:ingredientPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
@@ -406,14 +408,14 @@ html, body {
 .ingredients-grid {
   display:grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: clamp(8px, 1.5vw, 14px);
-  max-width: clamp(200px, 26vw, 280px);
+  gap: 10px;
+  max-width: 260px;
 }
 .ingredient-btn {
   background: rgba(255,255,255,0.12);
   border: 2px solid rgba(255,255,255,0.25);
   border-radius:14px;
-  padding: clamp(8px, 1.2vw, 14px);
+  padding: 12px;
   cursor:pointer;
   display:flex;
   flex-direction:column;
@@ -432,12 +434,12 @@ html, body {
   animation:pulse 1s ease-in-out infinite;
 }
 .ingredient-btn img {
-  width: clamp(36px, 5vw, 56px);
-  height: clamp(36px, 5vw, 56px);
+  width: 48px;
+  height: 48px;
   object-fit:contain;
 }
 .ingredient-btn .ing-name {
-  font-size: clamp(9px, 1.1vw, 12px);
+  font-size: 11px;
   color:rgba(255,255,255,0.8);
   font-weight:700;
   text-align:center;
@@ -450,7 +452,7 @@ html, body {
   bottom:0; left:0; right:0;
   background:rgba(0,0,0,0.85);
   backdrop-filter:blur(12px);
-  padding:20px 40px;
+  padding:16px 32px;
   display:flex;
   align-items:center;
   gap:20px;
@@ -461,18 +463,18 @@ html, body {
 .cooking-feedback.show { transform:translateY(0); }
 .cooking-feedback.success { border-top-color: var(--green-light); }
 .cooking-feedback.fail { border-top-color: var(--red); }
-.feedback-icon { font-size: clamp(28px, 4vw, 44px); flex-shrink:0; }
+.feedback-icon { font-size: 36px; flex-shrink:0; }
 .feedback-text { flex:1; }
-.feedback-text .fb-title { font-family:'Fredoka One',cursive; font-size: clamp(14px, 2vw, 20px); color:white; }
-.feedback-text .fb-sub { font-size: clamp(11px, 1.4vw, 14px); color:rgba(255,255,255,0.7); line-height:1.5; margin-top:4px; }
+.feedback-text .fb-title { font-family:'Fredoka One',cursive; font-size: 18px; color:white; }
+.feedback-text .fb-sub { font-size: 13px; color:rgba(255,255,255,0.7); line-height:1.5; margin-top:4px; }
 .btn-feedback {
   background: var(--gold);
   color:var(--ink);
   border:none;
   border-radius:50px;
-  padding:10px 24px;
+  padding:10px 22px;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(13px, 1.8vw, 17px);
+  font-size: 15px;
   cursor:pointer;
   flex-shrink:0;
   transition:transform .15s;
@@ -486,7 +488,7 @@ html, body {
   justify-content:center;
   margin-top:8px;
 }
-.mistake-heart { font-size: clamp(14px, 2vw, 20px); transition:all 0.3s; }
+.mistake-heart { font-size: 18px; transition:all 0.3s; }
 .mistake-heart.lost { filter:grayscale(1); opacity:0.4; }
 
 /* Progress bar */
@@ -509,10 +511,9 @@ html, body {
   background: linear-gradient(160deg, #050f02, #0f2a05, #050f12);
   flex-direction:row;
   align-items:center;
-  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
-  gap: clamp(16px,3vw,40px);
+  padding:28px 48px;
+  gap:32px;
 }
-
 .chem-left {
   flex:0 0 auto;
   display:flex;
@@ -532,12 +533,11 @@ html, body {
   border-radius:20px;
 }
 .chem-david {
-  width: clamp(100px, 14vw, 160px);
-  height: clamp(130px, 18vw, 200px);
+  width: 140px;
+  height: 180px;
   object-fit:contain;
   filter:drop-shadow(0 6px 16px rgba(0,0,0,0.5));
 }
-
 .chem-right {
   flex:1;
   display:flex;
@@ -548,24 +548,24 @@ html, body {
   background:rgba(255,255,255,0.05);
   border:1px solid rgba(123,193,66,0.3);
   border-radius:20px;
-  padding:24px 28px;
+  padding:20px 24px;
 }
 .chem-formula {
   font-family:'Fredoka One',cursive;
-  font-size: clamp(13px, 1.8vw, 18px);
+  font-size: 16px;
   color:var(--gold);
   margin-bottom:10px;
   letter-spacing:0.5px;
 }
 .chem-formula-box h3 {
   font-family:'Fredoka One',cursive;
-  font-size: clamp(18px, 2.5vw, 26px);
+  font-size: 22px;
   color:var(--green-light);
   margin-bottom:10px;
 }
 .chem-formula-box p {
   color:rgba(255,255,255,0.8);
-  font-size: clamp(12px, 1.5vw, 15px);
+  font-size: 13px;
   line-height:1.75;
 }
 .btn-chem-next {
@@ -573,9 +573,9 @@ html, body {
   color:white;
   border:none;
   border-radius:50px;
-  padding:14px 40px;
+  padding:12px 36px;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: 18px;
   cursor:pointer;
   align-self:flex-start;
   box-shadow:0 4px 16px rgba(123,193,66,0.3);
@@ -589,8 +589,6 @@ html, body {
   flex-direction:column;
   overflow:hidden;
 }
-
-/* HUD */
 .hud {
   background: var(--green-dark);
   padding: 8px 20px;
@@ -602,26 +600,22 @@ html, body {
   min-height:44px;
 }
 .hud-left { display:flex; align-items:center; gap:12px; }
-.hud-hearts { display:flex; gap:3px; font-size: clamp(16px, 2.5vw, 22px); }
-.hud-score { font-family:'Fredoka One',cursive; font-size: clamp(16px, 2.5vw, 22px); color:var(--gold); }
+.hud-hearts { display:flex; gap:3px; font-size: 20px; }
+.hud-score { font-family:'Fredoka One',cursive; font-size: 20px; color:var(--gold); }
 .hud-level {
   font-size:12px; color:rgba(255,255,255,0.7);
   background:rgba(255,255,255,0.1);
   padding:3px 10px; border-radius:10px;
 }
-
-/* GAME AREA: left=menu bar, center=scene, right=david+prep */
 .game-body {
   flex:1;
   display:flex;
   overflow:hidden;
   min-height:0;
 }
-
-/* LEFT: Menu bar */
 .menu-sidebar {
   background: rgba(30,50,20,0.95);
-  width: clamp(80px, 10vw, 110px);
+  width: 96px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -654,14 +648,14 @@ html, body {
 .menu-btn.disabled { opacity:0.35; pointer-events:none; }
 .menu-btn.preparing { border-color:var(--gold); background:rgba(240,192,64,0.15); }
 .menu-btn img {
-  width: clamp(36px, 5vw, 52px);
-  height: clamp(36px, 5vw, 52px);
+  width: 46px;
+  height: 46px;
   object-fit:contain;
   display:block;
   margin:0 auto 4px;
 }
 .menu-btn .btn-name {
-  font-size: clamp(8px, 1vw, 11px);
+  font-size: 10px;
   color:rgba(255,255,255,0.8);
   line-height:1.2;
 }
@@ -673,29 +667,22 @@ html, body {
   transition:width 0.1s linear;
   border-radius:0 0 12px 12px;
 }
-
-/* CENTER: Cafe scene */
 .cafe-scene {
   flex:1;
   position:relative;
   overflow:hidden;
   min-width:0;
 }
-
 .cafe-bg-layer {
   position:absolute; inset:0;
   background: linear-gradient(180deg, #b0d8f5 0%, #d4eea8 55%, #8aba50 100%);
 }
-
-/* SVG background scene */
 .cafe-scene svg.bg-svg {
   position:absolute;
   top:0; left:0;
   width:100%; height:100%;
   pointer-events:none;
 }
-
-/* Customer tables */
 .tables-row {
   position:absolute;
   top: 12%;
@@ -705,7 +692,6 @@ html, body {
   align-items:flex-end;
   justify-content:space-around;
 }
-
 .customer-spot {
   display:flex;
   flex-direction:column;
@@ -713,10 +699,8 @@ html, body {
   gap:4px;
   position:relative;
 }
-
-/* Patience bar */
 .patience-wrap {
-  width: clamp(48px, 6vw, 68px);
+  width: 60px;
   height:5px;
   background:rgba(0,0,0,0.2);
   border-radius:3px;
@@ -727,8 +711,6 @@ html, body {
   border-radius:3px;
   transition:width 0.1s linear, background 0.3s;
 }
-
-/* Order bubble */
 .order-bubble {
   background:white;
   border-radius:10px;
@@ -747,25 +729,21 @@ html, body {
   border-top-color:white;
 }
 .order-bubble img {
-  width: clamp(24px, 3vw, 36px);
-  height: clamp(24px, 3vw, 36px);
+  width: 30px;
+  height: 30px;
   object-fit:contain;
 }
-
-/* Customer sprite */
 .customer-sprite {
-  width: clamp(52px, 7vw, 80px);
-  height: clamp(70px, 9vw, 105px);
+  width: 68px;
+  height: 90px;
   object-fit:contain;
   object-position:bottom;
   animation:customerEntry 0.4s ease;
 }
-
-/* Counter bar */
 .counter-bar {
   position:absolute;
   bottom:0; left:0; right:0;
-  height: clamp(60px, 10vh, 90px);
+  height: 72px;
   background: linear-gradient(180deg, #8b6a3e 0%, #6b4a2a 100%);
 }
 .counter-bar::before {
@@ -776,11 +754,9 @@ html, body {
   background:#a07840;
   border-radius:8px 8px 0 0;
 }
-
-/* Ready order on counter */
 .ready-tray {
   position:absolute;
-  bottom: clamp(62px, 10vh, 92px);
+  bottom: 74px;
   left:50%;
   transform:translateX(-50%);
   background:var(--gold);
@@ -792,18 +768,16 @@ html, body {
   cursor:pointer;
   z-index:5;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(11px, 1.5vw, 15px);
+  font-size: 13px;
   color:var(--ink);
 }
 .ready-tray img {
-  width: clamp(28px, 4vw, 44px);
-  height: clamp(28px, 4vw, 44px);
+  width: 36px;
+  height: 36px;
   object-fit:contain;
 }
-
-/* RIGHT: David area */
 .david-sidebar {
-  width: clamp(80px, 11vw, 120px);
+  width: 100px;
   background: rgba(30,50,20,0.6);
   display:flex;
   flex-direction:column;
@@ -815,15 +789,13 @@ html, body {
   border-left:1px solid rgba(255,255,255,0.08);
   position:relative;
 }
-
 .david-serving {
-  width: clamp(60px, 9vw, 100px);
-  height: clamp(80px, 12vw, 130px);
+  width: 86px;
+  height: 112px;
   object-fit:contain;
   filter:drop-shadow(0 4px 10px rgba(0,0,0,0.3));
 }
 .david-serving.cooking { animation:davidCook 0.4s ease-in-out infinite alternate; }
-
 .david-status {
   font-size:9px;
   color:rgba(255,255,255,0.6);
@@ -836,8 +808,8 @@ html, body {
   background: linear-gradient(160deg, #0a2505, #1a6010, #0a2010);
   flex-direction:row;
   align-items:center;
-  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
-  gap: clamp(16px,3vw,40px);
+  padding:28px 52px;
+  gap:32px;
 }
 .complete-left {
   flex:1;
@@ -846,17 +818,17 @@ html, body {
   gap:16px;
   align-items:flex-start;
 }
-.complete-stars { font-size: clamp(32px, 5vw, 56px); }
-.complete-title { font-family:'Fredoka One',cursive; font-size: clamp(24px, 4vw, 42px); color:white; }
-.complete-score { font-family:'Fredoka One',cursive; font-size: clamp(18px, 2.5vw, 28px); color:var(--gold); }
+.complete-stars { font-size: 48px; }
+.complete-title { font-family:'Fredoka One',cursive; font-size: 36px; color:white; }
+.complete-score { font-family:'Fredoka One',cursive; font-size: 24px; color:var(--gold); }
 .btn-next {
   background:var(--gold);
   color:var(--ink);
   border:none;
   border-radius:50px;
-  padding:14px 36px;
+  padding:12px 32px;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: 18px;
   cursor:pointer;
   box-shadow:0 4px 20px rgba(240,192,64,0.5);
   transition:transform .15s;
@@ -869,8 +841,8 @@ html, body {
   gap:12px;
 }
 .complete-david {
-  width: clamp(130px, 18vw, 210px);
-  height: clamp(165px, 23vw, 270px);
+  width: 190px;
+  height: 245px;
   object-fit:contain;
   filter:drop-shadow(0 8px 20px rgba(0,0,0,0.3));
   animation:davidFloat 3s ease-in-out infinite;
@@ -881,20 +853,20 @@ html, body {
   background: linear-gradient(160deg, #2a0505, #5a1010);
   flex-direction:row;
   align-items:center;
-  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
-  gap: clamp(16px,3vw,40px);
+  padding:28px 52px;
+  gap:32px;
 }
-.gameover-emoji { font-size: clamp(48px, 7vw, 80px); }
-.gameover-title { font-family:'Fredoka One',cursive; font-size: clamp(24px, 4vw, 42px); color:white; }
-.gameover-msg { color:rgba(255,255,255,0.7); font-size: clamp(12px, 1.6vw, 16px); }
+.gameover-emoji { font-size: 72px; }
+.gameover-title { font-family:'Fredoka One',cursive; font-size: 36px; color:white; }
+.gameover-msg { color:rgba(255,255,255,0.7); font-size: 14px; }
 .btn-retry {
   background:var(--red);
   color:white;
   border:none;
   border-radius:50px;
-  padding:14px 36px;
+  padding:12px 32px;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: 18px;
   cursor:pointer;
   transition:transform .15s;
 }
@@ -905,8 +877,8 @@ html, body {
   background: linear-gradient(160deg, #0a2505, #1a8010, #0a3010);
   flex-direction:row;
   align-items:center;
-  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
-  gap: clamp(16px,3vw,40px);
+  padding:28px 52px;
+  gap:32px;
   overflow:hidden;
 }
 .cc-left {
@@ -915,15 +887,15 @@ html, body {
   flex-direction:column;
   gap:14px;
 }
-.cc-title { font-family:'Fredoka One',cursive; font-size: clamp(24px, 4vw, 42px); color:white; line-height:1.2; }
-.cc-sub { color:var(--gold); font-size: clamp(13px, 1.8vw, 18px); font-weight:800; }
+.cc-title { font-family:'Fredoka One',cursive; font-size: 36px; color:white; line-height:1.2; }
+.cc-sub { color:var(--gold); font-size: 16px; font-weight:800; }
 .cc-fact {
   background:rgba(255,255,255,0.1);
   border:1px solid rgba(255,255,255,0.2);
   border-radius:16px;
-  padding:18px;
+  padding:16px;
   color:rgba(255,255,255,0.85);
-  font-size: clamp(12px, 1.5vw, 15px);
+  font-size: 13px;
   line-height:1.7;
 }
 .btn-home {
@@ -931,9 +903,9 @@ html, body {
   color:var(--ink);
   border:none;
   border-radius:50px;
-  padding:14px 36px;
+  padding:12px 32px;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: 18px;
   cursor:pointer;
   align-self:flex-start;
   box-shadow:0 4px 20px rgba(240,192,64,0.5);
@@ -947,8 +919,8 @@ html, body {
   gap:10px;
 }
 .cc-david {
-  width: clamp(130px, 18vw, 210px);
-  height: clamp(165px, 23vw, 270px);
+  width: 190px;
+  height: 245px;
   object-fit:contain;
   filter:drop-shadow(0 8px 20px rgba(0,0,0,0.3));
   animation:davidFloat 3s ease-in-out infinite;
@@ -958,7 +930,7 @@ html, body {
 .float-text {
   position:absolute;
   font-family:'Fredoka One',cursive;
-  font-size: clamp(16px, 2.5vw, 24px);
+  font-size: 20px;
   pointer-events:none;
   z-index:50;
   animation:floatUp 1.2s ease forwards;
@@ -978,7 +950,7 @@ html, body {
   color:white;
   padding:10px 22px;
   border-radius:20px;
-  font-size: clamp(12px, 1.5vw, 15px);
+  font-size: 13px;
   font-weight:700;
   z-index:100;
   white-space:nowrap;
@@ -1099,7 +1071,7 @@ html, body {
       <div class="bowl-area">
         <div class="bowl-wrapper" id="cook-bowl">
           <div class="bowl-contents" id="bowl-contents">
-            <span style="font-size:clamp(28px,4vw,44px)">🫙</span>
+            <span style="font-size:40px">🫙</span>
           </div>
         </div>
         <div class="bowl-hint" id="bowl-hint">Tap bahan sesuai urutan resep!</div>
@@ -1256,7 +1228,7 @@ html, body {
       bikin <em>alert</em> tapi tetap calm. Ini kenapa matcha jadi minuman favorit para
       Materials Scientist di sela-sela eksperimen! 🧪
     </div>
-    <div style="font-family:'Fredoka One',cursive;font-size:clamp(18px,2.5vw,26px);color:var(--gold)" id="cc-total-score">Total: 0</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--gold)" id="cc-total-score">Total: 0</div>
     <button class="btn-home" onclick="G.goTitle()">Main Lagi 🔁</button>
   </div>
   <div class="cc-right">
@@ -1264,7 +1236,7 @@ html, body {
       src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png"
       onerror="this.style.display='none'"
       alt="David">
-    <div style="font-size:clamp(28px,4vw,48px);text-align:center">🎓✨</div>
+    <div style="font-size:40px;text-align:center">🎓✨</div>
   </div>
 </div>
 
@@ -1431,7 +1403,7 @@ const COOK = {
     ).join('');
 
     // Bowl reset
-    document.getElementById('bowl-contents').innerHTML = '<span style="font-size:clamp(28px,4vw,44px)">🫙</span>';
+    document.getElementById('bowl-contents').innerHTML = '<span style="font-size:40px">🫙</span>';
     document.getElementById('bowl-hint').textContent = `Tap bahan ke-1: ${INGREDIENTS[this.recipe[0]].name}`;
     document.getElementById('cook-bowl').className = 'bowl-wrapper';
 
@@ -1609,7 +1581,7 @@ const G = {
     chips.innerHTML = lvl.menus.map(mId => {
       const m = MENUS[mId];
       return `<div class="menu-chip">
-        <img src="${m.img}" style="width:clamp(28px,4vw,40px);height:clamp(28px,4vw,40px);object-fit:contain" onerror="this.outerHTML='<span style=font-size:28px>${m.emoji}</span>'" alt="${m.name}">
+        <img src="${m.img}" style="width:36px;height:36px;object-fit:contain" onerror="this.outerHTML='<span style=font-size:28px>${m.emoji}</span>'" alt="${m.name}">
         <div class="menu-chip-name">${m.name}</div>
       </div>`;
     }).join('');
@@ -1876,16 +1848,16 @@ const G = {
             <div class="patience-fill" id="pfill-${c.id}" style="width:${pct}%;background:${pBarColor}"></div>
           </div>
           <div class="order-bubble">
-            <img src="${menu.img}" onerror="this.outerHTML='<span>${menu.emoji}</span>'" alt="${menu.name}" style="width:clamp(24px,3vw,36px);height:clamp(24px,3vw,36px);object-fit:contain">
+            <img src="${menu.img}" onerror="this.outerHTML='<span>${menu.emoji}</span>'" alt="${menu.name}" style="width:30px;height:30px;object-fit:contain">
           </div>
           <img class="customer-sprite"
             src="${custImg(c.custNum, c.state)}"
-            onerror="this.outerHTML='<span style=font-size:clamp(36px,5vw,56px)>🧑</span>'"
+            onerror="this.outerHTML='<span style=font-size:48px>🧑</span>'"
             alt="Customer">
         `;
       } else {
         // Empty slot
-        slot.innerHTML = `<div style="width:clamp(52px,7vw,80px);height:clamp(70px,9vw,105px);opacity:0.15;border:2px dashed rgba(255,255,255,0.3);border-radius:8px"></div>`;
+        slot.innerHTML = `<div style="width:68px;height:90px;opacity:0.15;border:2px dashed rgba(255,255,255,0.3);border-radius:8px"></div>`;
       }
       area.appendChild(slot);
     }
@@ -1985,7 +1957,7 @@ const G = {
         width:${6+Math.random()*8}px;
         height:${6+Math.random()*8}px;
         background:${colors[Math.floor(Math.random()*colors.length)]};
-        left:${Math.random()*100}vw;
+        left:${Math.random()*960}px;
         top:-20px;
         position:fixed;
         z-index:999;
@@ -1997,6 +1969,24 @@ const G = {
     }
   },
 };
+// ============================================================
+// CANVAS SCALER — fit 960×540 game into any screen size
+// ============================================================
+function scaleGame() {
+  const app = document.getElementById('app');
+  const W = 960, H = 540;
+  const scaleX = window.innerWidth / W;
+  const scaleY = window.innerHeight / H;
+  const scale = Math.min(scaleX, scaleY);
+  app.style.transform = `scale(${scale})`;
+  // Also set app display size so body centers it correctly
+  app.style.width = W + 'px';
+  app.style.height = H + 'px';
+}
+scaleGame();
+window.addEventListener('resize', scaleGame);
+window.addEventListener('orientationchange', () => setTimeout(scaleGame, 200));
+
 // ============================================================
 // ORIENTATION CHECK — only block on mobile portrait
 // ============================================================
