@@ -160,92 +160,87 @@ html, body {
   background: linear-gradient(160deg, #0d2a05, #1a5a0a, #0d2a15);
   flex-direction: row;
   align-items: center;
-  padding: 32px 48px;
-  gap: 40px;
+  justify-content: center;
+  padding: clamp(16px,3vh,36px) clamp(20px,4vw,56px);
+  gap: clamp(16px,3vw,40px);
+  overflow: hidden;
 }
-
 .intro-left {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: clamp(8px,1.5vh,16px);
 }
-
 .intro-right {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
-
 .level-badge {
   display: inline-block;
   background: var(--gold);
   color: var(--ink);
   font-family:'Fredoka One',cursive;
-  font-size:13px;
-  padding:5px 16px;
+  font-size: clamp(11px,1.3vw,14px);
+  padding:4px 14px;
   border-radius:20px;
   width:fit-content;
 }
-
 .intro-title {
   font-family:'Fredoka One',cursive;
-  font-size: clamp(22px, 3.5vw, 36px);
+  font-size: clamp(18px, 3vw, 34px);
   color:white;
   line-height:1.2;
 }
-
 .intro-stats {
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.2);
-  border-radius:16px;
-  padding:16px 20px;
+  border-radius:14px;
+  padding: clamp(10px,1.5vh,16px) clamp(12px,2vw,20px);
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:6px;
 }
 .intro-stat-row {
   display:flex;
   justify-content:space-between;
   color:rgba(255,255,255,0.8);
-  font-size:14px;
-  padding:4px 0;
+  font-size: clamp(11px,1.3vw,14px);
+  padding:3px 0;
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
 .intro-stat-row:last-child { border:none; }
 .intro-stat-row span:last-child { font-weight:800; color:var(--gold); }
-
-.intro-menu-label { color:rgba(255,255,255,0.6); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
-.menu-chips { display:flex; gap:10px; flex-wrap:wrap; }
+.intro-menu-label { color:rgba(255,255,255,0.6); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
+.menu-chips { display:flex; gap:8px; flex-wrap:wrap; }
 .menu-chip {
   background:rgba(255,255,255,0.12);
   border:1px solid rgba(255,255,255,0.25);
   border-radius:12px;
-  padding:10px 14px;
+  padding: clamp(6px,1vh,10px) clamp(10px,1.5vw,14px);
   text-align:center;
-  font-size: clamp(18px, 2.5vw, 26px);
 }
-.menu-chip-name { font-size:10px; color:rgba(255,255,255,0.65); margin-top:3px; }
-
+.menu-chip-name { font-size:10px; color:rgba(255,255,255,0.65); margin-top:2px; }
 .btn-play {
   background: var(--green-light);
   color:white;
   border:none;
   border-radius:50px;
-  padding:14px 36px;
+  padding: clamp(10px,1.5vh,14px) clamp(24px,3vw,36px);
   font-family:'Fredoka One',cursive;
-  font-size: clamp(16px, 2vw, 20px);
+  font-size: clamp(14px, 1.8vw, 20px);
   cursor:pointer;
   width:100%;
   box-shadow:0 4px 16px rgba(123,193,66,0.4);
   transition:transform .15s;
 }
 .btn-play:active { transform:scale(0.97); }
-
 .intro-david {
-  width: clamp(120px, 18vw, 200px);
-  height: clamp(150px, 24vw, 260px);
+  width: clamp(100px, 16vw, 200px);
+  height: clamp(130px, 22vw, 260px);
   object-fit:contain;
   filter:drop-shadow(0 6px 18px rgba(0,0,0,0.4));
   animation:davidFloat 3s ease-in-out infinite;
@@ -255,16 +250,23 @@ html, body {
 #screen-cooking {
   position:relative;
   overflow:hidden;
+  display:none; /* overridden by .screen.active */
+}
+#screen-cooking.active {
+  display:flex;
+  flex-direction:column;
 }
 
 .cooking-bg {
   position:absolute; inset:0;
-  background: #f5e6c8;
+  width:100%; height:100%;
+  background: linear-gradient(160deg, #2d5a1b, #1a3a0a);
 }
 .cooking-bg img {
   width:100%; height:100%;
   object-fit:cover;
   object-position:center;
+  display:block;
 }
 
 .cooking-overlay {
@@ -1579,8 +1581,11 @@ const G = {
 
   // ---------- SCREENS ----------
   show(id) {
+    console.log('[Game] show:', id);
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + id).classList.add('active');
+    const el = document.getElementById('screen-' + id);
+    if (!el) { console.error('[Game] screen not found:', id); return; }
+    el.classList.add('active');
   },
 
   // ---------- GAME START ----------
@@ -1614,15 +1619,15 @@ const G = {
   // ---------- COOKING STAGE ----------
   startCookingStage() {
     const lvl = LEVELS[this.levelIdx];
-    // Only show cooking for menus not yet cooked
     const newMenus = lvl.menus.filter(m => !this.cookedMenus.has(m));
+    console.log('[Game] startCookingStage, newMenus:', newMenus);
     if (newMenus.length === 0) {
-      // All already cooked, go straight to serving
       this.startServing();
       return;
     }
     COOK.init(newMenus);
-    this.show('cooking');
+    // Small delay to ensure DOM is ready before switching screen
+    setTimeout(() => this.show('cooking'), 30);
   },
 
   feedbackNext() {
