@@ -28,9 +28,6 @@ html, body {
   overflow:hidden;
   background:#0a1f05;
   font-family:'Nunito',sans-serif;
-  display:flex;
-  align-items:center;
-  justify-content:center;
 }
 
 /* ORIENTATION GATE */
@@ -57,9 +54,8 @@ html, body {
 #app {
   width:960px; height:540px;
   position:relative;
-  overflow:hidden;
-  /* JS will apply transform:scale() to fit the viewport */
-  transform-origin: center center;
+  /* overflow:hidden removed — zoom handles clipping natively */
+  transform-origin: top left;
 }
 
 /* ====== SCREENS ====== */
@@ -1969,7 +1965,9 @@ const G = {
   },
 };
 // ============================================================
-// CANVAS SCALER — fit 960×540 game into any screen size
+// CANVAS SCALER — zoom to fit 960×540 into any screen
+// zoom CSS scales the element AND its children together,
+// no overflow clipping issues unlike transform:scale
 // ============================================================
 function scaleGame() {
   const app = document.getElementById('app');
@@ -1977,10 +1975,12 @@ function scaleGame() {
   const scaleX = window.innerWidth / W;
   const scaleY = window.innerHeight / H;
   const scale = Math.min(scaleX, scaleY);
-  app.style.transform = `scale(${scale})`;
-  // Also set app display size so body centers it correctly
-  app.style.width = W + 'px';
-  app.style.height = H + 'px';
+  app.style.zoom = scale;
+  // Center the app on screen
+  const scaledW = W * scale;
+  const scaledH = H * scale;
+  app.style.marginLeft = Math.max(0, (window.innerWidth - scaledW) / 2) + 'px';
+  app.style.marginTop = Math.max(0, (window.innerHeight - scaledH) / 2) + 'px';
 }
 scaleGame();
 window.addEventListener('resize', scaleGame);
