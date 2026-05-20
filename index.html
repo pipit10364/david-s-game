@@ -68,9 +68,9 @@ html, body {
 #screen-title {
   position: relative;
   overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(160deg, #0d2a05 0%, #1a5a0a 50%, #0d3a10 100%);
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 #title-bg {
   position: absolute; inset: 0;
@@ -84,42 +84,42 @@ html, body {
   z-index: 1;
 }
 #title-david {
-  position: absolute;
-  right: clamp(16px, 3vw, 48px);
-  bottom: 0;
-  height: clamp(200px, 80vh, 520px);
-  width: auto;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  width: clamp(120px, 28vw, 380px);
+  align-self: flex-end;
   object-fit: contain;
   object-position: bottom;
-  z-index: 2;
-  filter: drop-shadow(0 0 0 transparent);
+  /* keep it pinned to bottom of its flex column */
+  margin-top: auto;
   animation: davidFloat 3s ease-in-out infinite;
+  order: 2;
 }
 .title-center {
   position: relative;
   z-index: 3;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  gap: clamp(10px, 2vh, 20px);
-  text-align: center;
-  padding: clamp(16px, 3vw, 48px);
-  width: 100%;
-  max-width: clamp(300px, 55vw, 560px);
-  /* shift left so David doesn't cover text */
-  margin-right: clamp(100px, 20vw, 280px);
+  gap: clamp(8px, 1.8vh, 18px);
+  text-align: left;
+  padding: clamp(20px, 4vw, 56px) clamp(16px, 3vw, 40px);
+  order: 1;
 }
-.title-icon { font-size: clamp(40px, 6vw, 68px); line-height: 1; }
+.title-icon { font-size: clamp(28px, 4vw, 68px); line-height: 1; }
 .title-h1 {
   font-family: 'Fredoka One', cursive;
-  font-size: clamp(36px, 6.5vw, 72px);
+  font-size: clamp(28px, 5vw, 72px);
   color: #fff;
   text-shadow: 0 4px 24px rgba(0,0,0,0.6);
   line-height: 1;
 }
 .title-sub {
-  font-size: clamp(11px, 1.6vw, 16px);
+  font-size: clamp(10px, 1.4vw, 16px);
   color: rgba(255,255,255,0.65);
   font-style: italic;
 }
@@ -128,24 +128,24 @@ html, body {
   border: 1.5px solid rgba(255,255,255,0.25);
   backdrop-filter: blur(10px);
   border-radius: 16px;
-  padding: clamp(8px,1.5vh,14px) clamp(18px,3vw,32px);
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: clamp(6px,1.2vh,14px) clamp(14px,2.5vw,32px);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
   width: 100%;
 }
 .title-cafe-badge .t-name {
   font-family: 'Fredoka One', cursive;
-  font-size: clamp(16px, 2.5vw, 26px);
+  font-size: clamp(13px, 2vw, 26px);
   color: var(--gold);
 }
-.title-cafe-badge .t-sub { color: rgba(255,255,255,0.6); font-size: clamp(10px, 1.2vw, 13px); }
+.title-cafe-badge .t-sub { color: rgba(255,255,255,0.6); font-size: clamp(9px, 1vw, 13px); }
 .btn-start {
   background: linear-gradient(135deg, var(--gold), #d49820);
   color: var(--ink);
   border: none;
   border-radius: 50px;
-  padding: clamp(10px,1.8vh,16px) clamp(28px,5vw,52px);
+  padding: clamp(8px,1.5vh,16px) clamp(20px,3.5vw,52px);
   font-family: 'Fredoka One', cursive;
-  font-size: clamp(16px, 2.5vw, 24px);
+  font-size: clamp(14px, 2vw, 24px);
   cursor: pointer;
   box-shadow: 0 6px 24px rgba(240,192,64,0.5);
   transition: transform .15s, box-shadow .15s;
@@ -162,8 +162,8 @@ html, body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: clamp(16px,3vh,36px) clamp(20px,4vw,56px);
-  gap: clamp(16px,3vw,40px);
+  padding: clamp(10px,2vh,36px) clamp(14px,3vw,56px);
+  gap: clamp(10px,2vw,40px);
   overflow: hidden;
 }
 .intro-left {
@@ -171,13 +171,13 @@ html, body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(8px,1.5vh,16px);
+  gap: clamp(5px,1vh,16px);
 }
 .intro-right {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-shrink: 0;
 }
 .level-badge {
@@ -240,8 +240,8 @@ html, body {
 }
 .btn-play:active { transform:scale(0.97); }
 .intro-david {
-  width: clamp(100px, 16vw, 200px);
-  height: clamp(130px, 22vw, 260px);
+  width: clamp(80px, 18vh, 200px);
+  height: clamp(100px, 24vh, 260px);
   object-fit:contain;
   filter:drop-shadow(0 6px 18px rgba(0,0,0,0.4));
   animation:davidFloat 3s ease-in-out infinite;
@@ -261,7 +261,7 @@ html, body {
 .cooking-bg {
   position:absolute; inset:0;
   width:100%; height:100%;
-  background: linear-gradient(160deg, #1a4a0a 0%, #2a6a15 50%, #1a4a20 100%);
+  background: linear-gradient(160deg, #2d5a1b, #1a3a0a);
 }
 .cooking-bg img {
   width:100%; height:100%;
@@ -272,14 +272,14 @@ html, body {
 
 .cooking-overlay {
   position:absolute; inset:0;
-  background: rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.35);
 }
 
 .cooking-ui {
   position:absolute; inset:0;
   display:flex;
   flex-direction:column;
-  padding: 16px 24px 20px;
+  padding: clamp(8px,1.5vh,16px) clamp(12px,2.5vw,24px) clamp(10px,2vh,20px);
 }
 
 .cooking-header {
@@ -509,8 +509,8 @@ html, body {
   background: linear-gradient(160deg, #050f02, #0f2a05, #050f12);
   flex-direction:row;
   align-items:center;
-  padding:32px 60px;
-  gap:40px;
+  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
+  gap: clamp(16px,3vw,40px);
 }
 
 .chem-left {
@@ -836,8 +836,8 @@ html, body {
   background: linear-gradient(160deg, #0a2505, #1a6010, #0a2010);
   flex-direction:row;
   align-items:center;
-  padding:32px 60px;
-  gap:40px;
+  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
+  gap: clamp(16px,3vw,40px);
 }
 .complete-left {
   flex:1;
@@ -881,8 +881,8 @@ html, body {
   background: linear-gradient(160deg, #2a0505, #5a1010);
   flex-direction:row;
   align-items:center;
-  padding:32px 60px;
-  gap:40px;
+  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
+  gap: clamp(16px,3vw,40px);
 }
 .gameover-emoji { font-size: clamp(48px, 7vw, 80px); }
 .gameover-title { font-family:'Fredoka One',cursive; font-size: clamp(24px, 4vw, 42px); color:white; }
@@ -905,8 +905,8 @@ html, body {
   background: linear-gradient(160deg, #0a2505, #1a8010, #0a3010);
   flex-direction:row;
   align-items:center;
-  padding:32px 60px;
-  gap:40px;
+  padding: clamp(12px,2.5vh,32px) clamp(16px,4vw,60px);
+  gap: clamp(16px,3vw,40px);
   overflow:hidden;
 }
 .cc-left {
@@ -1017,7 +1017,7 @@ html, body {
   <!-- pantry background -->
   <img id="title-bg"
     src="https://raw.githubusercontent.com/pipit10364/David/main/Matcha%20pantry%20cooking.png"
-    onerror="this.style.display='none'"
+    onerror="this.style.background='#1a5a0a';this.removeAttribute('src')"
     alt="">
   <!-- green overlay -->
   <div id="title-overlay"></div>
@@ -1066,7 +1066,7 @@ html, body {
   <div class="cooking-bg">
     <img id="cooking-bg-img"
       src="https://raw.githubusercontent.com/pipit10364/David/main/Matcha%20pantry%20cooking.png"
-      onerror="this.style.display='none'"
+      onerror="this.style.background='#c8a870'"
       alt="Kitchen">
   </div>
   <div class="cooking-overlay"></div>
@@ -1379,11 +1379,6 @@ const LEVELS = [
 // ============================================================
 // COOKING STAGE LOGIC
 // ============================================================
-const INGREDIENT_EMOJI = {
-  matcha:'🍵', matcha2:'🍵', susu:'🥛', susu2:'🥛',
-  gula:'🍚', garam:'🧂', telor:'🥚', kuningTelor:'🥚', tepungKetan:'🫙',
-};
-
 const COOK = {
   menuId: null,
   recipe: [],
@@ -1449,12 +1444,8 @@ const COOK = {
     const grid = document.getElementById('ingredients-grid');
     grid.innerHTML = displayIngs.map(ingId => {
       const ing = INGREDIENTS[ingId];
-      const emo = INGREDIENT_EMOJI[ingId] || '🍶';
       return `<button class="ingredient-btn" id="ing-btn-${ingId}" onclick="COOK.tapIngredient('${ingId}')">
-        <img src="${ing.img}"
-          style="width:clamp(36px,5vw,52px);height:clamp(36px,5vw,52px);object-fit:contain"
-          onerror="this.outerHTML='<span style=font-size:clamp(32px,4vw,44px);line-height:1>${emo}</span>'"
-          alt="${ing.name}">
+        <img src="${ing.img}" onerror="this.style.fontSize='32px';this.outerHTML='<span style=font-size:32px>${ing.name[0]}</span>'" alt="${ing.name}">
         <div class="ing-name">${ing.name}</div>
       </button>`;
     }).join('');
@@ -1618,7 +1609,7 @@ const G = {
     chips.innerHTML = lvl.menus.map(mId => {
       const m = MENUS[mId];
       return `<div class="menu-chip">
-        <span style="font-size:clamp(24px,3.5vw,36px);display:block">${m.emoji}</span>
+        <img src="${m.img}" style="width:clamp(28px,4vw,40px);height:clamp(28px,4vw,40px);object-fit:contain" onerror="this.outerHTML='<span style=font-size:28px>${m.emoji}</span>'" alt="${m.name}">
         <div class="menu-chip-name">${m.name}</div>
       </div>`;
     }).join('');
@@ -1709,7 +1700,7 @@ const G = {
     container.innerHTML = lvl.menus.map(mId => {
       const m = MENUS[mId];
       return `<button class="menu-btn" id="mbtn-${mId}" onclick="G.startPrep('${mId}')">
-        <span style="font-size:clamp(28px,4vw,40px);display:block;margin-bottom:4px">${m.emoji}</span>
+        <img src="${m.img}" onerror="this.outerHTML='<span style=font-size:32px>${m.emoji}</span>'" alt="${m.name}">
         <div class="btn-name">${m.name}</div>
         <div class="prep-bar" id="pbar-${mId}" style="width:0%"></div>
       </button>`;
@@ -1885,7 +1876,7 @@ const G = {
             <div class="patience-fill" id="pfill-${c.id}" style="width:${pct}%;background:${pBarColor}"></div>
           </div>
           <div class="order-bubble">
-            <span style="font-size:clamp(22px,3vw,32px)">${menu.emoji}</span>
+            <img src="${menu.img}" onerror="this.outerHTML='<span>${menu.emoji}</span>'" alt="${menu.name}" style="width:clamp(24px,3vw,36px);height:clamp(24px,3vw,36px);object-fit:contain">
           </div>
           <img class="customer-sprite"
             src="${custImg(c.custNum, c.state)}"
