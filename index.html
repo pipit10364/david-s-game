@@ -70,6 +70,7 @@ html, body {
   overflow: hidden;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(160deg, #0d2a05 0%, #1a5a0a 50%, #0d3a10 100%);
 }
 #title-bg {
   position: absolute; inset: 0;
@@ -260,7 +261,7 @@ html, body {
 .cooking-bg {
   position:absolute; inset:0;
   width:100%; height:100%;
-  background: linear-gradient(160deg, #2d5a1b, #1a3a0a);
+  background: linear-gradient(160deg, #1a4a0a 0%, #2a6a15 50%, #1a4a20 100%);
 }
 .cooking-bg img {
   width:100%; height:100%;
@@ -271,7 +272,7 @@ html, body {
 
 .cooking-overlay {
   position:absolute; inset:0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.15);
 }
 
 .cooking-ui {
@@ -1016,7 +1017,7 @@ html, body {
   <!-- pantry background -->
   <img id="title-bg"
     src="https://raw.githubusercontent.com/pipit10364/David/main/Matcha%20pantry%20cooking.png"
-    onerror="this.style.background='#1a5a0a';this.removeAttribute('src')"
+    onerror="this.style.display='none'"
     alt="">
   <!-- green overlay -->
   <div id="title-overlay"></div>
@@ -1065,7 +1066,7 @@ html, body {
   <div class="cooking-bg">
     <img id="cooking-bg-img"
       src="https://raw.githubusercontent.com/pipit10364/David/main/Matcha%20pantry%20cooking.png"
-      onerror="this.style.background='#c8a870'"
+      onerror="this.style.display='none'"
       alt="Kitchen">
   </div>
   <div class="cooking-overlay"></div>
@@ -1378,6 +1379,11 @@ const LEVELS = [
 // ============================================================
 // COOKING STAGE LOGIC
 // ============================================================
+const INGREDIENT_EMOJI = {
+  matcha:'🍵', matcha2:'🍵', susu:'🥛', susu2:'🥛',
+  gula:'🍚', garam:'🧂', telor:'🥚', kuningTelor:'🥚', tepungKetan:'🫙',
+};
+
 const COOK = {
   menuId: null,
   recipe: [],
@@ -1443,8 +1449,12 @@ const COOK = {
     const grid = document.getElementById('ingredients-grid');
     grid.innerHTML = displayIngs.map(ingId => {
       const ing = INGREDIENTS[ingId];
+      const emo = INGREDIENT_EMOJI[ingId] || '🍶';
       return `<button class="ingredient-btn" id="ing-btn-${ingId}" onclick="COOK.tapIngredient('${ingId}')">
-        <img src="${ing.img}" onerror="this.style.fontSize='32px';this.outerHTML='<span style=font-size:32px>${ing.name[0]}</span>'" alt="${ing.name}">
+        <img src="${ing.img}"
+          style="width:clamp(36px,5vw,52px);height:clamp(36px,5vw,52px);object-fit:contain"
+          onerror="this.outerHTML='<span style=font-size:clamp(32px,4vw,44px);line-height:1>${emo}</span>'"
+          alt="${ing.name}">
         <div class="ing-name">${ing.name}</div>
       </button>`;
     }).join('');
@@ -1608,7 +1618,7 @@ const G = {
     chips.innerHTML = lvl.menus.map(mId => {
       const m = MENUS[mId];
       return `<div class="menu-chip">
-        <img src="${m.img}" style="width:clamp(28px,4vw,40px);height:clamp(28px,4vw,40px);object-fit:contain" onerror="this.outerHTML='<span style=font-size:28px>${m.emoji}</span>'" alt="${m.name}">
+        <span style="font-size:clamp(24px,3.5vw,36px);display:block">${m.emoji}</span>
         <div class="menu-chip-name">${m.name}</div>
       </div>`;
     }).join('');
@@ -1699,7 +1709,7 @@ const G = {
     container.innerHTML = lvl.menus.map(mId => {
       const m = MENUS[mId];
       return `<button class="menu-btn" id="mbtn-${mId}" onclick="G.startPrep('${mId}')">
-        <img src="${m.img}" onerror="this.outerHTML='<span style=font-size:32px>${m.emoji}</span>'" alt="${m.name}">
+        <span style="font-size:clamp(28px,4vw,40px);display:block;margin-bottom:4px">${m.emoji}</span>
         <div class="btn-name">${m.name}</div>
         <div class="prep-bar" id="pbar-${mId}" style="width:0%"></div>
       </button>`;
@@ -1875,7 +1885,7 @@ const G = {
             <div class="patience-fill" id="pfill-${c.id}" style="width:${pct}%;background:${pBarColor}"></div>
           </div>
           <div class="order-bubble">
-            <img src="${menu.img}" onerror="this.outerHTML='<span>${menu.emoji}</span>'" alt="${menu.name}" style="width:clamp(24px,3vw,36px);height:clamp(24px,3vw,36px);object-fit:contain">
+            <span style="font-size:clamp(22px,3vw,32px)">${menu.emoji}</span>
           </div>
           <img class="customer-sprite"
             src="${custImg(c.custNum, c.state)}"
