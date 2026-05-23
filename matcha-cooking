@@ -32,7 +32,7 @@
     </div>
     <div class="row">
       <button onclick="checkOrder()">Cek Jawaban</button>
-      <button onclick="resetQuiz()">Ulang Isi Slot</button>
+      <button onclick="resetSlotsOnly()">Ulang Isi Slot</button>
       <a class="btn" href="matcha-serving.html">Lanjut ke Serving</a>
       <a class="btn" href="index.html">Kembali</a>
     </div>
@@ -41,27 +41,42 @@
 <script>
 const correct=['Panaskan air','Ayak matcha','Saring matcha','Masukkan susu dingin','Masukkan es batu'];
 const chem={'Panaskan air':'Suhu hangat membantu senyawa matcha larut merata.','Ayak matcha':'Mengurangi gumpalan agar tekstur halus.','Saring matcha':'Memisahkan partikel besar supaya smooth.','Masukkan susu dingin':'Protein susu memberi body creamy.','Masukkan es batu':'Pendinginan cepat bikin rasa segar dan ringan.'};
-let chosen=null, filled=Array(correct.length).fill(''), lives=3;
+let chosen=null, filled=Array(correct.length).fill(''), lives=3, shuffledSteps=[];
+
+function initRound(){shuffledSteps=[...correct].sort(()=>Math.random()-0.5);}
 function render(){
   steps.innerHTML=''; slots.innerHTML='';
-  [...correct].sort(()=>Math.random()-0.5).forEach(step=>{
+  shuffledSteps.forEach(step=>{
     const el=document.createElement('div'); el.className='item'+(filled.includes(step)?' used':'');
     if(chosen===step) el.classList.add('selected'); el.textContent=step;
     el.onclick=()=>{chosen=step;render();}; steps.appendChild(el);
   });
   filled.forEach((v,i)=>{const el=document.createElement('div'); el.className='slot'+(v?' filled':''); el.textContent=v||`Slot ${i+1}`; el.onclick=()=>{if(!chosen) return; filled[i]=chosen; chosen=null; render();}; slots.appendChild(el);});
-  livesEl();
+  livesSpan.textContent=Array.from({length:3},(_,i)=>i<lives?'❤️':'🖤').join('');
 }
-function livesEl(){livesSpan.textContent=Array.from({length:3},(_,i)=>i<lives?'❤️':'🖤').join('');}
 function checkOrder(){
   if(filled.includes('')) return result.innerHTML='<b>⚠️ Slot belum lengkap.</b>';
   const ok=filled.every((v,i)=>v===correct[i]);
-  if(ok){localStorage.setItem('matchaCookingPass','1'); result.innerHTML='<b>✅ Benar!</b><br>'+correct.map((s,n)=>`${n+1}. ${s} — ${chem[s]}`).join('<br>');}
-  else{lives--; if(lives<=0){result.innerHTML='<b>❌ Nyawa habis.</b> Susun ulang dari awal.'; lives=3; filled=Array(correct.length).fill('');} else {result.innerHTML=`<b>❌ Urutan belum tepat.</b> Sisa nyawa: ${lives}`; filled=Array(correct.length).fill('');} render();}
+  if(ok){
+    localStorage.setItem('matchaCookingPass','1');
+    result.innerHTML='<b>✅ Benar!</b><br>'+correct.map((s,n)=>`${n+1}. ${s} — ${chem[s]}`).join('<br>');
+  } else {
+    lives--;
+    if(lives<=0){
+      result.innerHTML='<b>❌ Nyawa habis.</b> Urutan diacak ulang dari awal.';
+      lives=3;
+      filled=Array(correct.length).fill('');
+      initRound();
+    } else {
+      result.innerHTML=`<b>❌ Urutan belum tepat.</b> Sisa nyawa: ${lives}`;
+      filled=Array(correct.length).fill('');
+    }
+    chosen=null; render();
+  }
 }
-function resetQuiz(){filled=Array(correct.length).fill(''); chosen=null; result.textContent='Silakan susun ulang urutan step.'; render();}
+function resetSlotsOnly(){filled=Array(correct.length).fill(''); chosen=null; result.textContent='Silakan susun ulang urutan step.'; render();}
 const steps=document.getElementById('steps'),slots=document.getElementById('slots'),result=document.getElementById('result'),livesSpan=document.getElementById('lives');
-render();
+initRound(); render();
 </script>
 </body>
 </html>
