@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matcha Result</title>
+  <style>
+    body{font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#0f172a;color:#fff}
+    .box{background:#1e293b;padding:24px;border-radius:16px;max-width:480px;text-align:center}
+    a,button{display:inline-block;margin:8px;padding:10px 14px;border-radius:10px;border:none;text-decoration:none;background:#84cc16;color:#111;font-weight:bold;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1 id="title">Hasil Matcha Stage</h1>
+    <p id="desc"></p>
+    <p>Skor Akhir: <strong id="score"></strong></p>
+    <a href="matcha-serving.html">Main Lagi</a>
+    <a href="index.html">Kembali ke Menu</a>
+  </div>
+<script>
+const win=localStorage.getItem('matchaWin')==='1';
+const score=localStorage.getItem('matchaScore')||'0';
+document.getElementById('title').textContent=win?'🎉 YOU WIN':'😢 TIME UP';
+document.getElementById('desc').textContent=win?'Mantap! Kamu siap lanjut ke restoran berikutnya.':'Bagus! Coba lagi untuk tingkatkan kecepatan serving.';
+document.getElementById('score').textContent=score;
+</script>
+</body>
+</html>
