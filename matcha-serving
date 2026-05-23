@@ -3,73 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matcha Serving MVP</title>
+  <title>Matcha Serving MVP+</title>
   <style>
-    body{font-family:Arial,sans-serif;background:#f1f7ff;margin:0;padding:20px}
-    .wrap{max-width:1000px;margin:auto;background:#fff;border-radius:14px;padding:16px}
-    .hud{display:flex;gap:16px;flex-wrap:wrap;font-weight:bold}
-    .customers{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0}
+    body{font-family:Arial,sans-serif;background:#e8f1df;margin:0;padding:14px}
+    .wrap{max-width:1040px;margin:auto;background:#fff;border-radius:14px;padding:14px}
+    .hud{display:flex;gap:12px;flex-wrap:wrap;font-weight:700}
+    .pill{background:#f2f6ee;border:1px solid #d8e2cf;border-radius:999px;padding:6px 10px}
+    .customers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
     .c{border:2px solid #cfd9ea;border-radius:10px;padding:10px;background:#f8fbff}
-    .bar{height:8px;background:#eee;border-radius:6px;overflow:hidden}
-    .fill{height:100%;background:#75b84f}
-    button{padding:10px 14px;border:none;border-radius:10px;background:#5a9bd8;color:#fff;cursor:pointer}
+    .bar{height:8px;background:#eee;border-radius:6px;overflow:hidden}.fill{height:100%;background:#75b84f}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    button,a{padding:10px 12px;border:none;border-radius:10px;background:#5a9bd8;color:#fff;cursor:pointer;text-decoration:none;font-weight:700}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h2>👥 Matcha Serving (MVP)</h2>
-    <p>Versi sederhana: 1 menu saja (Iced Matcha). Layani 8 customer sebelum waktu habis.</p>
+    <h2>👥 Matcha Serving</h2>
+    <p>Target: layani <b>10 customer</b> sebelum waktu habis. Kalau customer kabur 4x, game over.</p>
     <div class="hud">
-      <div>Skor: <span id="score">0</span></div>
-      <div>Served: <span id="served">0</span>/8</div>
-      <div>Waktu: <span id="time">60</span>s</div>
-      <div>Stock Minuman Siap: <span id="stock">0</span></div>
+      <div class="pill">Skor: <span id="score">0</span></div>
+      <div class="pill">Served: <span id="served">0</span>/10</div>
+      <div class="pill">Kabur: <span id="fled">0</span>/4</div>
+      <div class="pill">Waktu: <span id="time">75</span>s</div>
+      <div class="pill">Stock Iced Matcha: <span id="stock">0</span></div>
     </div>
-
-    <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
-      <button onclick="brew()">Buat Iced Matcha (+1 stock)</button>
-      <button onclick="location.href='index.html'">Kembali</button>
+    <div class="actions">
+      <button onclick="brew()">Buat Iced Matcha (+1)</button>
+      <button onclick="brewBatch()">Brew Cepat (+3)</button>
+      <a href="index.html">Kembali</a>
     </div>
-
     <div class="customers" id="customers"></div>
   </div>
-
 <script>
-let score=0, served=0, time=60, stock=0;
-let customers=[]; let nextId=1;
-function spawn(){
-  if(customers.length>=2 || served>=8) return;
-  customers.push({id:nextId++,patience:100});
-  render();
-}
-function brew(){stock++;render();}
+let score=0, served=0, time=75, stock=0, fled=0;
+let customers=[]; let nextId=1; const maxSlots=3, targetServed=10;
+function spawn(){if(customers.length>=maxSlots||served>=targetServed) return; customers.push({id:nextId++,patience:100}); render();}
+function brew(){stock++; render();}
+function brewBatch(){stock+=3; render();}
 function serve(id){
-  if(stock<=0) return alert('Stock kosong! Klik "Buat Iced Matcha" dulu.');
-  stock--; score+=10; served++;
-  customers=customers.filter(c=>c.id!==id);
-  render();
-  if(served>=8) end(true);
+  const c=customers.find(x=>x.id===id); if(!c) return;
+  if(stock<=0) return alert('Stock kosong!');
+  const bonus=c.patience>65?15:c.patience>35?10:6;
+  stock--; score+=bonus; served++; customers=customers.filter(x=>x.id!==id);
+  render(); if(served>=targetServed) end(true);
 }
 function tick(){
   time--; if(time<=0) return end(false);
-  customers=customers.map(c=>({...c,patience:c.patience-8})).filter(c=>c.patience>0);
+  customers=customers.map(c=>({...c,patience:c.patience-7}));
+  const remain=[];
+  customers.forEach(c=>{if(c.patience<=0) fled++; else remain.push(c);});
+  customers=remain;
+  if(fled>=4) return end(false);
   render();
 }
 function render(){
-  scoreEl.textContent=score; servedEl.textContent=served; timeEl.textContent=time; stockEl.textContent=stock;
-  customersEl.innerHTML=customers.map(c=>`<div class='c'><strong>Customer #${c.id}</strong><p>Order: Iced Matcha</p><div class='bar'><div class='fill' style='width:${c.patience}%'></div></div><br><button onclick='serve(${c.id})'>Serve</button></div>`).join('');
+  scoreEl.textContent=score; servedEl.textContent=served; timeEl.textContent=time; stockEl.textContent=stock; fledEl.textContent=fled;
+  customersEl.innerHTML=customers.map(c=>`<div class='c'><strong>Customer #${c.id}</strong><p>Order: Iced Matcha</p><div class='bar'><div class='fill' style='width:${Math.max(c.patience,0)}%;background:${c.patience>50?'#75b84f':c.patience>25?'#e0b53f':'#d95f5f'}'></div></div><p style='margin:8px 0'>Patience: ${Math.max(c.patience,0)}%</p><button onclick='serve(${c.id})'>Serve</button></div>`).join('');
 }
-function end(win){
-  localStorage.setItem('matchaScore',String(score));
-  localStorage.setItem('matchaWin',win?'1':'0');
-  location.href='matcha-result.html';
-}
-const scoreEl=document.getElementById('score');
-const servedEl=document.getElementById('served');
-const timeEl=document.getElementById('time');
-const stockEl=document.getElementById('stock');
-const customersEl=document.getElementById('customers');
-setInterval(spawn,2500); setInterval(tick,1000); render();
+function end(win){localStorage.setItem('matchaScore',String(score));localStorage.setItem('matchaWin',win?'1':'0');location.href='matcha-result.html';}
+const scoreEl=document.getElementById('score'),servedEl=document.getElementById('served'),timeEl=document.getElementById('time'),stockEl=document.getElementById('stock'),fledEl=document.getElementById('fled'),customersEl=document.getElementById('customers');
+setInterval(spawn,2100); setInterval(tick,1000); render();
 </script>
 </body>
 </html>
