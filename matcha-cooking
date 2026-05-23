@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matcha Cooking Quiz</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f3efe4;margin:0;padding:20px}
+    .wrap{max-width:1000px;margin:auto;background:#fff;border-radius:14px;padding:18px}
+    .board{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .item,.slot{padding:12px;border-radius:10px;border:2px solid #ddd;cursor:pointer;background:#f8f8f8}
+    .item.used{opacity:.4;pointer-events:none}
+    .slot{min-height:44px;background:#eef7df;border-style:dashed}
+    .slot.filled{border-style:solid;background:#dff0c2}
+    button{padding:10px 14px;border:none;border-radius:10px;background:#89b64b;color:white;cursor:pointer}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .chem{margin-top:14px;padding:12px;border-radius:10px;background:#f0f4ff}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>🍵 Matcha Cooking Quiz</h2>
+    <p>Pilih step di kiri, lalu klik slot urutan di kanan.</p>
+    <div class="board">
+      <div id="steps"></div>
+      <div id="slots"></div>
+    </div>
+    <div class="row">
+      <button onclick="checkOrder()">Cek Jawaban</button>
+      <button onclick="resetQuiz()">Ulang</button>
+      <button onclick="location.href='matcha-serving.html'">Lanjut ke Serving</button>
+      <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+    <div id="result" class="chem"></div>
+  </div>
+
+<script>
+const correct=[
+  'Panaskan air',
+  'Ayak matcha',
+  'Saring matcha',
+  'Masukkan susu dingin',
+  'Masukkan es batu'
+];
+const chem={
+  'Panaskan air':'Suhu hangat membantu senyawa matcha larut lebih merata.',
+  'Ayak matcha':'Pengayakan mengurangi gumpalan agar tekstur halus.',
+  'Saring matcha':'Penyaringan memisahkan partikel besar supaya minuman lebih smooth.',
+  'Masukkan susu dingin':'Lemak/protein susu memberi sensasi creamy.',
+  'Masukkan es batu':'Pendinginan cepat bikin matcha latte segar.'
+};
+let chosen=null;
+let filled=Array(correct.length).fill('');
+
+function render(){
+  const steps=document.getElementById('steps');
+  const slots=document.getElementById('slots');
+  steps.innerHTML=''; slots.innerHTML='';
+  [...correct].sort(()=>Math.random()-0.5).forEach(step=>{
+    const el=document.createElement('div');
+    el.className='item'; el.textContent=step;
+    el.onclick=()=>{chosen=step; document.querySelectorAll('.item').forEach(i=>i.style.outline='none'); el.style.outline='2px solid #89b64b';};
+    if(filled.includes(step)) el.classList.add('used');
+    steps.appendChild(el);
+  });
+  filled.forEach((value,i)=>{
+    const slot=document.createElement('div');
+    slot.className='slot'+(value?' filled':'');
+    slot.textContent=value||`Slot ${i+1}`;
+    slot.onclick=()=>{if(!chosen) return; filled[i]=chosen; chosen=null; render();};
+    slots.appendChild(slot);
+  });
+}
+
+function checkOrder(){
+  const ok=filled.every((v,i)=>v===correct[i]);
+  const box=document.getElementById('result');
+  if(ok){
+    box.innerHTML='<strong>✅ Benar!</strong><br>'+correct.map(s=>`• ${s}: ${chem[s]}`).join('<br>');
+    localStorage.setItem('matchaCookingPass','1');
+  }else{
+    box.innerHTML='<strong>❌ Urutan belum tepat.</strong><br>Coba cek lagi urutan step-nya ya.';
+  }
+}
+function resetQuiz(){filled=Array(correct.length).fill(''); document.getElementById('result').textContent=''; render();}
+render();
+</script>
+</body>
+</html>
