@@ -5,84 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Matcha Cooking Quiz</title>
   <style>
-    body{font-family:Arial,sans-serif;background:#f3efe4;margin:0;padding:20px}
-    .wrap{max-width:1000px;margin:auto;background:#fff;border-radius:14px;padding:18px}
-    .board{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .item,.slot{padding:12px;border-radius:10px;border:2px solid #ddd;cursor:pointer;background:#f8f8f8}
-    .item.used{opacity:.4;pointer-events:none}
+    :root{--green:#7ab84d;--ink:#203020}
+    body{font-family:Arial,sans-serif;background:#efe8db;margin:0;padding:16px;color:#222}
+    .wrap{max-width:1020px;margin:auto;background:#fff;border-radius:14px;padding:16px}
+    h2{margin-top:0}
+    .layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .col{background:#faf9f5;border:1px solid #e9e4d8;border-radius:10px;padding:10px}
+    .item,.slot{padding:11px 12px;border-radius:10px;border:2px solid #ddd;margin-bottom:8px;background:#fff;cursor:pointer;font-weight:700}
+    .item.selected{border-color:var(--green)} .item.used{opacity:.35;pointer-events:none}
     .slot{min-height:44px;background:#eef7df;border-style:dashed}
     .slot.filled{border-style:solid;background:#dff0c2}
-    button{padding:10px 14px;border:none;border-radius:10px;background:#89b64b;color:white;cursor:pointer}
-    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .chem{margin-top:14px;padding:12px;border-radius:10px;background:#f0f4ff}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button,a.btn{padding:10px 14px;border:none;border-radius:10px;background:var(--green);color:white;cursor:pointer;text-decoration:none}
+    .chem{margin-top:14px;padding:12px;border-radius:10px;background:#f0f4ff;line-height:1.5}
+    @media(max-width:800px){.layout{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <h2>🍵 Matcha Cooking Quiz</h2>
-    <p>Pilih step di kiri, lalu klik slot urutan di kanan.</p>
-    <div class="board">
-      <div id="steps"></div>
-      <div id="slots"></div>
+    <p>Pilih step di kiri, lalu klik slot urutan di kanan. Kamu punya <b>3 nyawa</b>.</p>
+    <div style="font-weight:700">Nyawa: <span id="lives">❤️❤️❤️</span></div>
+    <div class="layout">
+      <div class="col"><h4>Pilihan Step</h4><div id="steps"></div></div>
+      <div class="col"><h4>Urutan Masak</h4><div id="slots"></div></div>
     </div>
     <div class="row">
       <button onclick="checkOrder()">Cek Jawaban</button>
-      <button onclick="resetQuiz()">Ulang</button>
-      <button onclick="location.href='matcha-serving.html'">Lanjut ke Serving</button>
-      <button onclick="location.href='index.html'">Kembali</button>
+      <button onclick="resetQuiz()">Ulang Isi Slot</button>
+      <a class="btn" href="matcha-serving.html">Lanjut ke Serving</a>
+      <a class="btn" href="index.html">Kembali</a>
     </div>
-    <div id="result" class="chem"></div>
+    <div id="result" class="chem">Petunjuk: urutan benar akan menampilkan penjelasan kimia.</div>
   </div>
-
 <script>
-const correct=[
-  'Panaskan air',
-  'Ayak matcha',
-  'Saring matcha',
-  'Masukkan susu dingin',
-  'Masukkan es batu'
-];
-const chem={
-  'Panaskan air':'Suhu hangat membantu senyawa matcha larut lebih merata.',
-  'Ayak matcha':'Pengayakan mengurangi gumpalan agar tekstur halus.',
-  'Saring matcha':'Penyaringan memisahkan partikel besar supaya minuman lebih smooth.',
-  'Masukkan susu dingin':'Lemak/protein susu memberi sensasi creamy.',
-  'Masukkan es batu':'Pendinginan cepat bikin matcha latte segar.'
-};
-let chosen=null;
-let filled=Array(correct.length).fill('');
-
+const correct=['Panaskan air','Ayak matcha','Saring matcha','Masukkan susu dingin','Masukkan es batu'];
+const chem={'Panaskan air':'Suhu hangat membantu senyawa matcha larut merata.','Ayak matcha':'Mengurangi gumpalan agar tekstur halus.','Saring matcha':'Memisahkan partikel besar supaya smooth.','Masukkan susu dingin':'Protein susu memberi body creamy.','Masukkan es batu':'Pendinginan cepat bikin rasa segar dan ringan.'};
+let chosen=null, filled=Array(correct.length).fill(''), lives=3;
 function render(){
-  const steps=document.getElementById('steps');
-  const slots=document.getElementById('slots');
   steps.innerHTML=''; slots.innerHTML='';
   [...correct].sort(()=>Math.random()-0.5).forEach(step=>{
-    const el=document.createElement('div');
-    el.className='item'; el.textContent=step;
-    el.onclick=()=>{chosen=step; document.querySelectorAll('.item').forEach(i=>i.style.outline='none'); el.style.outline='2px solid #89b64b';};
-    if(filled.includes(step)) el.classList.add('used');
-    steps.appendChild(el);
+    const el=document.createElement('div'); el.className='item'+(filled.includes(step)?' used':'');
+    if(chosen===step) el.classList.add('selected'); el.textContent=step;
+    el.onclick=()=>{chosen=step;render();}; steps.appendChild(el);
   });
-  filled.forEach((value,i)=>{
-    const slot=document.createElement('div');
-    slot.className='slot'+(value?' filled':'');
-    slot.textContent=value||`Slot ${i+1}`;
-    slot.onclick=()=>{if(!chosen) return; filled[i]=chosen; chosen=null; render();};
-    slots.appendChild(slot);
-  });
+  filled.forEach((v,i)=>{const el=document.createElement('div'); el.className='slot'+(v?' filled':''); el.textContent=v||`Slot ${i+1}`; el.onclick=()=>{if(!chosen) return; filled[i]=chosen; chosen=null; render();}; slots.appendChild(el);});
+  livesEl();
 }
-
+function livesEl(){livesSpan.textContent=Array.from({length:3},(_,i)=>i<lives?'❤️':'🖤').join('');}
 function checkOrder(){
+  if(filled.includes('')) return result.innerHTML='<b>⚠️ Slot belum lengkap.</b>';
   const ok=filled.every((v,i)=>v===correct[i]);
-  const box=document.getElementById('result');
-  if(ok){
-    box.innerHTML='<strong>✅ Benar!</strong><br>'+correct.map(s=>`• ${s}: ${chem[s]}`).join('<br>');
-    localStorage.setItem('matchaCookingPass','1');
-  }else{
-    box.innerHTML='<strong>❌ Urutan belum tepat.</strong><br>Coba cek lagi urutan step-nya ya.';
-  }
+  if(ok){localStorage.setItem('matchaCookingPass','1'); result.innerHTML='<b>✅ Benar!</b><br>'+correct.map((s,n)=>`${n+1}. ${s} — ${chem[s]}`).join('<br>');}
+  else{lives--; if(lives<=0){result.innerHTML='<b>❌ Nyawa habis.</b> Susun ulang dari awal.'; lives=3; filled=Array(correct.length).fill('');} else {result.innerHTML=`<b>❌ Urutan belum tepat.</b> Sisa nyawa: ${lives}`; filled=Array(correct.length).fill('');} render();}
 }
-function resetQuiz(){filled=Array(correct.length).fill(''); document.getElementById('result').textContent=''; render();}
+function resetQuiz(){filled=Array(correct.length).fill(''); chosen=null; result.textContent='Silakan susun ulang urutan step.'; render();}
+const steps=document.getElementById('steps'),slots=document.getElementById('slots'),result=document.getElementById('result'),livesSpan=document.getElementById('lives');
 render();
 </script>
 </body>
