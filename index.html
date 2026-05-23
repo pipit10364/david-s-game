@@ -1,0 +1,548 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+:root{
+  --bg:#0e1a2e;--panel:#162035;--card:#1c2a42;
+  --gold:#f0c040;--glow-gold:rgba(240,192,64,0.35);
+  --green:#5db85d;--blue:#5bb0e8;--red:#e05555;--purple:#a060f0;--orange:#f08030;--teal:#40c8b8;
+  --ink:#fff;--muted:rgba(255,255,255,0.5);--faint:rgba(255,255,255,0.08);
+  --radius:12px;
+}
+body{background:var(--bg);font-family:'Fredoka One',cursive,'Nunito',sans-serif;color:var(--ink);min-height:600px}
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800&display=swap');
+
+.screen{display:none;flex-direction:column;align-items:center;padding:12px;min-height:600px}
+.screen.on{display:flex}
+
+/* ── MAP ── */
+#s-map{gap:10px;background:var(--bg)}
+.map-title{font-size:26px;color:var(--gold);margin-top:4px}
+.map-byline{font-size:11px;color:var(--muted);font-family:'Nunito',sans-serif;margin-bottom:4px}
+.lvl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.lvl-node{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.lvl-bubble{width:56px;height:56px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;border:2px solid rgba(255,255,255,0.12);background:var(--faint);color:rgba(255,255,255,0.25);line-height:1.2}
+.lvl-bubble.unlocked{background:linear-gradient(135deg,#1a4a2a,#2a7a3a);border-color:#5db85d;color:#fff;cursor:pointer}
+.lvl-bubble.current{background:linear-gradient(135deg,#3a1a6a,#6a2aaa);border-color:#a060f0;color:#fff;animation:glow 2s ease-in-out infinite}
+.lvl-bubble.done{background:linear-gradient(135deg,#1a3a6a,#2a6aaa);border-color:#5bb0e8;color:#fff}
+.lvl-stars{font-size:9px;letter-spacing:1px;color:var(--gold)}
+.lv-name{font-size:9px;color:var(--muted);font-family:'Nunito',sans-serif;text-align:center;max-width:64px;line-height:1.3}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(160,96,240,0.4)}50%{box-shadow:0 0 0 6px rgba(160,96,240,0)}}
+
+/* ── GAME ── */
+#s-game{gap:0;background:var(--bg);padding:0}
+
+.hud{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;width:100%;background:rgba(0,0,0,0.4)}
+.hud-block{display:flex;flex-direction:column;align-items:center}
+.hud-val{font-size:20px;color:var(--gold)}
+.hud-lbl{font-size:9px;color:var(--muted);font-family:'Nunito',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.hud-lv{font-size:12px;color:rgba(255,255,255,0.7);font-family:'Nunito',sans-serif}
+
+.target-bar{display:flex;gap:6px;padding:6px 10px;width:100%;overflow-x:auto;background:rgba(0,0,0,0.25)}
+.target-pill{display:flex;align-items:center;gap:5px;background:var(--faint);border:1px solid rgba(255,255,255,0.12);border-radius:999px;padding:3px 10px;font-size:11px;white-space:nowrap;font-family:'Nunito',sans-serif;font-weight:700}
+.target-pill.done{opacity:0.4;text-decoration:line-through}
+.target-dot{width:8px;height:8px;border-radius:50%}
+
+.prog-wrap{width:100%;height:5px;background:rgba(255,255,255,0.08)}
+.prog-fill{height:100%;background:linear-gradient(90deg,#5db85d,#a0e040);transition:width 0.4s ease}
+
+.board-area{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;min-height:0}
+.board{display:grid;gap:3px;padding:8px;background:rgba(255,255,255,0.04);border-radius:16px;border:1px solid rgba(255,255,255,0.08)}
+
+.cell{
+  width:46px;height:46px;border-radius:10px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;
+  border:2px solid transparent;
+  background:rgba(255,255,255,0.05);
+  transition:transform 0.1s,border-color 0.1s;
+  font-family:'Nunito',sans-serif;
+}
+.cell-symbol{font-size:15px;font-weight:800;line-height:1}
+.cell-name{font-size:8px;opacity:0.75;line-height:1;margin-top:1px}
+.cell.selected{border-color:var(--gold);transform:scale(1.1);z-index:2;box-shadow:0 0 0 3px var(--glow-gold)}
+.cell.hint-glow{animation:hintpulse 0.9s ease infinite}
+.cell.obstacle{cursor:default;background:rgba(80,60,40,0.6);border-color:rgba(120,80,40,0.4)}
+.cell.inert-cell{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.06)}
+@keyframes hintpulse{0%,100%{box-shadow:0 0 0 0 rgba(240,192,64,0.5)}50%{box-shadow:0 0 0 5px rgba(240,192,64,0)}}
+
+.cell[data-elem="H"]{background:#1a3a5a;border-color:#3a6a9a}
+.cell[data-elem="O"]{background:#3a1a1a;border-color:#8a3a3a}
+.cell[data-elem="Na"]{background:#2a2a1a;border-color:#8a8a2a}
+.cell[data-elem="Cl"]{background:#1a3a1a;border-color:#3a8a3a}
+.cell[data-elem="C"]{background:#2a2a2a;border-color:#6a6a6a}
+.cell[data-elem="N"]{background:#2a1a3a;border-color:#6a3a8a}
+.cell[data-elem="Ca"]{background:#3a2a1a;border-color:#9a7a3a}
+.cell[data-elem="Fe"]{background:#3a1a0a;border-color:#9a4a1a}
+.cell[data-elem="S"]{background:#3a3a0a;border-color:#9a9a1a}
+.cell[data-elem="K"]{background:#1a1a3a;border-color:#3a3a9a}
+
+.bottom-bar{display:flex;gap:6px;padding:8px 10px;width:100%;background:rgba(0,0,0,0.35);justify-content:center;flex-wrap:wrap}
+.btn-sm{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;color:var(--ink);font-family:'Nunito',sans-serif;transition:transform 0.1s}
+.btn-sm:active{transform:scale(0.94)}
+.btn-back{background:rgba(255,255,255,0.05);color:var(--muted)}
+
+/* ── FACT TOAST ── */
+.fact-wrap{position:absolute;bottom:80px;left:8px;right:8px;z-index:50}
+.fact-card{background:#1a2e4a;border:1px solid #3a6a9a;border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;animation:slideUp 0.35s ease;font-family:'Nunito',sans-serif}
+.fact-reaction{font-size:16px;font-weight:800;color:var(--gold)}
+.fact-title{font-size:12px;font-weight:700;color:#a0d0ff}
+.fact-body{font-size:11px;color:rgba(255,255,255,0.75);line-height:1.5}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── FLOAT TEXT ── */
+.float-txt{position:absolute;font-size:18px;font-weight:800;pointer-events:none;animation:floatUp 0.9s ease forwards;color:var(--gold);font-family:'Nunito',sans-serif;z-index:60;text-shadow:0 2px 6px rgba(0,0,0,0.5)}
+@keyframes floatUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-50px);opacity:0}}
+
+/* ── MODAL ── */
+.modal-wrap{min-height:500px;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;display:none;padding:16px}
+.modal-wrap.on{display:flex}
+.modal{background:var(--panel);border:1px solid rgba(255,255,255,0.15);border-radius:22px;padding:24px 20px;text-align:center;width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px}
+.modal-icon{font-size:52px}
+.modal-stars{font-size:32px;letter-spacing:6px;color:var(--gold)}
+.modal-title{font-size:24px;color:var(--ink)}
+.modal-score{font-size:22px;color:var(--gold)}
+.modal-sub{font-size:12px;color:var(--muted);font-family:'Nunito',sans-serif;line-height:1.6}
+.modal-fact{background:rgba(255,255,255,0.06);border-radius:10px;padding:10px 12px;font-size:11px;color:#a0d0ff;font-family:'Nunito',sans-serif;line-height:1.55;text-align:left}
+.btn-modal{border:none;border-radius:50px;padding:12px 0;font-size:16px;cursor:pointer;width:100%;font-family:'Fredoka One',cursive;transition:transform 0.12s}
+.btn-modal:active{transform:scale(0.96)}
+.btn-p{background:linear-gradient(135deg,#3a8a2a,#5aaa3a);color:#fff}
+.btn-s{background:rgba(255,255,255,0.1);color:#fff}
+
+/* legend */
+.legend{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;padding:4px 8px;width:100%}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);font-family:'Nunito',sans-serif}
+.leg-dot{width:8px;height:8px;border-radius:3px}
+</style>
+
+<div id="s-map" class="screen on">
+  <div class="map-title">⚗️ Chem Crush</div>
+  <div class="map-byline">Match elemen yang bisa bereaksi — bukan yang sama!</div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#3a6a9a"></div>H Hidrogen</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#8a3a3a"></div>O Oksigen</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#6a6a6a"></div>C Karbon</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#3a8a3a"></div>Cl Klorin</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#8a8a2a"></div>Na Natrium</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#6a3a8a"></div>N Nitrogen</div>
+  </div>
+  <div class="lvl-grid" id="map-grid"></div>
+</div>
+
+<div id="s-game" class="screen" style="position:relative">
+  <div class="hud">
+    <div class="hud-block">
+      <div class="hud-val" id="h-moves">20</div>
+      <div class="hud-lbl">Moves</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-lv" id="h-lv">Level 1</div>
+      <div class="hud-val" id="h-score">0</div>
+      <div class="hud-lbl">Skor</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-val" id="h-rx">0</div>
+      <div class="hud-lbl">Reaksi</div>
+    </div>
+  </div>
+  <div class="target-bar" id="target-bar"></div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div class="board-area"><div class="board" id="board"></div></div>
+  <div id="fact-zone" style="position:absolute;bottom:72px;left:8px;right:8px;z-index:50;pointer-events:none"></div>
+  <div class="bottom-bar">
+    <button class="btn-sm" onclick="G.boost('hint')">💡 Hint</button>
+    <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle</button>
+    <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst</button>
+    <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
+  </div>
+</div>
+
+<div class="modal-wrap" id="modal-wrap">
+  <div class="modal">
+    <div class="modal-icon" id="m-icon">🎉</div>
+    <div class="modal-stars" id="m-stars"></div>
+    <div class="modal-title" id="m-title">Reaksi Selesai!</div>
+    <div class="modal-score" id="m-score"></div>
+    <div class="modal-sub" id="m-sub"></div>
+    <div class="modal-fact" id="m-fact"></div>
+    <button class="btn-modal btn-p" id="m-btn1" onclick="G.mb1()">Lanjut</button>
+    <button class="btn-modal btn-s" id="m-btn2" onclick="G.mb2()">Ulang</button>
+  </div>
+</div>
+
+<script>
+const ELEMENTS={
+  H:{sym:'H',name:'Hidrogen',color:'#5bb0e8'},
+  O:{sym:'O',name:'Oksigen',color:'#e05555'},
+  Na:{sym:'Na',name:'Natrium',color:'#f0c040'},
+  Cl:{sym:'Cl',name:'Klorin',color:'#5db85d'},
+  C:{sym:'C',name:'Karbon',color:'#888888'},
+  N:{sym:'N',name:'Nitrogen',color:'#a060f0'},
+  Ca:{sym:'Ca',name:'Kalsium',color:'#f08030'},
+  Fe:{sym:'Fe',name:'Besi',color:'#c07840'},
+  S:{sym:'S',name:'Sulfur',color:'#d0c020'},
+  K:{sym:'K',name:'Kalium',color:'#6080c0'},
+};
+
+const REACTIONS=[
+  {elems:['H','O'],product:'H₂O',pts:150,name:'Air',fact:'H₂O terbentuk dari 2 atom hidrogen + 1 oksigen. Ikatan kovalen polar-nya bikin air bisa melarutkan hampir segalanya — itulah kenapa air disebut "universal solvent".'},
+  {elems:['Na','Cl'],product:'NaCl',pts:180,name:'Garam',fact:'NaCl — garam dapur — terbentuk dari reaksi hebat antara logam Na yang meledak di air dan gas Cl₂ yang beracun. Hasilnya: kristal yang aman dimakan dan bikin masakan enak!'},
+  {elems:['C','O'],product:'CO₂',pts:160,name:'Karbon dioksida',fact:'CO₂ dihasilkan dari pembakaran karbon dengan oksigen. Ini juga produk respirasi selular — tiap napas yang kamu keluarkan mengandung CO₂ hasil metabolisme tubuhmu.'},
+  {elems:['N','H'],product:'NH₃',pts:200,name:'Amonia',fact:'NH₃ (amonia) adalah molekul penting dalam biosintesis protein. Proses Haber-Bosch yang mensintesis amonia dari N₂ + H₂ adalah salah satu penemuan kimia terpenting abad 20.'},
+  {elems:['Ca','O'],product:'CaO',pts:170,name:'Kapur bakar',fact:'CaO (kalsium oksida / kapur bakar) dihasilkan dari pemanasan batu kapur. Saat dicampur air jadi Ca(OH)₂ — bahan semen yang membangun peradaban manusia selama ribuan tahun.'},
+  {elems:['Fe','O'],product:'Fe₂O₃',pts:160,name:'Karat besi',fact:'Fe₂O₃ adalah karat besi — hasil oksidasi lambat besi dengan oksigen dan air. Proses ini melepas elektron dari Fe (korosi). Di Mars, Fe₂O₃ yang melimpah bikin planet itu berwarna merah!'},
+  {elems:['S','O'],product:'SO₂',pts:175,name:'Sulfur dioksida',fact:'SO₂ dihasilkan dari pembakaran bahan bakar fosil yang mengandung sulfur. Di atmosfer, SO₂ bereaksi dengan air jadi H₂SO₄ — hujan asam yang merusak ekosistem.'},
+  {elems:['K','O'],product:'K₂O',pts:165,name:'Kalium oksida',fact:'K₂O terbentuk saat kalium logam bereaksi dengan oksigen. Kalium adalah logam alkali yang sangat reaktif — bisa terbakar spontan di udara dan meledak jika kena air!'},
+  {elems:['Na','O'],product:'Na₂O',pts:170,name:'Natrium oksida',fact:'Na₂O terbentuk dari oksidasi natrium. Kalau kena air langsung jadi NaOH (soda api) yang sangat basa dan korosif. Ini kenapa logam alkali disimpan dalam minyak mineral.'},
+  {elems:['C','N'],product:'CN⁻',pts:220,name:'Sianida',fact:'Ion sianida CN⁻ sangat beracun karena mengikat besi dalam sitokrom c oksidase — enzim vital respirasi sel. Ironisnya, sianida juga dipakai di industri perhiasan untuk memurnikan emas.'},
+  {elems:['H','N'],product:'HNO₃',pts:210,name:'Asam nitrat',fact:'HNO₃ adalah asam kuat yang digunakan dalam pembuatan pupuk dan bahan peledak. Di tubuh, nitrogen dari protein dipecah jadi NH₃ lalu diubah hati menjadi urea untuk dibuang.'},
+  {elems:['Ca','Cl'],product:'CaCl₂',pts:185,name:'Kalsium klorida',fact:'CaCl₂ sangat higroskopis — menyerap uap air dari udara. Dipakai sebagai dehumidifier, pengawet makanan, dan pencair es di jalanan. Di sel tubuh, Ca²⁺ adalah sinyal penting untuk kontraksi otot.'},
+];
+
+const RXMAP={};
+REACTIONS.forEach(rx=>{
+  const k=rx.elems.slice().sort().join('|');
+  RXMAP[k]=rx;
+});
+
+function getRx(a,b){return RXMAP[[a,b].sort().join('|')]||null;}
+
+const LEVELS=[
+  {id:1,name:'H₂O & NaCl',moves:22,elems:['H','O','Na','Cl'],cols:6,rows:6,target:{reactions:5},obstacles:[]},
+  {id:2,name:'Karbon & Nitrogen',moves:20,elems:['H','O','C','N'],cols:6,rows:6,target:{reactions:6,score:1000},obstacles:[]},
+  {id:3,name:'Lab Berbatu',moves:18,elems:['H','O','Na','Cl','C'],cols:6,rows:7,target:{reactions:7},obstacles:[[2,2],[3,4]]},
+  {id:4,name:'Logam Alkali',moves:22,elems:['Na','Cl','Ca','K'],cols:7,rows:6,target:{reactions:8,score:1400},obstacles:[]},
+  {id:5,name:'Reaksi Besi',moves:20,elems:['Fe','O','S','C','N'],cols:7,rows:7,target:{reactions:9},obstacles:[[0,3],[6,3]]},
+  {id:6,name:'Full Periodik',moves:18,elems:['H','O','Na','Cl','C','N','Ca','Fe'],cols:7,rows:7,target:{reactions:10,score:2000},obstacles:[[2,2],[4,4],[2,4]]},
+  {id:7,name:'Chaos Lab',moves:16,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:7,rows:7,target:{reactions:12,score:2500},obstacles:[[3,0],[3,6],[0,3],[6,3]]},
+  {id:8,name:'Grand Synthesis',moves:20,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:8,rows:8,target:{reactions:15,score:3500},obstacles:[[0,0],[7,0],[0,7],[7,7],[3,3],[4,4]]},
+];
+
+const SAVE='chemcrush_v1';
+const G={
+  lv:null,board:[],sel:null,score:0,moves:0,reactions:0,busy:false,
+  stars:{},scores:{},isWin:false,
+
+  save(){try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores}));}catch(e){}},
+  load(){try{const d=JSON.parse(localStorage.getItem(SAVE)||'{}');this.stars=d.stars||{};this.scores=d.scores||{};}catch(e){}},
+
+  toMap(){
+    document.getElementById('s-game').classList.remove('on');
+    document.getElementById('modal-wrap').classList.remove('on');
+    document.getElementById('s-map').classList.add('on');
+    this.buildMap();
+  },
+
+  buildMap(){
+    const g=document.getElementById('map-grid');g.innerHTML='';
+    const maxU=Math.max(1,...Object.keys(this.stars).map(Number).filter(k=>this.stars[k]>0).map(k=>k+1));
+    LEVELS.forEach(lv=>{
+      const done=(this.stars[lv.id]||0)>0;
+      const unlocked=lv.id<=maxU;
+      const cur=lv.id===maxU&&!done;
+      const cls=done?'done':cur?'current':unlocked?'unlocked':'';
+      const stars=done?'★'.repeat(this.stars[lv.id])+'☆'.repeat(3-this.stars[lv.id]):'';
+      const nd=document.createElement('div');nd.className='lvl-node';
+      nd.innerHTML=`<div class="lvl-bubble ${cls}" onclick="G.play(${lv.id})"><span>${lv.id}</span><span style="font-size:9px;opacity:0.7">${lv.elems.slice(0,2).join('·')}</span></div><div class="lvl-stars">${stars}</div><div class="lv-name">${lv.name}</div>`;
+      if(!unlocked) nd.querySelector('.lvl-bubble').onclick=null;
+      g.appendChild(nd);
+    });
+  },
+
+  play(id){
+    const lv=LEVELS.find(l=>l.id===id);if(!lv)return;
+    const maxU=Math.max(1,...Object.keys(this.stars).map(Number).filter(k=>this.stars[k]>0).map(k=>k+1));
+    if(lv.id>maxU)return;
+    this.lv=lv;this.score=0;this.moves=lv.moves;this.reactions=0;this.sel=null;this.busy=false;
+    this.initBoard();this.renderBoard();this.updateHUD();this.buildTargetBar();
+    document.getElementById('s-map').classList.remove('on');
+    document.getElementById('s-game').classList.add('on');
+    document.getElementById('modal-wrap').classList.remove('on');
+    document.getElementById('h-lv').textContent='Level '+lv.id+' · '+lv.name;
+  },
+
+  initBoard(){
+    const lv=this.lv;
+    const obsSet=new Set(lv.obstacles.map(([c,r])=>r+','+c));
+    this.board=[];
+    for(let r=0;r<lv.rows;r++){
+      this.board[r]=[];
+      for(let c=0;c<lv.cols;c++){
+        this.board[r][c]={
+          elem:obsSet.has(r+','+c)?null:this.rndElem(),
+          obstacle:obsSet.has(r+','+c),
+        };
+      }
+    }
+  },
+
+  rndElem(){
+    const pool=this.lv.elems;
+    return pool[Math.floor(Math.random()*pool.length)];
+  },
+
+  renderBoard(){
+    const lv=this.lv,b=this.board;
+    const bd=document.getElementById('board');
+    const sz=Math.min(46,Math.floor((340)/lv.cols));
+    bd.style.gridTemplateColumns=`repeat(${lv.cols},${sz}px)`;
+    bd.innerHTML='';
+    for(let r=0;r<lv.rows;r++){
+      for(let c=0;c<lv.cols;c++){
+        const cell=b[r][c];
+        const div=document.createElement('div');
+        div.className='cell';div.dataset.r=r;div.dataset.c=c;
+        div.style.width=sz+'px';div.style.height=sz+'px';
+        if(cell.obstacle){
+          div.classList.add('obstacle');
+          div.innerHTML='<span style="font-size:18px">🧱</span>';
+        } else if(cell.elem){
+          const el=ELEMENTS[cell.elem];
+          div.dataset.elem=cell.elem;
+          div.innerHTML=`<div class="cell-symbol" style="color:${el.color}">${el.sym}</div><div class="cell-name" style="color:${el.color}">${el.name.substring(0,6)}</div>`;
+          if(this.sel&&this.sel[0]===r&&this.sel[1]===c) div.classList.add('selected');
+          div.onclick=()=>this.tap(r,c);
+        } else {
+          div.classList.add('inert-cell');
+        }
+        bd.appendChild(div);
+      }
+    }
+  },
+
+  tap(r,c){
+    if(this.busy)return;
+    const cell=this.board[r][c];
+    if(!cell.elem||cell.obstacle)return;
+    if(!this.sel){this.sel=[r,c];this.renderBoard();return;}
+    const[sr,sc]=this.sel;
+    if(sr===r&&sc===c){this.sel=null;this.renderBoard();return;}
+    if(Math.abs(sr-r)+Math.abs(sc-c)===1){
+      this.sel=null;
+      this.trySwap(sr,sc,r,c);
+    } else {
+      this.sel=[r,c];this.renderBoard();
+    }
+  },
+
+  trySwap(r1,c1,r2,c2){
+    const b=this.board;
+    const a=b[r1][c1].elem,bE=b[r2][c2].elem;
+    const rx=getRx(a,bE);
+    if(!rx){
+      this.noReact(r1,c1,r2,c2);return;
+    }
+    this.moves--;
+    this.busy=true;
+    b[r1][c1].elem=null;b[r2][c2].elem=null;
+    this.renderBoard();
+    this.reactions++;
+    this.score+=rx.pts;
+    if(rx.pts>=200) this.score+=50;
+    this.floatPts(rx.pts,r1,c1);
+    this.showFact(rx);
+    setTimeout(()=>{
+      this.gravity();this.fillBoard();
+      this.renderBoard();this.updateHUD();this.buildTargetBar();
+      this.busy=false;
+      this.checkEnd();
+    },600);
+  },
+
+  noReact(r1,c1,r2,c2){
+    const b=this.board;
+    [b[r1][c1].elem,b[r2][c2].elem]=[b[r2][c2].elem,b[r1][c1].elem];
+    this.moves--;
+    this.renderBoard();this.updateHUD();
+    this.showNoReact();
+    if(this.moves<=0) this.checkEnd();
+  },
+
+  gravity(){
+    const lv=this.lv,b=this.board;
+    for(let c=0;c<lv.cols;c++){
+      let empty=lv.rows-1;
+      for(let r=lv.rows-1;r>=0;r--){
+        if(b[r][c].obstacle){empty=r-1;continue;}
+        if(b[r][c].elem){
+          if(r!==empty){b[empty][c].elem=b[r][c].elem;b[r][c].elem=null;}
+          empty--;
+        }
+      }
+    }
+  },
+
+  fillBoard(){
+    const lv=this.lv,b=this.board;
+    for(let r=0;r<lv.rows;r++)
+      for(let c=0;c<lv.cols;c++)
+        if(!b[r][c].obstacle&&!b[r][c].elem)
+          b[r][c].elem=this.rndElem();
+  },
+
+  floatPts(pts,r,c){
+    const bd=document.getElementById('board');
+    const rect=bd.getBoundingClientRect();
+    const sz=Math.min(46,Math.floor(340/this.lv.cols));
+    const el=document.createElement('div');
+    el.className='float-txt';
+    el.textContent='+'+pts;
+    el.style.left=(rect.left-bd.parentElement.getBoundingClientRect().left+c*sz+sz/2-16)+'px';
+    el.style.top=(r*sz+20)+'px';
+    document.getElementById('fact-zone').appendChild(el);
+    setTimeout(()=>el.remove(),950);
+  },
+
+  showFact(rx){
+    const zone=document.getElementById('fact-zone');
+    const old=zone.querySelector('.fact-card');if(old)old.remove();
+    const div=document.createElement('div');div.className='fact-card';
+    div.innerHTML=`<div class="fact-reaction">${rx.elems.join(' + ')} → ${rx.product}</div><div class="fact-title">⚗️ ${rx.name}</div><div class="fact-body">${rx.fact}</div>`;
+    zone.appendChild(div);
+    setTimeout(()=>{if(div.parentNode)div.remove();},4500);
+  },
+
+  showNoReact(){
+    const zone=document.getElementById('fact-zone');
+    const old=zone.querySelector('.fact-card');if(old)old.remove();
+    const div=document.createElement('div');div.className='fact-card';
+    div.style.borderColor='rgba(224,85,85,0.5)';div.style.background='#2a1a1a';
+    div.innerHTML=`<div class="fact-reaction" style="color:#e08080">Tidak bereaksi!</div><div class="fact-body" style="color:rgba(255,255,255,0.6)">Elemen ini tidak membentuk reaksi langsung. Swap tetap jalan — cari pasangan yang bereaksi!</div>`;
+    zone.appendChild(div);
+    setTimeout(()=>{if(div.parentNode)div.remove();},2500);
+  },
+
+  updateHUD(){
+    document.getElementById('h-moves').textContent=this.moves;
+    document.getElementById('h-score').textContent=this.score.toLocaleString();
+    document.getElementById('h-rx').textContent=this.reactions;
+    const t=this.lv.target;
+    let pct=0;
+    const rxGoal=t.reactions||0,scoreGoal=t.score||0;
+    if(rxGoal&&!scoreGoal) pct=Math.min(100,this.reactions/rxGoal*100);
+    else if(scoreGoal&&!rxGoal) pct=Math.min(100,this.score/scoreGoal*100);
+    else pct=Math.min(100,Math.min(this.reactions/rxGoal,this.score/scoreGoal)*100);
+    document.getElementById('prog').style.width=Math.round(pct)+'%';
+  },
+
+  buildTargetBar(){
+    const t=this.lv.target;
+    const bar=document.getElementById('target-bar');bar.innerHTML='';
+    const add=(color,text,done)=>{
+      const p=document.createElement('div');p.className='target-pill'+(done?' done':'');
+      p.innerHTML=`<div class="target-dot" style="background:${color}"></div>${text}`;
+      bar.appendChild(p);
+    };
+    if(t.reactions) add('#a060f0',`${this.reactions}/${t.reactions} reaksi`,this.reactions>=t.reactions);
+    if(t.score) add('#f0c040',`${this.score.toLocaleString()}/${t.score.toLocaleString()} skor`,this.score>=t.score);
+  },
+
+  checkEnd(){
+    const t=this.lv.target;
+    const rxOk=!t.reactions||(this.reactions>=t.reactions);
+    const scOk=!t.score||(this.score>=t.score);
+    if(rxOk&&scOk){this.win();return;}
+    if(this.moves<=0){this.lose();}
+  },
+
+  win(){
+    this.busy=true;
+    const lv=this.lv;
+    const movesLeft=this.moves;
+    let stars=movesLeft>=Math.floor(lv.moves*0.5)?3:movesLeft>=Math.floor(lv.moves*0.2)?2:1;
+    const prev=this.stars[lv.id]||0;
+    if(stars>prev)this.stars[lv.id]=stars;
+    if(!this.scores[lv.id]||this.score>this.scores[lv.id])this.scores[lv.id]=this.score;
+    this.save();
+    const isLast=lv.id>=LEVELS.length;
+    const rx=REACTIONS[Math.floor(Math.random()*REACTIONS.length)];
+    this.isWin=true;
+    this.showModal('🎉','★'.repeat(stars)+'☆'.repeat(3-stars),'Sintesis Berhasil!',
+      `${this.score.toLocaleString()} poin · ${this.reactions} reaksi`,
+      isLast?'Semua level selesai! Kamu sudah jadi ahli kimia 🏆':'Bagus! Kamu mengerti reaksi kimia dengan baik.',
+      `Fun fact: ${rx.elems.join(' + ')} → ${rx.product} — ${rx.fact}`,
+      isLast?'Main Lagi':'Level Berikutnya','Ulang Level');
+  },
+
+  lose(){
+    this.busy=true;this.isWin=false;
+    this.showModal('😰','','Moves Habis!',
+      `${this.score.toLocaleString()} poin · ${this.reactions} reaksi`,
+      `Target: ${this.lv.target.reactions||0} reaksi. Fokus cari pasangan yang bisa bereaksi — jangan swap sembarangan!`,
+      'Tips: '+REACTIONS[Math.floor(Math.random()*REACTIONS.length)].elems.join(' + ')+' bisa bereaksi!',
+      'Coba Lagi','Ke Map');
+  },
+
+  showModal(icon,stars,title,score,sub,fact,b1,b2){
+    document.getElementById('m-icon').textContent=icon;
+    document.getElementById('m-stars').textContent=stars;
+    document.getElementById('m-title').textContent=title;
+    document.getElementById('m-score').textContent=score;
+    document.getElementById('m-sub').textContent=sub;
+    document.getElementById('m-fact').textContent=fact;
+    document.getElementById('m-btn1').textContent=b1;
+    document.getElementById('m-btn2').textContent=b2;
+    document.getElementById('modal-wrap').classList.add('on');
+  },
+
+  mb1(){
+    document.getElementById('modal-wrap').classList.remove('on');
+    if(this.isWin){
+      const next=LEVELS.find(l=>l.id===this.lv.id+1);
+      if(next)this.play(next.id);else this.toMap();
+    } else {this.play(this.lv.id);}
+  },
+  mb2(){
+    document.getElementById('modal-wrap').classList.remove('on');
+    if(this.isWin)this.play(this.lv.id);else this.toMap();
+  },
+
+  boost(type){
+    if(this.busy)return;
+    if(type==='hint'){
+      const lv=this.lv,b=this.board;
+      for(let r=0;r<lv.rows;r++) for(let c=0;c<lv.cols;c++){
+        if(!b[r][c].elem||b[r][c].obstacle)continue;
+        const dirs=[[0,1],[1,0]];
+        for(const[dr,dc]of dirs){
+          const nr=r+dr,nc=c+dc;
+          if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
+          if(!b[nr][nc].elem||b[nr][nc].obstacle)continue;
+          const rx=getRx(b[r][c].elem,b[nr][nc].elem);
+          if(rx){
+            const el=document.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+            const el2=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
+            if(el)el.classList.add('hint-glow');if(el2)el2.classList.add('hint-glow');
+            setTimeout(()=>{el?.classList.remove('hint-glow');el2?.classList.remove('hint-glow');},1200);
+            return;
+          }
+        }
+      }
+      this.showNoReact();
+    }
+    if(type==='shuffle'){
+      const lv=this.lv,b=this.board;
+      const pool=[];
+      for(let r=0;r<lv.rows;r++) for(let c=0;c<lv.cols;c++) if(!b[r][c].obstacle&&b[r][c].elem) pool.push(b[r][c].elem);
+      pool.sort(()=>Math.random()-.5);let i=0;
+      for(let r=0;r<lv.rows;r++) for(let c=0;c<lv.cols;c++) if(!b[r][c].obstacle&&b[r][c].elem) b[r][c].elem=pool[i++];
+      this.renderBoard();
+    }
+    if(type==='catalyst'){
+      const lv=this.lv,b=this.board;
+      const cands=[];
+      for(let r=0;r<lv.rows;r++) for(let c=0;c<lv.cols;c++) if(!b[r][c].obstacle&&b[r][c].elem) cands.push([r,c]);
+      cands.sort(()=>Math.random()-.5);
+      cands.slice(0,3).forEach(([r,c])=>{
+        const pool=lv.elems;b[r][c].elem=pool[Math.floor(Math.random()*pool.length)];
+      });
+      this.renderBoard();
+      const zone=document.getElementById('fact-zone');
+      const div=document.createElement('div');div.className='fact-card';
+      div.innerHTML=`<div class="fact-reaction" style="color:#a060f0">⚡ Katalis Aktif!</div><div class="fact-body">3 elemen random diganti. Katalis dalam kimia nyata mempercepat reaksi tanpa ikut bereaksi — seperti enzim dalam tubuhmu!</div>`;
+      zone.appendChild(div);setTimeout(()=>div.remove(),3000);
+    }
+  },
+};
+
+G.load();G.buildMap();
+</script>
