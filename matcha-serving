@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matcha Serving MVP</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f1f7ff;margin:0;padding:20px}
+    .wrap{max-width:1000px;margin:auto;background:#fff;border-radius:14px;padding:16px}
+    .hud{display:flex;gap:16px;flex-wrap:wrap;font-weight:bold}
+    .customers{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0}
+    .c{border:2px solid #cfd9ea;border-radius:10px;padding:10px;background:#f8fbff}
+    .bar{height:8px;background:#eee;border-radius:6px;overflow:hidden}
+    .fill{height:100%;background:#75b84f}
+    button{padding:10px 14px;border:none;border-radius:10px;background:#5a9bd8;color:#fff;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>👥 Matcha Serving (MVP)</h2>
+    <p>Versi sederhana: 1 menu saja (Iced Matcha). Layani 8 customer sebelum waktu habis.</p>
+    <div class="hud">
+      <div>Skor: <span id="score">0</span></div>
+      <div>Served: <span id="served">0</span>/8</div>
+      <div>Waktu: <span id="time">60</span>s</div>
+      <div>Stock Minuman Siap: <span id="stock">0</span></div>
+    </div>
+
+    <div style="margin:10px 0;display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="brew()">Buat Iced Matcha (+1 stock)</button>
+      <button onclick="location.href='index.html'">Kembali</button>
+    </div>
+
+    <div class="customers" id="customers"></div>
+  </div>
+
+<script>
+let score=0, served=0, time=60, stock=0;
+let customers=[]; let nextId=1;
+function spawn(){
+  if(customers.length>=2 || served>=8) return;
+  customers.push({id:nextId++,patience:100});
+  render();
+}
+function brew(){stock++;render();}
+function serve(id){
+  if(stock<=0) return alert('Stock kosong! Klik "Buat Iced Matcha" dulu.');
+  stock--; score+=10; served++;
+  customers=customers.filter(c=>c.id!==id);
+  render();
+  if(served>=8) end(true);
+}
+function tick(){
+  time--; if(time<=0) return end(false);
+  customers=customers.map(c=>({...c,patience:c.patience-8})).filter(c=>c.patience>0);
+  render();
+}
+function render(){
+  scoreEl.textContent=score; servedEl.textContent=served; timeEl.textContent=time; stockEl.textContent=stock;
+  customersEl.innerHTML=customers.map(c=>`<div class='c'><strong>Customer #${c.id}</strong><p>Order: Iced Matcha</p><div class='bar'><div class='fill' style='width:${c.patience}%'></div></div><br><button onclick='serve(${c.id})'>Serve</button></div>`).join('');
+}
+function end(win){
+  localStorage.setItem('matchaScore',String(score));
+  localStorage.setItem('matchaWin',win?'1':'0');
+  location.href='matcha-result.html';
+}
+const scoreEl=document.getElementById('score');
+const servedEl=document.getElementById('served');
+const timeEl=document.getElementById('time');
+const stockEl=document.getElementById('stock');
+const customersEl=document.getElementById('customers');
+setInterval(spawn,2500); setInterval(tick,1000); render();
+</script>
+</body>
+</html>
