@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Matcha Result</title>
   <style>
-    body{font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#0f172a;color:#fff}
-    .box{background:#1e293b;padding:24px;border-radius:16px;max-width:480px;text-align:center}
-    a,button{display:inline-block;margin:8px;padding:10px 14px;border-radius:10px;border:none;text-decoration:none;background:#84cc16;color:#111;font-weight:bold;cursor:pointer}
+    body{font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#10261c;color:#fff}
+    .box{background:#1c3a2b;padding:24px;border-radius:16px;max-width:560px;text-align:center;border:1px solid rgba(255,255,255,.15)}
+    a{display:inline-block;margin:8px;padding:10px 14px;border-radius:10px;text-decoration:none;background:#84cc16;color:#112;font-weight:700}
+    .small{opacity:.85}
   </style>
 </head>
 <body>
@@ -15,15 +16,19 @@
     <h1 id="title">Hasil Matcha Stage</h1>
     <p id="desc"></p>
     <p>Skor Akhir: <strong id="score"></strong></p>
-    <a href="matcha-serving.html">Main Lagi</a>
+    <p class="small" id="next"></p>
+    <a href="matcha-serving.html">Main Serving Lagi</a>
+    <a href="matcha-cooking.html">Ulang Cooking Quiz</a>
     <a href="index.html">Kembali ke Menu</a>
   </div>
 <script>
 const win=localStorage.getItem('matchaWin')==='1';
-const score=localStorage.getItem('matchaScore')||'0';
+const score=Number(localStorage.getItem('matchaScore')||0);
+const pass=localStorage.getItem('matchaCookingPass')==='1';
 document.getElementById('title').textContent=win?'🎉 YOU WIN':'😢 TIME UP';
-document.getElementById('desc').textContent=win?'Mantap! Kamu siap lanjut ke restoran berikutnya.':'Bagus! Coba lagi untuk tingkatkan kecepatan serving.';
+document.getElementById('desc').textContent=win?'Mantap! Stage Matcha berhasil kamu lewati.':'Belum lolos. Fokus jaga stock dan serve customer yang patience-nya kritis dulu.';
 document.getElementById('score').textContent=score;
+document.getElementById('next').textContent=pass&&win?'Siap lanjut: berikutnya kita bisa bikin Restoran Bakpao 🎯':'Tips: selesaikan cooking quiz + serving untuk progress penuh.';
 </script>
 </body>
 </html>
