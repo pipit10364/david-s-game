@@ -580,6 +580,279 @@ const G={
     }
   },
 
+  rndElem(){return this.lv.elems[Math.floor(Math.rando  width:60px;height:60px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Fredoka One',cursive;font-size:14px;
+  border:2px solid var(--border);background:var(--panel2);color:var(--muted);
+  line-height:1.2;transition:transform .12s;cursor:default;
+}
+.lvl-bubble.unlocked,.lvl-bubble.current,.lvl-bubble.done{cursor:pointer}
+.lvl-bubble:active{transform:scale(0.91)}
+.lvl-bubble.unlocked{background:#e6f8ec;border-color:#70c880;color:#1a6030}
+.lvl-bubble.current{background:#e4eeff;border-color:#6090e0;color:#1a3888;animation:boblv 2s ease-in-out infinite}
+.lvl-bubble.done{background:#e4f2fc;border-color:#60aad0;color:#1a4870}
+.lvl-stars{font-size:10px;letter-spacing:1px;color:var(--gold)}
+.lv-name{font-size:9px;color:var(--muted);text-align:center;max-width:68px;line-height:1.3;font-weight:800}
+@keyframes boblv{0%,100%{box-shadow:0 0 0 0 rgba(96,144,224,0.35)}50%{box-shadow:0 0 0 8px rgba(96,144,224,0)}}
+
+/* ══ GAME ══ */
+#s-game{background:var(--sky);padding:0;position:relative}
+
+.hud{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(80,160,210,0.08)}
+.hud-block{display:flex;flex-direction:column;align-items:center;gap:1px}
+.hud-val{font-family:'Fredoka One',cursive;font-size:24px;color:var(--ink);line-height:1}
+.hud-lbl{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
+.hud-lv{font-size:11px;color:var(--ink2);font-weight:800;text-align:center;max-width:140px;line-height:1.3}
+
+.target-bar{display:flex;gap:6px;padding:6px 12px;width:100%;overflow-x:auto;background:var(--panel2);border-bottom:1px solid var(--border)}
+.target-pill{display:flex;align-items:center;gap:5px;background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:4px 12px;font-size:11px;white-space:nowrap;font-weight:800;color:var(--ink2)}
+.target-pill.done{opacity:0.4;text-decoration:line-through}
+.target-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.prog-wrap{width:100%;height:6px;background:var(--sky2)}
+.prog-fill{height:100%;background:linear-gradient(90deg,#50c880,#a0e840);transition:width .4s ease}
+
+.board-area{display:flex;align-items:center;justify-content:center;padding:12px 8px;flex:1;position:relative}
+.board{display:grid;gap:4px;padding:10px;background:var(--panel);border-radius:18px;border:1.5px solid var(--border);box-shadow:var(--shadow)}
+
+/* ── TILES ── */
+.cell{
+  border-radius:11px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;
+  border:2px solid transparent;
+  transition:transform .1s;
+  box-shadow:0 2px 5px rgba(0,0,0,0.07);
+}
+.cell:active{transform:scale(0.9)}
+.cell.selected{transform:scale(1.1);z-index:2;outline:3px solid var(--gold);outline-offset:2px;box-shadow:0 4px 14px rgba(212,138,8,0.3)}
+.cell.hint-glow{animation:hintpls .85s ease infinite}
+.cell.obstacle{cursor:default;background:#ece4d8;border-color:#c8b898;box-shadow:none}
+.cell.inert-cell{background:var(--sky2);border-color:var(--border);box-shadow:none;cursor:default}
+@keyframes hintpls{0%,100%{box-shadow:0 0 0 0 rgba(212,138,8,0.5)}50%{box-shadow:0 0 0 6px rgba(212,138,8,0)}}
+
+.cell[data-elem="H"]{background:#ddeeff;border-color:#88bbee}
+.cell[data-elem="H"] .cs{color:#1a5898}.cell[data-elem="H"] .cn{color:#4488cc}
+.cell[data-elem="O"]{background:#fde8e8;border-color:#f09090}
+.cell[data-elem="O"] .cs{color:#c02020}.cell[data-elem="O"] .cn{color:#d05050}
+.cell[data-elem="Na"]{background:#fdf6d8;border-color:#e8c840}
+.cell[data-elem="Na"] .cs{color:#8a6200}.cell[data-elem="Na"] .cn{color:#aa8020}
+.cell[data-elem="Cl"]{background:#e2f8e2;border-color:#70cc70}
+.cell[data-elem="Cl"] .cs{color:#1a6a1a}.cell[data-elem="Cl"] .cn{color:#3a8a3a}
+.cell[data-elem="C"]{background:#ececec;border-color:#aaaaaa}
+.cell[data-elem="C"] .cs{color:#333333}.cell[data-elem="C"] .cn{color:#666666}
+.cell[data-elem="N"]{background:#ece8ff;border-color:#aa88ee}
+.cell[data-elem="N"] .cs{color:#4a1a9a}.cell[data-elem="N"] .cn{color:#7040ba}
+.cell[data-elem="Ca"]{background:#fff0e0;border-color:#f0a850}
+.cell[data-elem="Ca"] .cs{color:#8a4000}.cell[data-elem="Ca"] .cn{color:#aa6020}
+.cell[data-elem="Fe"]{background:#fde8d8;border-color:#d08050}
+.cell[data-elem="Fe"] .cs{color:#7a2000}.cell[data-elem="Fe"] .cn{color:#9a4020}
+.cell[data-elem="S"]{background:#fffbd0;border-color:#d8c020}
+.cell[data-elem="S"] .cs{color:#6a5000}.cell[data-elem="S"] .cn{color:#8a7010}
+.cell[data-elem="K"]{background:#e8e8ff;border-color:#9090e0}
+.cell[data-elem="K"] .cs{color:#1a1a88}.cell[data-elem="K"] .cn{color:#4040aa}
+
+.cs{font-size:16px;font-weight:900;line-height:1}
+.cn{font-size:8px;font-weight:800;line-height:1;margin-top:1px;opacity:0.8}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{display:flex;gap:6px;padding:8px 12px;width:100%;background:var(--panel);border-top:1.5px solid var(--border);justify-content:center;flex-wrap:wrap}
+.btn-sm{background:var(--panel2);border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;font-size:11px;font-weight:800;cursor:pointer;color:var(--ink2);font-family:'Nunito',sans-serif;transition:transform .1s,background .1s}
+.btn-sm:hover{background:var(--sky2)}
+.btn-sm:active{transform:scale(0.93)}
+.btn-back{color:var(--muted)}
+
+/* ── FACT CARD ── */
+.fact-zone{position:fixed;bottom:72px;left:8px;right:8px;z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center}
+.fact-card{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;animation:slideUp .3s ease;box-shadow:0 4px 20px rgba(80,160,210,0.18);width:100%;max-width:420px}
+.fact-reaction{font-size:15px;font-weight:900;color:var(--gold)}
+.fact-title{font-size:11px;font-weight:800;color:var(--ink2)}
+.fact-body{font-size:10.5px;color:var(--ink2);line-height:1.6;opacity:0.85}
+.fact-noreact{border-color:#f0a0a0;background:#fff5f5}
+.fact-noreact .fact-reaction{color:#c04040}
+@keyframes slideUp{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── FLOAT TEXT ── */
+.float-txt{position:absolute;font-size:17px;font-weight:900;pointer-events:none;animation:floatUp .9s ease forwards;color:var(--gold);font-family:'Nunito',sans-serif;z-index:60;text-shadow:0 1px 4px rgba(0,0,0,0.12)}
+@keyframes floatUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-48px);opacity:0}}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(180,220,240,0.75);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-bg.on{display:flex}
+.modal{background:var(--panel);border:1.5px solid var(--border);border-radius:24px;padding:26px 22px;text-align:center;width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;box-shadow:0 12px 48px rgba(80,150,200,0.22)}
+.modal-icon{font-size:56px}
+.modal-stars{font-size:36px;letter-spacing:6px;color:var(--gold)}
+.modal-title{font-family:'Fredoka One',cursive;font-size:26px;color:var(--ink)}
+.modal-score{font-family:'Fredoka One',cursive;font-size:20px;color:var(--gold)}
+.modal-sub{font-size:12px;color:var(--ink2);line-height:1.6}
+.modal-fact{background:var(--sky);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--ink2);line-height:1.55;text-align:left;font-weight:700}
+.btn-modal{border:none;border-radius:50px;padding:13px 0;font-family:'Fredoka One',cursive;font-size:18px;cursor:pointer;width:100%;transition:transform .12s}
+.btn-modal:active{transform:scale(0.96)}
+.btn-p{background:linear-gradient(135deg,#40b060,#60d080);color:#fff}
+.btn-s{background:var(--sky2);color:var(--ink);border:1.5px solid var(--border)}
+</style>
+</head>
+<body>
+
+<!-- MAP -->
+<div id="s-map" class="screen on">
+  <div class="map-header">
+    <div class="map-title">⚗️ Chem Crush</div>
+    <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong> — bukan yang warnanya sama!</div>
+    <div class="map-badge">14 reaksi kimia nyata · 8 level</div>
+  </div>
+  <div class="legend-wrap">
+    <div class="leg-item"><div class="leg-dot" style="background:#88bbee;border:1.5px solid #88bbee"></div>H</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#f09090"></div>O</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#aaaaaa"></div>C</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#70cc70"></div>Cl</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e8c840"></div>Na</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#aa88ee"></div>N</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#f0a850"></div>Ca</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d08050"></div>Fe</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d8c020"></div>S</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#9090e0"></div>K</div>
+  </div>
+  <div class="lvl-grid" id="map-grid"></div>
+</div>
+
+<!-- GAME -->
+<div id="s-game" class="screen">
+  <div class="hud">
+    <div class="hud-block">
+      <div class="hud-val" id="h-moves">20</div>
+      <div class="hud-lbl">Moves</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-lv" id="h-lv">Level 1</div>
+      <div class="hud-val" id="h-score">0</div>
+      <div class="hud-lbl">Skor</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-val" id="h-rx">0</div>
+      <div class="hud-lbl">Reaksi</div>
+    </div>
+  </div>
+  <div class="target-bar" id="target-bar"></div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div class="board-area" id="board-area"><div class="board" id="board"></div></div>
+  <div class="fact-zone" id="fact-zone"></div>
+  <div class="bottom-bar">
+    <button class="btn-sm" onclick="G.boost('hint')">💡 Hint</button>
+    <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle</button>
+    <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst</button>
+    <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-wrap">
+  <div class="modal">
+    <div class="modal-icon" id="m-icon">🎉</div>
+    <div class="modal-stars" id="m-stars"></div>
+    <div class="modal-title" id="m-title">Sintesis Berhasil!</div>
+    <div class="modal-score" id="m-score"></div>
+    <div class="modal-sub" id="m-sub"></div>
+    <div class="modal-fact" id="m-fact"></div>
+    <button class="btn-modal btn-p" id="m-btn1" onclick="G.mb1()">Lanjut</button>
+    <button class="btn-modal btn-s" id="m-btn2" onclick="G.mb2()">Ulang</button>
+  </div>
+</div>
+
+<script>
+const ELEMENTS={
+  H:{sym:'H',name:'Hidrogen'},O:{sym:'O',name:'Oksigen'},
+  Na:{sym:'Na',name:'Natrium'},Cl:{sym:'Cl',name:'Klorin'},
+  C:{sym:'C',name:'Karbon'},N:{sym:'N',name:'Nitrogen'},
+  Ca:{sym:'Ca',name:'Kalsium'},Fe:{sym:'Fe',name:'Besi'},
+  S:{sym:'S',name:'Sulfur'},K:{sym:'K',name:'Kalium'},
+};
+
+const REACTIONS=[
+  {elems:['H','O'],product:'H₂O',pts:150,name:'Air',fact:'H₂O terbentuk dari 2 atom hidrogen + 1 oksigen. Ikatan kovalen polar-nya bikin air bisa melarutkan hampir segalanya — itulah kenapa air disebut "universal solvent".'},
+  {elems:['Na','Cl'],product:'NaCl',pts:180,name:'Garam dapur',fact:'NaCl terbentuk dari reaksi hebat antara logam Na yang meledak di air dan gas Cl₂ yang beracun. Hasilnya: kristal yang aman dimakan dan bikin masakan enak!'},
+  {elems:['C','O'],product:'CO₂',pts:160,name:'Karbon dioksida',fact:'CO₂ dihasilkan dari pembakaran karbon dengan oksigen — juga produk respirasi selular. Tiap napas yang kamu keluarkan mengandung CO₂ hasil metabolisme tubuhmu.'},
+  {elems:['N','H'],product:'NH₃',pts:200,name:'Amonia',fact:'NH₃ penting dalam biosintesis protein. Proses Haber-Bosch yang mensintesisnya dari N₂+H₂ adalah penemuan kimia terpenting abad 20 — memungkinkan pupuk untuk miliaran orang.'},
+  {elems:['Ca','O'],product:'CaO',pts:170,name:'Kapur bakar',fact:'CaO dari pemanasan batu kapur. Dicampur air jadi Ca(OH)₂ — bahan semen yang membangun peradaban manusia ribuan tahun.'},
+  {elems:['Fe','O'],product:'Fe₂O₃',pts:160,name:'Karat besi',fact:'Fe₂O₃ adalah karat besi, hasil oksidasi lambat. Di Mars, Fe₂O₃ yang melimpah bikin planet itu berwarna merah — Mars sejatinya adalah planet yang sedang berkarat!'},
+  {elems:['S','O'],product:'SO₂',pts:175,name:'Sulfur dioksida',fact:'SO₂ dari pembakaran bahan bakar fosil. Di atmosfer bereaksi jadi H₂SO₄ — hujan asam yang merusak hutan, danau, dan bangunan bersejarah.'},
+  {elems:['K','O'],product:'K₂O',pts:165,name:'Kalium oksida',fact:'Kalium sangat reaktif — bisa terbakar spontan di udara dan meledak jika kena air. Itulah kenapa logam alkali disimpan dalam minyak mineral.'},
+  {elems:['Na','O'],product:'Na₂O',pts:170,name:'Natrium oksida',fact:'Na₂O kena air langsung jadi NaOH (soda api) yang sangat korosif. Dipakai untuk membuat sabun, kertas, dan memurnikan aluminium.'},
+  {elems:['C','N'],product:'CN⁻',pts:220,name:'Sianida',fact:'Ion CN⁻ sangat beracun — blokir sitokrom c oksidase, enzim vital respirasi sel. Ironisnya, dipakai industri perhiasan untuk memurnikan emas.'},
+  {elems:['H','N'],product:'HNO₃',pts:210,name:'Asam nitrat',fact:'HNO₃ digunakan dalam pembuatan pupuk dan bahan peledak. Di tubuh, nitrogen dari protein dipecah jadi NH₃ lalu diubah hati menjadi urea untuk dibuang.'},
+  {elems:['Ca','Cl'],product:'CaCl₂',pts:185,name:'Kalsium klorida',fact:'CaCl₂ sangat higroskopis — menyerap uap air dari udara. Di sel tubuh, Ca²⁺ adalah sinyal penting untuk kontraksi otot dan transmisi sinyal saraf.'},
+  {elems:['Fe','S'],product:'FeS',pts:175,name:'Besi sulfida',fact:'FeS terbentuk dari reaksi langsung besi dan sulfur saat dipanaskan. Mineral ini banyak ditemukan di kerak bumi dan diyakini ada di inti bumi!'},
+  {elems:['K','Cl'],product:'KCl',pts:180,name:'Kalium klorida',fact:'KCl digunakan sebagai pengganti garam bagi penderita hipertensi. Ion K⁺ sangat vital mengatur ritme detak jantung dan fungsi otot.'},
+];
+
+const RXMAP={};
+REACTIONS.forEach(rx=>{RXMAP[rx.elems.slice().sort().join('|')]=rx;});
+function getRx(a,b){return RXMAP[[a,b].sort().join('|')]||null;}
+
+const LEVELS=[
+  {id:1,name:'H₂O & NaCl',moves:28,elems:['H','O','Na','Cl'],cols:6,rows:6,target:{reactions:5},obstacles:[]},
+  {id:2,name:'Karbon Masuk',moves:28,elems:['H','O','C','N'],cols:6,rows:6,target:{reactions:6,score:900},obstacles:[]},
+  {id:3,name:'Lab Berbatu',moves:28,elems:['H','O','Na','Cl','C'],cols:6,rows:7,target:{reactions:7},obstacles:[[2,2],[3,4]]},
+  {id:4,name:'Logam Alkali',moves:30,elems:['Na','Cl','Ca','K'],cols:7,rows:6,target:{reactions:8,score:1400},obstacles:[]},
+  {id:5,name:'Reaksi Besi',moves:28,elems:['Fe','O','S','C','N'],cols:7,rows:7,target:{reactions:9},obstacles:[[0,3],[6,3]]},
+  {id:6,name:'Full Periodik',moves:30,elems:['H','O','Na','Cl','C','N','Ca','Fe'],cols:7,rows:7,target:{reactions:10,score:2000},obstacles:[[2,2],[4,4],[2,4]]},
+  {id:7,name:'Chaos Lab',moves:28,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:7,rows:7,target:{reactions:12,score:2500},obstacles:[[3,0],[3,6],[0,3],[6,3]]},
+  {id:8,name:'Grand Synthesis',moves:32,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:8,rows:8,target:{reactions:15,score:3500},obstacles:[[0,0],[7,0],[0,7],[7,7],[3,3],[4,4]]},
+];
+
+const SAVE='chemcrush_v2';
+const G={
+  lv:null,board:[],sel:null,score:0,moves:0,reactions:0,busy:false,
+  stars:{},scores:{},isWin:false,
+
+  save(){try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores}));}catch(e){}},
+  load(){try{const d=JSON.parse(localStorage.getItem(SAVE)||'{}');this.stars=d.stars||{};this.scores=d.scores||{};}catch(e){}},
+
+  toMap(){
+    document.getElementById('s-game').classList.remove('on');
+    document.getElementById('modal-wrap').classList.remove('on');
+    document.getElementById('s-map').classList.add('on');
+    this.buildMap();
+  },
+
+  buildMap(){
+    const g=document.getElementById('map-grid');g.innerHTML='';
+    const maxU=Math.max(1,...Object.keys(this.stars).map(Number).filter(k=>this.stars[k]>0).map(k=>k+1));
+    LEVELS.forEach(lv=>{
+      const done=(this.stars[lv.id]||0)>0;
+      const unlocked=lv.id<=maxU;
+      const cur=lv.id===maxU&&!done;
+      const cls=done?'done':cur?'current':unlocked?'unlocked':'';
+      const starsStr=done?'★'.repeat(this.stars[lv.id])+'☆'.repeat(3-this.stars[lv.id]):'';
+      const nd=document.createElement('div');nd.className='lvl-node';
+      nd.innerHTML=`<div class="lvl-bubble ${cls}" onclick="${unlocked?'G.play('+lv.id+')':''}"><span>${lv.id}</span><span style="font-size:9px;opacity:0.7">${lv.elems.slice(0,2).join('·')}</span></div><div class="lvl-stars">${starsStr}</div><div class="lv-name">${lv.name}</div>`;
+      g.appendChild(nd);
+    });
+  },
+
+  play(id){
+    const lv=LEVELS.find(l=>l.id===id);if(!lv)return;
+    this.lv=lv;this.score=0;this.moves=lv.moves;this.reactions=0;this.sel=null;this.busy=false;
+    this.initBoard();this.renderBoard();this.updateHUD();this.buildTargetBar();
+    document.getElementById('s-map').classList.remove('on');
+    document.getElementById('s-game').classList.add('on');
+    document.getElementById('modal-wrap').classList.remove('on');
+    document.getElementById('fact-zone').innerHTML='';
+    document.getElementById('h-lv').textContent='Lv.'+lv.id+' · '+lv.name;
+  },
+
+  initBoard(){
+    const lv=this.lv;
+    const obsSet=new Set(lv.obstacles.map(([c,r])=>r+','+c));
+    this.board=[];
+    for(let r=0;r<lv.rows;r++){
+      this.board[r]=[];
+      for(let c=0;c<lv.cols;c++){
+        this.board[r][c]={elem:obsSet.has(r+','+c)?null:this.rndElem(),obstacle:obsSet.has(r+','+c)};
+      }
+    }
+  },
+
   rndElem(){return this.lv.elems[Math.floor(Math.rando  .map-byline{font-size:13px;max-width:500px}
   .legend-wrap{max-width:560px}
   .lvl-grid{max-width:560px;grid-template-columns:repeat(4,1fr)}
