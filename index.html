@@ -18,6 +18,8 @@
 html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito',sans-serif;color:var(--ink);overflow-x:hidden}
 .screen{display:none;flex-direction:column;align-items:center;min-height:100vh}
 .screen.on{display:flex}
+/* Game screen specifically needs exact height, not min-height */
+#s-game.on{min-height:unset;height:100vh}
 
 /* ══ INTRO ══ */
 #s-intro{
@@ -102,7 +104,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .map-lb-btn:hover{background:var(--sky2)}
 
 /* ══ GAME — MOBILE ══ */
-#s-game{background:var(--sky);padding:0;position:relative;width:100%}
+#s-game{background:var(--sky);padding:0;position:relative;width:100%;height:100vh;overflow:hidden}
 .hud{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(80,160,210,.08);flex-shrink:0}
 .hud-block{display:flex;flex-direction:column;align-items:center;gap:1px}
 .hud-val{font-family:'Fredoka One',cursive;font-size:24px;color:var(--ink);line-height:1}
@@ -114,8 +116,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .target-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .prog-wrap{width:100%;height:6px;background:var(--sky2);flex-shrink:0}
 .prog-fill{height:100%;background:linear-gradient(90deg,#50c880,#a0e840);transition:width .4s ease}
-.game-body{display:flex;flex-direction:column;flex:1;width:100%;min-height:0}
-.board-area{display:flex;align-items:center;justify-content:center;padding:12px 8px;flex:1;position:relative;min-height:0}
+.game-body{display:flex;flex-direction:column;flex:1;width:100%;min-height:0;overflow:hidden}
+.board-area{display:flex;align-items:center;justify-content:center;padding:8px 8px 4px;flex:1;position:relative;min-height:0;overflow:hidden}
 .board{display:grid;gap:4px;padding:10px;background:var(--panel);border-radius:18px;border:1.5px solid var(--border);box-shadow:var(--shadow)}
 .side-panel{display:none}
 .bottom-bar{display:flex;gap:6px;padding:8px 12px;width:100%;background:var(--panel);border-top:1.5px solid var(--border);justify-content:center;flex-wrap:wrap;flex-shrink:0}
@@ -128,12 +130,18 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ GAME — DESKTOP ══ */
 @media(min-width:860px){
-  #s-game{flex-direction:column;min-height:100vh}
-  .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1100px;margin:0 auto;padding:20px 24px;gap:20px;min-height:0}
-  .board-area{flex:0 0 auto;padding:0;align-items:flex-start;justify-content:center}
-  .side-panel{display:flex;flex-direction:column;flex:1;gap:14px;min-width:260px;max-width:320px}
+  #s-game{flex-direction:column;height:100vh;overflow:hidden}
+  .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1100px;margin:0 auto;padding:16px 24px;gap:20px;min-height:0;overflow:hidden}
+  .board-area{flex:0 0 auto;padding:0;align-items:flex-start;justify-content:center;overflow:hidden}
+  .side-panel{display:flex;flex-direction:column;flex:1;gap:10px;min-width:240px;max-width:300px;overflow-y:auto;overflow-x:hidden;padding-bottom:8px}
   .bottom-bar{border-top:none;background:transparent;justify-content:flex-start;padding:0;flex-wrap:wrap;gap:8px}
   .fact-zone{position:static;pointer-events:auto;align-items:stretch}
+  #mobile-bar{display:none}
+  /* David card compact on desktop */
+  .david-avatar{width:80px;height:80px}
+  .david-card{padding:12px;gap:8px;flex-direction:row;align-items:flex-start}
+  .david-name{display:none}
+  .david-speech{min-height:36px;font-size:10.5px}
 }
 .david-card{background:var(--panel);border:1.5px solid var(--border);border-radius:18px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:var(--shadow)}
 .david-avatar{width:110px;height:110px;background:linear-gradient(135deg,#e8f6fc,#d0ecf8);border:2px solid var(--border);border-radius:16px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;flex-shrink:0;position:relative}
@@ -186,6 +194,28 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .cell[data-elem="K"] .cs{color:#1a1a88}.cell[data-elem="K"] .cn{color:#4040aa}
 .cs{font-size:16px;font-weight:900;line-height:1}
 .cn{font-size:8px;font-weight:800;line-height:1;margin-top:1px;opacity:.8}
+/* Fact toast — inside board-area, overlays top of board on mobile */
+.fact-zone-toast{
+  position:absolute;
+  top:10px;left:8px;right:8px;
+  z-index:55;
+  pointer-events:none;
+  display:flex;flex-direction:column;align-items:stretch;
+  gap:4px;
+}
+@media(min-width:860px){
+  .fact-zone-toast{display:none} /* desktop uses side panel instead */
+}
+/* Make board-area position:relative so toast is relative to it */
+.board-area{position:relative}
+
+/* Fact toast card variant: slightly more compact + semi-transparent bg */
+.fact-zone-toast .fact-card{
+  background:rgba(255,255,255,.96);
+  box-shadow:0 4px 20px rgba(0,0,0,.15);
+  max-width:100%;
+}
+.fact-zone-toast .fact-card.fact-noreact{background:rgba(255,245,245,.96)}
 .fact-card{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;animation:slideUp .3s ease;box-shadow:0 4px 20px rgba(80,160,210,.18);width:100%;max-width:420px}
 .fact-reaction{font-size:14px;font-weight:900;color:var(--gold)}
 .fact-title{font-size:11px;font-weight:800;color:var(--ink2)}
@@ -273,6 +303,54 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ CONFETTI ══ */
 #confetti-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:199;display:none}
+
+/* ══ LOW MOVES WARNING ══ */
+.hud-val.low{color:#e04040!important;animation:pulseLow .55s ease infinite}
+@keyframes pulseLow{0%,100%{transform:scale(1)}50%{transform:scale(1.22)}}
+
+/* ══ COMBO FLOAT ══ */
+.combo-txt{
+  position:absolute;font-family:'Fredoka One',cursive;font-size:24px;font-weight:900;
+  pointer-events:none;animation:comboUp 1.1s ease forwards;z-index:62;
+  color:#f06030;text-shadow:0 2px 8px rgba(240,96,48,.5);
+}
+@keyframes comboUp{0%{transform:translateY(0) scale(.7);opacity:1}60%{transform:translateY(-50px) scale(1.2);opacity:1}100%{transform:translateY(-80px) scale(1);opacity:0}}
+
+/* ══ DEAD BOARD NOTICE ══ */
+.dead-notice{
+  position:absolute;inset:0;background:rgba(14,34,51,.78);
+  z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;border-radius:18px;backdrop-filter:blur(6px);animation:fadeInQ .3s ease;
+}
+@keyframes fadeInQ{from{opacity:0}to{opacity:1}}
+.dead-txt{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;text-align:center;line-height:1.4;padding:0 16px}
+.dead-sub{font-size:11px;color:#a8d8ef;font-weight:700;text-align:center;padding:0 16px}
+.dead-btns{display:flex;gap:8px;margin-top:4px}
+.dead-btn{border:none;border-radius:50px;padding:10px 22px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;transition:transform .1s}
+.dead-btn:active{transform:scale(.95)}
+.dead-btn-y{background:linear-gradient(135deg,#3aae5c,#58d278);color:#fff}
+.dead-btn-n{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);color:#fff}
+
+/* ══ BOOST CHARGE BADGE ══ */
+.bc{font-size:9px;font-weight:900;background:rgba(0,0,0,.12);border-radius:999px;padding:1px 5px;margin-left:3px;vertical-align:middle}
+.bc.empty{opacity:.35;text-decoration:line-through}
+
+/* ══ TUTORIAL ══ */
+.tut-label{
+  position:absolute;z-index:59;pointer-events:none;
+  background:var(--gold);color:#fff;border-radius:8px;padding:5px 10px;
+  font-size:11px;font-weight:800;white-space:nowrap;transform:translateX(-50%);
+  box-shadow:0 4px 12px rgba(212,138,8,.4);animation:tutFade 3s ease forwards;
+}
+@keyframes tutFade{0%{opacity:0;transform:translateX(-50%) translateY(4px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}
+
+/* ══ END BREAKDOWN ══ */
+.end-breakdown{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:5px}
+.end-br{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#a8d8ef;font-weight:700}
+.end-br b{font-family:'Fredoka One',cursive;font-size:14px;color:#fff;font-weight:400}
+.end-br-sep{height:1px;background:rgba(255,255,255,.1);margin:2px 0}
+.end-br-total{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#ffd700;font-weight:800}
+.end-br-total b{font-family:'Fredoka One',cursive;font-size:20px;color:#ffd700;font-weight:400}
 </style>
 </head>
 <body>
@@ -313,7 +391,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="intro-pills">
     <div class="intro-pill">⚗️ 14 Reaksi Nyata</div>
     <div class="intro-pill">🗺️ 15 Level</div>
-    <div class="intro-pill">🏆 Leaderboard</div>
   </div>
 
   <button class="btn-start" onclick="G.startIntro()">Mulai Main ⚡</button>
@@ -370,7 +447,11 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
 
   <div class="game-body">
-    <div class="board-area" id="board-area"><div class="board" id="board"></div></div>
+    <div class="board-area" id="board-area">
+      <!-- Mobile fact toast: appears at top of board area -->
+      <div id="fact-zone-mobile" class="fact-zone-toast"></div>
+      <div class="board" id="board"></div>
+    </div>
 
     <div class="side-panel">
       <div class="david-card">
@@ -395,9 +476,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
         <div class="rx-empty" id="rx-empty">Belum ada reaksi...</div>
       </div>
       <div class="bottom-bar">
-        <button class="btn-sm" onclick="G.boost('hint')">💡 Hint</button>
-        <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle</button>
-        <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst</button>
+        <button class="btn-sm" onclick="G.boost('hint')">💡 Hint<span class="bc" id="bc-hint-d">×3</span></button>
+        <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle<span class="bc" id="bc-shuffle-d">×2</span></button>
+        <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst<span class="bc" id="bc-catalyst-d">×2</span></button>
         <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
         <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
       </div>
@@ -406,13 +487,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   </div>
 
   <div class="bottom-bar" id="mobile-bar">
-    <button class="btn-sm" onclick="G.boost('hint')">💡 Hint</button>
-    <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle</button>
-    <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst</button>
+    <button class="btn-sm" onclick="G.boost('hint')">💡 Hint<span class="bc" id="bc-hint-m">×3</span></button>
+    <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle<span class="bc" id="bc-shuffle-m">×2</span></button>
+    <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst<span class="bc" id="bc-catalyst-m">×2</span></button>
     <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
     <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
   </div>
-  <div class="fact-zone" id="fact-zone-mobile" style="position:fixed;bottom:68px;left:8px;right:8px;z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center"></div>
 </div>
 
 <!-- ══ END SCREEN ══ -->
@@ -422,6 +502,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <div class="end-stars" id="end-stars"></div>
     <div class="end-score-box">
       <div><div class="end-score-label">Skor Level Ini</div><div class="end-score-val" id="end-score">0</div></div>
+    </div>
+    <div class="end-breakdown" id="end-breakdown">
+      <div class="end-br"><span>⚗️ Reaksi</span><b id="eb-rx">+0</b></div>
+      <div class="end-br"><span>🔥 Combo bonus</span><b id="eb-combo">+0</b></div>
+      <div class="end-br-sep"></div>
+      <div class="end-br-total"><span>🎯 Bonus moves sisa</span><b id="eb-moves">+0</b></div>
     </div>
     <div id="end-hs" class="end-hs" style="display:none">🏆 Rekor Baru! <span id="end-hs-val"></span></div>
     <div id="end-prev" class="end-prev" style="display:none">High score sebelumnya: <strong id="end-prev-val" style="color:#fff"></strong></div>
@@ -487,15 +573,16 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 //  3. Enable Realtime Database (start in test mode)
 // ═══════════════════════════════════════════════════
 const FIREBASE_CONFIG={
-  apiKey:"YOUR_API_KEY",
-  authDomain:"YOUR_PROJECT.firebaseapp.com",
-  databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId:"YOUR_PROJECT_ID",
-  storageBucket:"YOUR_PROJECT.appspot.com",
-  messagingSenderId:"YOUR_SENDER_ID",
-  appId:"YOUR_APP_ID"
+  apiKey:"AIzaSyA3LqJS1OcSHwcOMP3oGwD_uME-4UC7dG0",
+  authDomain:"david-chem.firebaseapp.com",
+  databaseURL:"https://david-chem-default-rtdb.firebaseio.com",
+  projectId:"david-chem",
+  storageBucket:"david-chem.firebasestorage.app",
+  messagingSenderId:"209480977161",
+  appId:"1:209480977161:web:f874933ab5bbfb392161d8",
+  measurementId:"G-DVJEB34ZT5"
 };
-const FB_ON=FIREBASE_CONFIG.apiKey!=="YOUR_API_KEY";
+const FB_ON=true; // Firebase configured
 
 // ─── ELEMENTS ───
 const ELEMENTS={
@@ -673,6 +760,13 @@ const G={
   lv:null,board:[],sel:null,score:0,moves:0,reactions:0,busy:false,
   stars:{},scores:{},isWin:false,rxLog:[],idleTimer:null,
   username:null,lbFrom:'intro',
+  // New: game state tracking
+  streak:0,
+  boostCharges:{hint:3,shuffle:2,catalyst:2},
+  rxBaseScore:0,    // pts from reactions (no combo)
+  comboBonus:0,     // extra pts from combo multiplier
+  movesBonus:0,     // bonus moves at win
+  tutDone:false,    // tutorial shown this session
 
   save(){try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username}));}catch(e){}},
   load(){
@@ -741,8 +835,10 @@ const G={
     const lv=LEVELS.find(l=>l.id===id);if(!lv)return;
     this.lv=lv;this.score=0;this.moves=lv.moves;this.reactions=0;
     this.sel=null;this.busy=false;this.rxLog=[];
+    this.streak=0;this.rxBaseScore=0;this.comboBonus=0;this.movesBonus=0;
+    this.boostCharges={hint:3,shuffle:2,catalyst:2};
     this.initBoard();this.renderBoard();this.updateHUD();this.buildTargetBar();
-    this.updateSidePanel();this.renderRxHistory();
+    this.updateSidePanel();this.renderRxHistory();this.updateBoostButtons();
     this.show('s-game');
     document.getElementById('modal-wrap').classList.remove('on');
     document.getElementById('fact-zone-desktop').innerHTML='';
@@ -750,6 +846,8 @@ const G={
     document.getElementById('h-lv').textContent='Lv.'+lv.id+' · '+lv.name;
     this.davidSay(DAVID_IDLE[Math.floor(Math.random()*DAVID_IDLE.length)],'');
     this.davidExpr('idle');this.scheduleIdle();
+    // Tutorial: auto-hint on level 1 first play
+    if(lv.id===1&&!this.tutDone){setTimeout(()=>this.showTutorial(),900);}
   },
 
   // ── GUIDE ──
@@ -830,8 +928,14 @@ const G={
   renderBoard(){
     const lv=this.lv,b=this.board;
     const bd=document.getElementById('board');
-    const avail=this.isDesktop()?Math.min(window.innerWidth*.5,520):Math.min(window.innerWidth-24,400);
-    const sz=Math.min(48,Math.floor((avail-24)/lv.cols));
+    const ba=document.getElementById('board-area');
+    const baRect=ba.getBoundingClientRect();
+    const availW=this.isDesktop()?Math.min(window.innerWidth*.5,520):Math.min(baRect.width||window.innerWidth-16,400);
+    // Also limit by available height so board never overflows vertically
+    const availH=this.isDesktop()?baRect.height||500:Math.min(baRect.height||400,window.innerHeight*.55);
+    const szByW=Math.floor((availW-24)/lv.cols);
+    const szByH=Math.floor((availH-24)/lv.rows);
+    const sz=Math.min(48,szByW,szByH);
     bd.style.gridTemplateColumns=`repeat(${lv.cols},${sz}px)`;
     bd.innerHTML='';
     for(let r=0;r<lv.rows;r++){
@@ -875,27 +979,46 @@ const G={
     this.moves--;this.busy=true;
     b[r1][c1].elem=null;b[r2][c2].elem=null;
     this.renderBoard();
-    this.reactions++;this.score+=rx.pts;
+    // Combo multiplier (streak 1=1x, 2=2x, 3=3x, 4+=4x)
+    this.streak++;
+    const mult=Math.min(this.streak,4);
+    const earnedPts=rx.pts*mult;
+    this.rxBaseScore+=rx.pts;
+    this.comboBonus+=earnedPts-rx.pts;
+    this.score+=earnedPts;
+    this.reactions++;
     this.rxLog.unshift(rx);if(this.rxLog.length>8)this.rxLog.pop();
-    this.floatPts(rx.pts,r1,c1);this.showFact(rx);
+    this.floatPts(earnedPts,r1,c1);
+    if(this.streak>=2)this.showCombo(this.streak,mult,r2,c2);
+    this.showFact(rx);
     this.davidSay(rx.davidSay,'react');this.davidExpr('aha');
     this.renderRxHistory();
     clearTimeout(this.idleTimer);this.idleTimer=setTimeout(()=>this.scheduleIdle(),5000);
     setTimeout(()=>{
       this.gravity();this.fillBoard();
       this.renderBoard();this.updateHUD();this.buildTargetBar();this.updateSidePanel();
-      this.busy=false;this.checkEnd();
+      this.busy=false;
+      if(!this.checkEnd())this.checkDeadBoard();
     },600);
   },
 
   noReact(r1,c1,r2,c2){
+    // Standard match-3: show swap briefly, swap BACK, -1 move, reset streak
     const b=this.board;
     [b[r1][c1].elem,b[r2][c2].elem]=[b[r2][c2].elem,b[r1][c1].elem];
-    this.moves--;this.renderBoard();this.updateHUD();this.updateSidePanel();
+    this.renderBoard();
+    this.streak=0;
+    this.busy=true;
     this.showNoReact();
-    this.davidSay('Tidak bereaksi... coba pasangan lain. Buka Panduan Reaksi kalau bingung! 📖','nope');
+    this.davidSay('Tidak bereaksi — posisi balik otomatis. Cek 📖 Panduan Reaksi!','nope');
     this.davidExpr('wow');
-    if(this.moves<=0)setTimeout(()=>this.checkEnd(),300);
+    setTimeout(()=>{
+      [b[r1][c1].elem,b[r2][c2].elem]=[b[r2][c2].elem,b[r1][c1].elem];
+      this.moves--;
+      this.renderBoard();this.updateHUD();this.updateSidePanel();
+      this.busy=false;
+      if(this.moves<=0)this.checkEnd();
+    },420);
   },
 
   gravity(){
@@ -918,7 +1041,9 @@ const G={
     const ba=document.getElementById('board-area');
     const bdRect=document.getElementById('board').getBoundingClientRect();
     const baRect=ba.getBoundingClientRect();
-    const sz=Math.min(48,Math.floor((this.isDesktop()?Math.min(window.innerWidth*.5,520):Math.min(window.innerWidth-24,400)-24)/this.lv.cols));
+    const availW=this.isDesktop()?Math.min(window.innerWidth*.5,520):Math.min(baRect.width||window.innerWidth-16,400);
+    const availH=this.isDesktop()?baRect.height||500:Math.min(baRect.height||400,window.innerHeight*.55);
+    const sz=Math.min(48,Math.floor((availW-24)/this.lv.cols),Math.floor((availH-24)/this.lv.rows));
     const el=document.createElement('div');el.className='float-txt';el.textContent='+'+pts;
     el.style.left=(bdRect.left-baRect.left+c*(sz+4)+10+sz*.2)+'px';
     el.style.top=(bdRect.top-baRect.top+r*(sz+4)+10)+'px';
@@ -942,7 +1067,10 @@ const G={
   },
 
   updateHUD(){
-    document.getElementById('h-moves').textContent=this.moves;
+    const movesEl=document.getElementById('h-moves');
+    movesEl.textContent=this.moves;
+    if(this.moves<=5&&this.moves>0)movesEl.classList.add('low');
+    else movesEl.classList.remove('low');
     document.getElementById('h-score').textContent=this.score.toLocaleString();
     document.getElementById('h-rx').textContent=this.reactions;
     const t=this.lv.target;
@@ -981,14 +1109,20 @@ const G={
     const t=this.lv.target;
     const rxOk=!t.reactions||(this.reactions>=t.reactions);
     const scOk=!t.score||(this.score>=t.score);
-    if(rxOk&&scOk){this.win();return;}
-    if(this.moves<=0){this.lose();}
+    if(rxOk&&scOk){this.win();return true;}
+    if(this.moves<=0){this.lose();return true;}
+    return false;
   },
 
   // ── WIN ──
   async win(){
     clearTimeout(this.idleTimer);this.busy=true;
     const lv=this.lv;
+
+    // Moves bonus: +20 per remaining move
+    this.movesBonus=this.moves*20;
+    this.score+=this.movesBonus;
+
     let stars=this.moves>=Math.floor(lv.moves*.5)?3:this.moves>=Math.floor(lv.moves*.15)?2:1;
     const prev=this.stars[lv.id]||0;
     if(stars>prev)this.stars[lv.id]=stars;
@@ -997,19 +1131,15 @@ const G={
     if(isNewHS)this.scores[lv.id]=this.score;
     this.save();
 
-    // Confetti!
     Confetti.start();
     this.davidExpr('aha');
 
-    // Firebase submit
     let lbIn=false;
     if(this.username&&FB_ON){lbIn=await fbSubmit(this.username,this.score,lv.id);}
 
-    // Populate end screen
     const isLast=lv.id>=LEVELS.length;
     document.getElementById('end-title').textContent=isLast?'🏆 Ahli Kimia Sejati!':'🎉 Sintesis Berhasil!';
 
-    // Stars with pop animation
     const starsEl=document.getElementById('end-stars');starsEl.innerHTML='';
     for(let i=1;i<=3;i++){
       const s=document.createElement('span');s.className='star-pop';
@@ -1021,7 +1151,11 @@ const G={
 
     document.getElementById('end-score').textContent=this.score.toLocaleString();
 
-    // High score badge
+    // Score breakdown
+    document.getElementById('eb-rx').textContent='+'+this.rxBaseScore.toLocaleString();
+    document.getElementById('eb-combo').textContent=this.comboBonus>0?'🔥 +'+this.comboBonus.toLocaleString():'—';
+    document.getElementById('eb-moves').textContent=this.movesBonus>0?'+'+this.movesBonus.toLocaleString():'—';
+
     const hsEl=document.getElementById('end-hs'),prevEl=document.getElementById('end-prev');
     if(isNewHS&&prevScore>0){
       hsEl.style.display='flex';document.getElementById('end-hs-val').textContent=this.score.toLocaleString();
@@ -1031,14 +1165,12 @@ const G={
       document.getElementById('end-prev-val').textContent=prevScore.toLocaleString();
     }else{hsEl.style.display='none';prevEl.style.display='none';}
 
-    // Leaderboard status
     const lbEl=document.getElementById('end-lb');
     if(!this.username)lbEl.textContent='💡 Login dengan username IG untuk masuk leaderboard!';
     else if(!FB_ON)lbEl.textContent='';
     else if(lbIn)lbEl.textContent='🏆 Skor kamu masuk leaderboard!';
     else lbEl.textContent='Skor ini tidak mengalahkan rekor-mu di leaderboard.';
 
-    // Next button
     const btn1=document.getElementById('end-btn1');
     if(isLast){btn1.textContent='🔄 Main Lagi';btn1.onclick=()=>G.toMap();}
     else{btn1.textContent='Level Berikutnya →';btn1.onclick=()=>G.endBtn1();}
@@ -1085,6 +1217,14 @@ const G={
   // ── BOOSTS ──
   boost(type){
     if(this.busy)return;
+    // Check charges
+    if((this.boostCharges[type]||0)<=0){
+      this.davidSay(`${type==='hint'?'Hint':type==='shuffle'?'Shuffle':'Catalyst'} sudah habis untuk level ini!`,'nope');
+      return;
+    }
+    this.boostCharges[type]--;
+    this.updateBoostButtons();
+
     if(type==='hint'){
       const lv=this.lv,b=this.board;
       for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++){
@@ -1102,8 +1242,8 @@ const G={
           }
         }
       }
-      this.davidSay('Board lagi susah nih. Coba Shuffle dulu? 🔀','nope');
-      this.davidExpr('wow');this.showNoReact();
+      this.davidSay('Tidak ada pasangan tersisa. Coba Shuffle! 🔀','nope');
+      this.davidExpr('wow');
     }
     if(type==='shuffle'){
       const lv=this.lv,b=this.board,pool=[];
@@ -1111,7 +1251,8 @@ const G={
       pool.sort(()=>Math.random()-.5);let i=0;
       for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)b[r][c].elem=pool[i++];
       this.renderBoard();
-      this.davidSay('Board diacak! Sekarang cari pasangan yang bisa bereaksi 🔍','');
+      this.streak=0;
+      this.davidSay('Board diacak! Cari pasangan yang bisa bereaksi 🔍','');
       this.davidExpr('idle');
     }
     if(type==='catalyst'){
@@ -1121,6 +1262,121 @@ const G={
       this.renderBoard();
       this.davidSay('Katalis aktif! 3 elemen diganti. Katalis mempercepat reaksi tanpa ikut bereaksi!','react');
       this.davidExpr('aha');
+    }
+  },
+
+  updateBoostButtons(){
+    const bc=this.boostCharges;
+    [['hint','bc-hint-d','bc-hint-m'],['shuffle','bc-shuffle-d','bc-shuffle-m'],['catalyst','bc-catalyst-d','bc-catalyst-m']]
+    .forEach(([type,id1,id2])=>{
+      const n=bc[type]||0;
+      const txt='×'+n;
+      [id1,id2].forEach(id=>{
+        const el=document.getElementById(id);if(!el)return;
+        el.textContent=txt;
+        if(n<=0)el.classList.add('empty');else el.classList.remove('empty');
+      });
+    });
+  },
+
+  // ── DEAD BOARD DETECTION ──
+  hasValidMoves(){
+    const lv=this.lv,b=this.board;
+    for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++){
+      if(!b[r][c].elem||b[r][c].obstacle)continue;
+      for(const[dr,dc]of[[0,1],[1,0]]){
+        const nr=r+dr,nc=c+dc;
+        if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
+        if(!b[nr][nc].elem||b[nr][nc].obstacle)continue;
+        if(getRx(b[r][c].elem,b[nr][nc].elem))return true;
+      }
+    }
+    return false;
+  },
+
+  checkDeadBoard(){
+    if(this.hasValidMoves())return;
+    // Remove any existing notice
+    const old=document.getElementById('dead-notice');if(old)old.remove();
+    const ba=document.getElementById('board-area');
+    const div=document.createElement('div');div.className='dead-notice';div.id='dead-notice';
+    div.innerHTML=`
+      <div class="dead-txt">😕 Tidak ada reaksi tersisa!</div>
+      <div class="dead-sub">Tidak ada pasangan elemen yang bisa bereaksi di board saat ini.</div>
+      <div class="dead-btns">
+        <button class="dead-btn dead-btn-y" onclick="G.deadShuffle()">🔀 Acak Board</button>
+        <button class="dead-btn dead-btn-n" onclick="document.getElementById('dead-notice').remove()">Lihat Sendiri</button>
+      </div>`;
+    ba.appendChild(div);
+  },
+
+  deadShuffle(){
+    const old=document.getElementById('dead-notice');if(old)old.remove();
+    const lv=this.lv,b=this.board,pool=[];
+    for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)pool.push(b[r][c].elem);
+    pool.sort(()=>Math.random()-.5);let i=0;
+    for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)b[r][c].elem=pool[i++];
+    this.streak=0;
+    this.renderBoard();
+    this.davidSay('Board diacak! Sekarang seharusnya ada pasangan yang bisa bereaksi 🔍','');
+    this.davidExpr('idle');
+  },
+
+  // ── COMBO FLOAT TEXT ──
+  showCombo(streak,mult,r,c){
+    const ba=document.getElementById('board-area');
+    const bdRect=document.getElementById('board').getBoundingClientRect();
+    const baRect=ba.getBoundingClientRect();
+    const lv=this.lv;
+    const availW=this.isDesktop()?Math.min(window.innerWidth*.5,520):Math.min(baRect.width||window.innerWidth-16,400);
+    const availH=this.isDesktop()?baRect.height||500:Math.min(baRect.height||400,window.innerHeight*.55);
+    const sz=Math.min(48,Math.floor((availW-24)/lv.cols),Math.floor((availH-24)/lv.rows));
+    const labels=['','','COMBO!','COMBO x3!','COMBO x4! 🔥'];
+    const el=document.createElement('div');el.className='combo-txt';
+    el.textContent=labels[Math.min(streak,4)]||`COMBO x${streak}!`;
+    el.style.left=(bdRect.left-baRect.left+c*(sz+4)+sz*.5-30)+'px';
+    el.style.top=(bdRect.top-baRect.top+r*(sz+4)-10)+'px';
+    ba.appendChild(el);
+    setTimeout(()=>el.remove(),1150);
+  },
+
+  // ── TUTORIAL (level 1 only) ──
+  showTutorial(){
+    if(this.tutDone||this.lv.id!==1)return;
+    const lv=this.lv,b=this.board;
+    // Find first valid adjacent pair
+    for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++){
+      if(!b[r][c].elem||b[r][c].obstacle)continue;
+      for(const[dr,dc]of[[0,1],[1,0]]){
+        const nr=r+dr,nc=c+dc;
+        if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
+        if(!b[nr][nc].elem||b[nr][nc].obstacle)continue;
+        if(getRx(b[r][c].elem,b[nr][nc].elem)){
+          // Highlight the pair
+          const c1el=document.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+          const c2el=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
+          if(c1el&&c2el){
+            c1el.classList.add('hint-glow');c2el.classList.add('hint-glow');
+            // Add label above first cell
+            const ba=document.getElementById('board-area');
+            const bdRect=document.getElementById('board').getBoundingClientRect();
+            const baRect=ba.getBoundingClientRect();
+            const sz=c1el.offsetWidth||40;
+            const lbl=document.createElement('div');lbl.className='tut-label';
+            lbl.textContent='Swap dua ini untuk mulai! ✨';
+            lbl.style.left=(bdRect.left-baRect.left+c*(sz+4)+sz*.5)+'px';
+            lbl.style.top=(bdRect.top-baRect.top+r*(sz+4)-36)+'px';
+            ba.appendChild(lbl);
+            setTimeout(()=>{
+              c1el.classList.remove('hint-glow');c2el.classList.remove('hint-glow');
+              lbl.remove();
+            },3200);
+          }
+          this.davidSay('Halo! Swap dua elemen yang berkilau itu untuk memulai reaksi pertamamu! ✨','react');
+          this.tutDone=true;
+          return;
+        }
+      }
     }
   },
 };
