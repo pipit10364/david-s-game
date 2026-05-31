@@ -69,8 +69,10 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .map-title{font-family:'Fredoka One',cursive;font-size:32px;color:var(--ink)}
 .map-byline{font-size:12px;color:var(--ink2);line-height:1.6;max-width:340px}
 .map-badge{background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:4px 16px;font-size:11px;font-weight:800;color:var(--ink2)}
-.map-user{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink2);font-weight:800}
+.map-user{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);font-weight:800}
 .map-user strong{color:var(--ink)}
+.map-login-btn{background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:800;color:var(--ink2);cursor:pointer;transition:background .15s}
+.map-login-btn:hover{background:var(--sky2)}
 @media(min-width:700px){
   #s-map{padding:32px 40px 48px}
   .map-title{font-size:40px}
@@ -401,8 +403,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 <div class="un-bg" id="un-wrap">
   <div class="un-box">
     <div class="un-ico">👤</div>
-    <div class="un-title">Username kamu?</div>
-    <div class="un-desc">Masukkan username Instagram untuk masuk leaderboard. Kalau cetak rekor, nama kamu bakal nongol di sana!</div>
+    <div class="un-title">Username Instagram</div>
+    <div class="un-desc">Masukkan username Instagram untuk masuk leaderboard. Nama ini akan tampil di papan skor global.</div>
     <div class="un-field">
       <span class="un-at">@</span>
       <input class="un-input" id="un-input" type="text" placeholder="username_ig" maxlength="30" autocorrect="off" autocapitalize="none" spellcheck="false">
@@ -418,7 +420,10 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <div class="map-title">⚗️ Chem Crush</div>
     <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong><br>— bukan yang warnanya sama!</div>
     <div class="map-badge">14 reaksi kimia nyata · 15 level</div>
-    <div class="map-user" id="map-user" style="display:none">👤 Main sebagai: <strong id="map-uname"></strong></div>
+    <div class="map-user" id="map-user">
+      <span id="map-user-label">👤 <span id="map-uname">Belum login</span></span>
+      <button class="map-login-btn" id="map-login-btn" onclick="G.showUsernameModal()">Ganti</button>
+    </div>
   </div>
   <div class="legend-wrap">
     <div class="leg-item"><div class="leg-dot" style="background:#88bbee"></div>H Hidrogen</div>
@@ -575,7 +580,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 const FIREBASE_CONFIG={
   apiKey:"AIzaSyA3LqJS1OcSHwcOMP3oGwD_uME-4UC7dG0",
   authDomain:"david-chem.firebaseapp.com",
-  databaseURL:"https://david-chem-default-rtdb.firebaseio.com",
+  databaseURL:"https://david-chem-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId:"david-chem",
   storageBucket:"david-chem.firebasestorage.app",
   messagingSenderId:"209480977161",
@@ -682,31 +687,67 @@ if(FB_ON){
   s1.onload=()=>{
     const s2=document.createElement('script');
     s2.src='https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js';
-    s2.onload=()=>{try{firebase.initializeApp(FIREBASE_CONFIG);_fbDB=firebase.database();}catch(e){console.warn('Firebase:',e);}};
+    s2.onload=()=>{
+      try{
+        firebase.initializeApp(FIREBASE_CONFIG);
+        _fbDB=firebase.database();
+        console.log('Firebase Realtime DB ready ✓');
+      }catch(e){console.warn('Firebase init error:',e);}
+    };
     document.head.appendChild(s2);
   };
+  s1.onerror=()=>console.warn('Firebase SDK gagal dimuat. Cek koneksi internet.');
   document.head.appendChild(s1);
 }
+
+// Tunggu _fbDB siap, timeout dalam ms
+function waitForDB(ms=6000){
+  if(_fbDB)return Promise.resolve(_fbDB);
+  return new Promise((res,rej)=>{
+    const t0=Date.now();
+    const poll=()=>{
+      if(_fbDB)return res(_fbDB);
+      if(Date.now()-t0>ms)return rej(new Error('DB timeout'));
+      setTimeout(poll,250);
+    };
+    poll();
+  });
+}
+
 async function fbGetLB(){
-  if(!_fbDB)return[];
   try{
-    const snap=await _fbDB.ref('chemcrush/lb').orderByChild('score').limitToLast(20).once('value');
+    const db=await waitForDB(6000);
+    const snap=await Promise.race([
+      db.ref('chemcrush/lb').orderByChild('score').limitToLast(20).once('value'),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('query timeout')),7000))
+    ]);
     const data=snap.val()||{};
     return Object.values(data).sort((a,b)=>b.score-a.score).slice(0,10);
-  }catch(e){return[];}
+  }catch(e){
+    console.warn('fbGetLB error:',e.message);
+    return null; // null = error, [] = empty
+  }
 }
+
 async function fbSubmit(username,score,level){
-  if(!_fbDB||!username)return false;
-  const key=username.replace(/[.#$[\]/]/g,'_');
+  if(!username)return false;
   try{
-    const snap=await _fbDB.ref('chemcrush/lb/'+key).once('value');
+    const db=await waitForDB(6000);
+    const key=username.replace(/[.#$[\]/]/g,'_');
+    const snap=await Promise.race([
+      db.ref('chemcrush/lb/'+key).once('value'),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),7000))
+    ]);
     const ex=snap.val();
     if(!ex||score>ex.score){
-      await _fbDB.ref('chemcrush/lb/'+key).set({username:'@'+username,score,level,ts:Date.now()});
+      await db.ref('chemcrush/lb/'+key).set({username:'@'+username,score,level,ts:Date.now()});
       return true;
     }
     return false;
-  }catch(e){return false;}
+  }catch(e){
+    console.warn('fbSubmit error:',e.message);
+    return false;
+  }
 }
 
 // ─── CONFETTI ───
@@ -799,9 +840,21 @@ const G={
   // ── MAP ──
   toMap(){
     this.show('s-map');clearTimeout(this.idleTimer);this.buildMap();
-    const ur=document.getElementById('map-user');
-    if(this.username){ur.style.display='flex';document.getElementById('map-uname').textContent='@'+this.username;}
-    else{ur.style.display='none';}
+    const nameEl=document.getElementById('map-uname');
+    const btnEl=document.getElementById('map-login-btn');
+    if(this.username){
+      if(nameEl)nameEl.textContent='@'+this.username;
+      if(btnEl)btnEl.textContent='Ganti';
+    }else{
+      if(nameEl)nameEl.textContent='Belum login';
+      if(btnEl)btnEl.textContent='Login';
+    }
+  },
+
+  showUsernameModal(){
+    const inp=document.getElementById('un-input');
+    if(inp&&this.username)inp.value=this.username;
+    document.getElementById('un-wrap').classList.add('on');
   },
 
   buildMap(){
@@ -859,13 +912,21 @@ const G={
     this.lbFrom=from||'intro';
     this.show('s-lb');
     const card=document.getElementById('lb-card');
-    card.innerHTML='<div class="lb-loading">Memuat...</div>';
+    card.innerHTML='<div class="lb-loading">⏳ Memuat leaderboard...</div>';
     if(!FB_ON){
-      card.innerHTML=`<div class="lb-empty">🔧 Firebase belum dikonfigurasi.<br><br>Edit <code>FIREBASE_CONFIG</code> di bagian atas kode untuk mengaktifkan leaderboard.<br><br>Hubungi developer untuk setup.</div><div class="lb-fb-note">Leaderboard membutuhkan Firebase Realtime Database</div>`;
+      card.innerHTML=`<div class="lb-empty">🔧 Firebase belum dikonfigurasi.<br>Edit <code>FIREBASE_CONFIG</code> di kode.</div>`;
       return;
     }
     const entries=await fbGetLB();
-    if(!entries.length){card.innerHTML='<div class="lb-empty">Belum ada data.<br>Jadilah yang pertama! 🚀</div>';return;}
+    // null = network/permission error
+    if(entries===null){
+      card.innerHTML=`<div class="lb-empty">⚠️ Gagal memuat leaderboard.<br><br>Kemungkinan penyebab:<br>• Rules Firebase belum di-publish<br>• Database URL salah<br>• Koneksi internet bermasalah<br><br><small style="opacity:.6">Cek Console browser untuk detail error</small></div>`;
+      return;
+    }
+    if(!entries.length){
+      card.innerHTML='<div class="lb-empty">Belum ada data.<br>Jadilah yang pertama! 🚀</div>';
+      return;
+    }
     card.innerHTML='';
     const medals=['g','s','b'];
     entries.forEach((e,i)=>{
