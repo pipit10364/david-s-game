@@ -136,10 +136,11 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1400px;margin:0 auto;padding:12px 32px;gap:24px;min-height:0;overflow:hidden}
   /* Board fills all remaining space */
   .board-area{flex:1;min-width:0;padding:0;align-items:flex-start;justify-content:center;overflow:hidden}
-  /* Side panel: fixed 290px */
-  .side-panel{display:flex;flex-direction:column;flex:0 0 290px;gap:8px;overflow:hidden;padding-bottom:4px}
+  /* Side panel: wider so fact text doesn't wrap/cut */
+  .side-panel{display:flex;flex-direction:column;flex:0 0 360px;gap:8px;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
+  /* Fact zone: grows naturally, no overflow cut */
+  .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible}
   .bottom-bar{border-top:none;background:transparent;justify-content:flex-start;padding:0;flex-wrap:wrap;gap:6px}
-  .fact-zone{position:static;pointer-events:auto;align-items:stretch;flex:1;min-height:80px;overflow:hidden}
   #mobile-bar{display:none}
   .david-avatar{width:72px;height:72px;flex-shrink:0}
   .david-card{padding:10px;gap:8px;flex-direction:row;align-items:flex-start}
@@ -239,7 +240,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .stat-label{font-size:11px;color:var(--muted);font-weight:800}
 .stat-val{font-family:'Fredoka One',cursive;font-size:18px;color:var(--ink)}
 .stat-divider{height:1px;background:var(--border)}
-.rx-history{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow);max-height:200px;overflow-y:auto}
+.rx-history{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow);max-height:160px;overflow-y:auto}
 .rx-history-title{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
 .rx-item{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink2);font-weight:700;padding:3px 0;border-bottom:1px solid var(--border)}
 .rx-item:last-child{border-bottom:none}
@@ -1075,9 +1076,8 @@ const G={
     const bd=document.getElementById('board');
     let sz;
     if(this.isDesktop()){
-      // viewport - side panel (290) - padding (64px total) - gap (24px) - board padding (16px)
-      const availW=Math.max(400, window.innerWidth - 290 - 64 - 24 - 16);
-      // viewport - HUD (~52px) - target (~32px) - prog (6px) - game-body padding (24px) - board padding (16px)
+      // viewport - side panel (360) - padding (64px total) - gap (24px) - board padding (16px)
+      const availW=Math.max(360, window.innerWidth - 360 - 64 - 24 - 16);
       const availH=Math.max(300, window.innerHeight - 130);
       const szW=Math.floor(availW/lv.cols);
       const szH=Math.floor(availH/lv.rows);
@@ -1210,7 +1210,7 @@ const G={
     const lv=this.lv;
     let sz;
     if(this.isDesktop()){
-      const availW=Math.max(400, window.innerWidth - 290 - 64 - 24 - 16);
+      const availW=Math.max(360, window.innerWidth - 360 - 64 - 24 - 16);
       const availH=Math.max(300, window.innerHeight - 130);
       sz=Math.min(64,Math.floor(availW/lv.cols),Math.floor(availH/lv.rows));
     }else{
