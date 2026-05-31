@@ -1075,13 +1075,13 @@ const G={
     const bd=document.getElementById('board');
     let sz;
     if(this.isDesktop()){
-      // Use actual board-area width for bigger, space-filling board
-      const ba=document.getElementById('board-area');
-      const availW=Math.max(300,(ba?ba.getBoundingClientRect().width:600)-20);
-      const baH=ba?ba.getBoundingClientRect().height:500;
+      // viewport - side panel (290) - padding (64px total) - gap (24px) - board padding (16px)
+      const availW=Math.max(400, window.innerWidth - 290 - 64 - 24 - 16);
+      // viewport - HUD (~52px) - target (~32px) - prog (6px) - game-body padding (24px) - board padding (16px)
+      const availH=Math.max(300, window.innerHeight - 130);
       const szW=Math.floor(availW/lv.cols);
-      const szH=Math.floor((baH-20)/lv.rows);
-      sz=Math.min(64,szW,szH); // larger cap on desktop: 64px
+      const szH=Math.floor(availH/lv.rows);
+      sz=Math.min(64, szW, szH);
     }else{
       const hud=document.querySelector('.hud');
       const tbar=document.getElementById('target-bar');
@@ -1210,10 +1210,9 @@ const G={
     const lv=this.lv;
     let sz;
     if(this.isDesktop()){
-      const availW=Math.max(300,baRect.width-20);
-      const szW=Math.floor(availW/lv.cols);
-      const szH=Math.floor((baRect.height-20)/lv.rows);
-      sz=Math.min(64,szW,szH);
+      const availW=Math.max(400, window.innerWidth - 290 - 64 - 24 - 16);
+      const availH=Math.max(300, window.innerHeight - 130);
+      sz=Math.min(64,Math.floor(availW/lv.cols),Math.floor(availH/lv.rows));
     }else{
       const hud=document.querySelector('.hud');
       const mbar=document.getElementById('mobile-bar');
@@ -1636,6 +1635,17 @@ Confetti.init();
 
 // Enter key on username input
 document.getElementById('un-input').addEventListener('keydown',e=>{if(e.key==='Enter')G.saveUsername();});
+
+// Re-render board on resize (desktop window resize)
+let _resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(_resizeTimer);
+  _resizeTimer=setTimeout(()=>{
+    if(G.lv&&G.board.length&&document.getElementById('s-game').classList.contains('on')){
+      G.renderBoard();
+    }
+  },150);
+});
 </script>
 </body>
 </html>
