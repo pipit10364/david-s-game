@@ -133,17 +133,98 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 /* ══ GAME — DESKTOP ══ */
 @media(min-width:860px){
   #s-game{flex-direction:column;height:100vh;overflow:hidden}
-  .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1100px;margin:0 auto;padding:16px 24px;gap:20px;min-height:0;overflow:hidden}
-  .board-area{flex:0 0 auto;padding:0;align-items:flex-start;justify-content:center;overflow:hidden}
-  .side-panel{display:flex;flex-direction:column;flex:1;gap:10px;min-width:240px;max-width:300px;overflow-y:auto;overflow-x:hidden;padding-bottom:8px}
-  .bottom-bar{border-top:none;background:transparent;justify-content:flex-start;padding:0;flex-wrap:wrap;gap:8px}
-  .fact-zone{position:static;pointer-events:auto;align-items:stretch}
+  .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1400px;margin:0 auto;padding:12px 32px;gap:24px;min-height:0;overflow:hidden}
+  /* Board fills all remaining space */
+  .board-area{flex:1;min-width:0;padding:0;align-items:flex-start;justify-content:center;overflow:hidden}
+  /* Side panel: fixed 290px */
+  .side-panel{display:flex;flex-direction:column;flex:0 0 290px;gap:8px;overflow:hidden;padding-bottom:4px}
+  .bottom-bar{border-top:none;background:transparent;justify-content:flex-start;padding:0;flex-wrap:wrap;gap:6px}
+  .fact-zone{position:static;pointer-events:auto;align-items:stretch;flex:1;min-height:80px;overflow:hidden}
   #mobile-bar{display:none}
-  /* David card compact on desktop */
-  .david-avatar{width:80px;height:80px}
-  .david-card{padding:12px;gap:8px;flex-direction:row;align-items:flex-start}
+  .david-avatar{width:72px;height:72px;flex-shrink:0}
+  .david-card{padding:10px;gap:8px;flex-direction:row;align-items:flex-start}
   .david-name{display:none}
-  .david-speech{min-height:36px;font-size:10.5px}
+  .david-speech{min-height:32px;font-size:10.5px;flex:1}
+}
+/* NO shake animation on desktop david card on mobile */
+.hud-david-mini{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:1.5px solid var(--border);display:block;margin:0 auto 2px;background:var(--sky2)}
+@media(min-width:860px){.hud-david-mini{display:none}}
+
+/* No-react shake + red flash */
+@keyframes noreactShake{
+  0%,100%{transform:translateX(0) scale(1)}
+  20%{transform:translateX(-5px) scale(.94)}
+  40%{transform:translateX(5px) scale(.94)}
+  60%{transform:translateX(-4px) scale(.96)}
+  80%{transform:translateX(4px) scale(.96)}
+}
+.cell.noreact-anim{
+  animation:noreactShake .38s ease!important;
+  border-color:#e04040!important;
+  box-shadow:0 0 0 3px rgba(224,64,64,.3)!important;
+  background:rgba(255,200,200,.6)!important;
+}
+
+/* Mobile: hide fact paragraph, just show formula + name */
+@media(max-width:859px){
+  .fact-zone-toast{display:none!important} /* replaced by david-zone */
+}
+
+/* ══ MOBILE DAVID ZONE ══ */
+.david-zone{
+  display:flex;align-items:flex-end;gap:10px;
+  padding:6px 10px 6px;width:100%;
+  background:var(--panel);border-top:1px solid var(--border);
+  flex-shrink:0;overflow:hidden;
+  transition:all .3s ease;
+}
+.dz-empty{min-height:0;padding:0;border-top:none}
+@media(min-width:860px){.david-zone{display:none}}
+.dz-avatar{
+  width:44px;height:44px;border-radius:50%;
+  object-fit:cover;object-position:center top;
+  border:2px solid var(--border);flex-shrink:0;
+  background:linear-gradient(135deg,#e8f6fc,#d0ecf8);
+}
+.dz-bubble{
+  flex:1;background:var(--gold-light);
+  border:1.5px solid #e8c860;border-radius:12px;border-bottom-left-radius:3px;
+  padding:7px 10px;animation:slideUp .25s ease;
+}
+.dz-bubble.nope{background:#fff0f0;border-color:#f0a0a0}
+.dz-reaction{font-size:13px;font-weight:900;color:var(--gold)}
+.dz-bubble.nope .dz-reaction{color:#c04040}
+.dz-name{font-size:11px;font-weight:800;color:var(--ink2)}
+.dz-fact{font-size:10.5px;color:var(--ink2);line-height:1.5;margin-top:3px;opacity:.85}
+
+/* ══ END SCREEN INLINE LEADERBOARD ══ */
+.end-lb-section{
+  width:100%;max-width:360px;
+  background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:20px;overflow:hidden;
+  flex-shrink:0;
+}
+.end-lb-head{
+  padding:10px 16px;
+  background:rgba(255,255,255,.06);
+  font-family:'Fredoka One',cursive;font-size:16px;color:#fff;
+  display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.end-lb-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
+.end-lb-row:last-child{border-bottom:none}
+.end-lb-row.me{background:rgba(212,138,8,.18)}
+.end-lb-rank{font-family:'Fredoka One',cursive;font-size:16px;color:rgba(255,255,255,.3);width:28px;text-align:center}
+.end-lb-rank.g{color:#ffd700}.end-lb-rank.s{color:#c8d0d8}.end-lb-rank.b{color:#cd8040}
+.end-lb-user{flex:1;font-weight:800;font-size:13px;color:#fff}
+.end-lb-score{font-family:'Fredoka One',cursive;font-size:16px;color:#a8d8ef}
+.end-lb-loading{padding:16px;text-align:center;font-size:12px;color:rgba(255,255,255,.4);font-weight:700}
+#s-end{overflow-y:auto;padding-bottom:24px}
+
+/* Mobile bottom safe area */
+@media(max-width:859px){
+  .bottom-bar{padding-bottom:max(5px,env(safe-area-inset-bottom,5px))}
 }
 .david-card{background:var(--panel);border:1.5px solid var(--border);border-radius:18px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:var(--shadow)}
 .david-avatar{width:110px;height:110px;background:linear-gradient(135deg,#e8f6fc,#d0ecf8);border:2px solid var(--border);border-radius:16px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;flex-shrink:0;position:relative}
@@ -404,7 +485,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="un-box">
     <div class="un-ico">👤</div>
     <div class="un-title">Username Instagram</div>
-    <div class="un-desc">Masukkan username Instagram untuk masuk leaderboard. Nama ini akan tampil di papan skor global.</div>
+    <div class="un-desc">Masukkan username Instagram untuk masuk leaderboard. Nama ini akan tampil di papan skor global.<br><br><small style="opacity:.6">💡 Pakai username yang sama di semua device untuk skor yang sinkron.</small></div>
     <div class="un-field">
       <span class="un-at">@</span>
       <input class="un-input" id="un-input" type="text" placeholder="username_ig" maxlength="30" autocorrect="off" autocapitalize="none" spellcheck="false">
@@ -445,7 +526,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 <div id="s-game" class="screen">
   <div class="hud">
     <div class="hud-block"><div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div></div>
-    <div class="hud-block"><div class="hud-lv" id="h-lv">Level 1</div><div class="hud-val" id="h-score">0</div><div class="hud-lbl">Skor</div></div>
+    <div class="hud-block">
+      <img class="hud-david-mini" id="hud-david-mini" src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="" onerror="this.style.display='none'">
+      <div class="hud-lv" id="h-lv">Level 1</div>
+      <div class="hud-val" id="h-score">0</div>
+      <div class="hud-lbl">Skor</div>
+    </div>
     <div class="hud-block"><div class="hud-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
   </div>
   <div class="target-bar" id="target-bar"></div>
@@ -453,7 +539,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
   <div class="game-body">
     <div class="board-area" id="board-area">
-      <!-- Mobile fact toast: appears at top of board area -->
       <div id="fact-zone-mobile" class="fact-zone-toast"></div>
       <div class="board" id="board"></div>
     </div>
@@ -468,13 +553,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
         </div>
         <div class="david-name">David 🧪</div>
         <div class="david-speech" id="david-speech">Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!</div>
-      </div>
-      <div class="stats-card">
-        <div class="stat-row"><div class="stat-label">Moves tersisa</div><div class="stat-val" id="sp-moves">—</div></div>
-        <div class="stat-divider"></div>
-        <div class="stat-row"><div class="stat-label">Total skor</div><div class="stat-val" id="sp-score">0</div></div>
-        <div class="stat-divider"></div>
-        <div class="stat-row"><div class="stat-label">Reaksi berhasil</div><div class="stat-val" id="sp-rx">0</div></div>
       </div>
       <div class="rx-history" id="rx-history">
         <div class="rx-history-title">Riwayat Reaksi</div>
@@ -498,6 +576,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
     <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
   </div>
+  <!-- Mobile David zone: shows David + fact bubble below buttons -->
+  <div class="david-zone dz-empty" id="david-zone"></div>
 </div>
 
 <!-- ══ END SCREEN ══ -->
@@ -516,13 +596,16 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     </div>
     <div id="end-hs" class="end-hs" style="display:none">🏆 Rekor Baru! <span id="end-hs-val"></span></div>
     <div id="end-prev" class="end-prev" style="display:none">High score sebelumnya: <strong id="end-prev-val" style="color:#fff"></strong></div>
-    <div class="end-lb" id="end-lb"></div>
     <div class="end-btns">
       <button class="btn-end-p" id="end-btn1" onclick="G.endBtn1()">Level Berikutnya →</button>
       <button class="btn-end-s" onclick="G.endBtn2()">Ulang Level</button>
-      <button class="btn-end-lb" onclick="G.showLB('end')">🏆 Lihat Leaderboard</button>
       <button class="btn-end-t" onclick="G.toMap()">← Ke Map</button>
     </div>
+  </div>
+  <!-- Inline leaderboard (Qurban-style, loads automatically) -->
+  <div class="end-lb-section" id="end-lb-section" style="display:none">
+    <div class="end-lb-head">🏆 Leaderboard</div>
+    <div id="end-lb-rows"><div class="end-lb-loading">⏳ Memuat...</div></div>
   </div>
 </div>
 
@@ -839,6 +922,7 @@ const G={
 
   // ── MAP ──
   toMap(){
+    clearTimeout(this._lbTimer);Confetti.stop();
     this.show('s-map');clearTimeout(this.idleTimer);this.buildMap();
     const nameEl=document.getElementById('map-uname');
     const btnEl=document.getElementById('map-login-btn');
@@ -989,26 +1073,29 @@ const G={
   renderBoard(){
     const lv=this.lv,b=this.board;
     const bd=document.getElementById('board');
-
-    // Calculate max cell size from both width AND height
     let sz;
     if(this.isDesktop()){
-      const availW=Math.min(window.innerWidth*.48,520);
-      sz=Math.min(48,Math.floor((availW-24)/lv.cols));
+      // Use actual board-area width for bigger, space-filling board
+      const ba=document.getElementById('board-area');
+      const availW=Math.max(300,(ba?ba.getBoundingClientRect().width:600)-20);
+      const baH=ba?ba.getBoundingClientRect().height:500;
+      const szW=Math.floor(availW/lv.cols);
+      const szH=Math.floor((baH-20)/lv.rows);
+      sz=Math.min(64,szW,szH); // larger cap on desktop: 64px
     }else{
-      // Mobile: measure actual available space for board
       const hud=document.querySelector('.hud');
       const tbar=document.getElementById('target-bar');
       const mbar=document.getElementById('mobile-bar');
       const prog=document.querySelector('.prog-wrap');
-      const usedH=(hud?hud.offsetHeight:58)+(tbar?tbar.offsetHeight:36)+(prog?prog.offsetHeight:6)+(mbar?mbar.offsetHeight:52)+28;
+      const dzone=document.getElementById('david-zone');
+      const usedH=(hud?hud.offsetHeight:52)+(tbar?tbar.offsetHeight:32)+(prog?prog.offsetHeight:6)+(mbar?mbar.offsetHeight:48)+(dzone&&!dzone.classList.contains('dz-empty')?60:0)+20;
       const availH=window.innerHeight-usedH;
-      const availW=Math.min(window.innerWidth-16,400);
-      const szW=Math.floor((availW-24)/lv.cols);
-      const szH=Math.floor((availH-8)/lv.rows); // less vertical padding
+      const availW=Math.min(window.innerWidth-12,400);
+      const szW=Math.floor((availW-20)/lv.cols);
+      const szH=Math.floor((availH-8)/lv.rows);
       sz=Math.min(48,szW,szH);
     }
-
+    sz=Math.max(24,sz); // never smaller than 24px
     bd.style.gridTemplateColumns=`repeat(${lv.cols},${sz}px)`;
     bd.style.gap='3px';
     bd.style.padding='8px';
@@ -1078,10 +1165,14 @@ const G={
   },
 
   noReact(r1,c1,r2,c2){
-    // Standard match-3: show swap briefly, swap BACK, -1 move, reset streak
+    // Swap visually, show shake+red flash, then swap back
     const b=this.board;
     [b[r1][c1].elem,b[r2][c2].elem]=[b[r2][c2].elem,b[r1][c1].elem];
     this.renderBoard();
+    // Shake + red flash on both cells
+    const ce1=document.querySelector(`[data-r="${r1}"][data-c="${c1}"]`);
+    const ce2=document.querySelector(`[data-r="${r2}"][data-c="${c2}"]`);
+    [ce1,ce2].forEach(el=>{if(el)el.classList.add('noreact-anim');});
     this.streak=0;
     this.busy=true;
     this.showNoReact();
@@ -1119,34 +1210,66 @@ const G={
     const lv=this.lv;
     let sz;
     if(this.isDesktop()){
-      sz=Math.min(48,Math.floor((Math.min(window.innerWidth*.48,520)-24)/lv.cols));
+      const availW=Math.max(300,baRect.width-20);
+      const szW=Math.floor(availW/lv.cols);
+      const szH=Math.floor((baRect.height-20)/lv.rows);
+      sz=Math.min(64,szW,szH);
     }else{
       const hud=document.querySelector('.hud');
       const mbar=document.getElementById('mobile-bar');
-      const usedH=(hud?hud.offsetHeight:58)+42+28+(mbar?mbar.offsetHeight:52);
-      sz=Math.min(48,Math.floor((Math.min(window.innerWidth-16,400)-24)/lv.cols),Math.floor((window.innerHeight-usedH)/lv.rows));
+      const usedH=(hud?hud.offsetHeight:52)+38+(mbar?mbar.offsetHeight:48)+24;
+      sz=Math.min(48,Math.floor((Math.min(window.innerWidth-12,400)-20)/lv.cols),Math.floor((window.innerHeight-usedH)/lv.rows));
     }
+    sz=Math.max(24,sz);
     const gap=3;
     const el=document.createElement('div');el.className='float-txt';el.textContent='+'+pts;
-    el.style.left=(bdRect.left-baRect.left+c*(sz+gap)+8+sz*.2)+'px';
-    el.style.top=(bdRect.top-baRect.top+r*(sz+gap)+8)+'px';
-    ba.style.position='relative';ba.appendChild(el);
+    el.style.left=(bdRect.left-baRect.left+c*(sz+gap)+sz*.3)+'px';
+    el.style.top=(bdRect.top-baRect.top+r*(sz+gap)+sz*.2)+'px';
+    ba.appendChild(el);
     setTimeout(()=>el.remove(),950);
   },
 
   showFact(rx){
-    const zone=this.factZone();
-    const old=zone.querySelector('.fact-card');if(old)old.remove();
-    const div=document.createElement('div');div.className='fact-card';
-    div.innerHTML=`<div class="fact-reaction">${rx.elems.join(' + ')} → ${rx.product}</div><div class="fact-title">⚗️ ${rx.name}</div><div class="fact-body">${rx.fact}</div>`;
-    zone.appendChild(div);setTimeout(()=>{if(div.parentNode)div.remove();},4500);
+    if(this.isDesktop()){
+      // Desktop: fact card in side panel
+      const zone=document.getElementById('fact-zone-desktop');
+      const old=zone.querySelector('.fact-card');if(old)old.remove();
+      const div=document.createElement('div');div.className='fact-card';
+      div.innerHTML=`<div class="fact-reaction">${rx.elems.join(' + ')} → ${rx.product}</div><div class="fact-title">⚗️ ${rx.name}</div><div class="fact-body">${rx.fact}</div>`;
+      zone.appendChild(div);setTimeout(()=>{if(div.parentNode)div.remove();},4500);
+    }else{
+      // Mobile: David circle + bubble in david-zone
+      const zone=document.getElementById('david-zone');if(!zone)return;
+      zone.classList.remove('dz-empty');
+      zone.innerHTML=`
+        <img class="dz-avatar" src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png" onerror="this.src='https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png'" alt="">
+        <div class="dz-bubble">
+          <div class="dz-reaction">${rx.elems.join(' + ')} → ${rx.product} · ${rx.name}</div>
+          <div class="dz-fact">${rx.fact}</div>
+        </div>`;
+      clearTimeout(this._dzTimer);
+      this._dzTimer=setTimeout(()=>{zone.innerHTML='';zone.classList.add('dz-empty');},4500);
+    }
   },
   showNoReact(){
-    const zone=this.factZone();
-    const old=zone.querySelector('.fact-card');if(old)old.remove();
-    const div=document.createElement('div');div.className='fact-card fact-noreact';
-    div.innerHTML=`<div class="fact-reaction">Tidak bereaksi ❌</div><div class="fact-body">Elemen ini tidak membentuk reaksi langsung. Cek Panduan Reaksi! 📖</div>`;
-    zone.appendChild(div);setTimeout(()=>{if(div.parentNode)div.remove();},2200);
+    if(this.isDesktop()){
+      const zone=document.getElementById('fact-zone-desktop');
+      const old=zone.querySelector('.fact-card');if(old)old.remove();
+      const div=document.createElement('div');div.className='fact-card fact-noreact';
+      div.innerHTML=`<div class="fact-reaction">Tidak bereaksi ❌</div><div class="fact-body">Elemen ini tidak membentuk reaksi langsung. Cek Panduan Reaksi! 📖</div>`;
+      zone.appendChild(div);setTimeout(()=>{if(div.parentNode)div.remove();},2200);
+    }else{
+      const zone=document.getElementById('david-zone');if(!zone)return;
+      zone.classList.remove('dz-empty');
+      zone.innerHTML=`
+        <img class="dz-avatar" src="https://raw.githubusercontent.com/pipit10364/David/main/Untitled11_20260517083604.png" onerror="this.src='https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png'" alt="">
+        <div class="dz-bubble nope">
+          <div class="dz-reaction">Tidak bereaksi ❌</div>
+          <div class="dz-fact">Coba pasangan lain. Buka 📖 Panduan Reaksi untuk melihat semua reaksi!</div>
+        </div>`;
+      clearTimeout(this._dzTimer);
+      this._dzTimer=setTimeout(()=>{zone.innerHTML='';zone.classList.add('dz-empty');},2200);
+    }
   },
 
   updateHUD(){
@@ -1250,9 +1373,6 @@ const G={
       if(prevEl)prevEl.style.display='none';
     }
 
-    const lbEl=document.getElementById('end-lb');
-    if(lbEl)lbEl.textContent=this.username?'⏳ Menyimpan ke leaderboard...':'💡 Login dengan username IG untuk masuk leaderboard!';
-
     const btn1=document.getElementById('end-btn1');
     if(btn1){
       if(isLast){btn1.textContent='🔄 Main Lagi';btn1.onclick=()=>G.toMap();}
@@ -1262,18 +1382,53 @@ const G={
     // ── Show end screen NOW ──
     this.show('s-end');
 
-    // ── Firebase in background (non-blocking) ──
+    // ── Inline leaderboard: show section, fetch in background ──
+    const lbSection=document.getElementById('end-lb-section');
+    const lbRows=document.getElementById('end-lb-rows');
+    if(FB_ON&&lbSection){
+      lbSection.style.display='block';
+      lbRows.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+      fbGetLB().then(entries=>{
+        if(!entries||!entries.length){lbRows.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
+        const medals=['🥇','🥈','🥉'];
+        lbRows.innerHTML='';
+        entries.forEach((e,i)=>{
+          const isMe=G.username&&(e.username==='@'+G.username);
+          const div=document.createElement('div');div.className='end-lb-row'+(isMe?' me':'');
+          const rc=i===0?'g':i===1?'s':i===2?'b':'';
+          div.innerHTML=`<div class="end-lb-rank ${rc}">${medals[i]||(i+1)}</div><div class="end-lb-user">${e.username}${isMe?' 👈':''}</div><div class="end-lb-score">${e.score.toLocaleString()}</div>`;
+          lbRows.appendChild(div);
+        });
+      });
+    }
+
+    // ── Firebase submit in background (non-blocking) ──
     if(this.username&&FB_ON){
       fbSubmit(this.username,this.score,lv.id).then(lbIn=>{
-        if(lbEl)lbEl.textContent=lbIn?'🏆 Skor kamu masuk leaderboard!':'Skor ini tidak mengalahkan rekor-mu di leaderboard.';
-      }).catch(()=>{
-        if(lbEl)lbEl.textContent='';
-      });
+        // Refresh leaderboard if score was submitted
+        if(lbIn){
+          const lbRows=document.getElementById('end-lb-rows');
+          if(lbRows){
+            fbGetLB().then(entries=>{
+              if(!entries||!entries.length)return;
+              const medals=['🥇','🥈','🥉'];
+              lbRows.innerHTML='';
+              entries.forEach((e,i)=>{
+                const isMe=G.username&&(e.username==='@'+G.username);
+                const div=document.createElement('div');div.className='end-lb-row'+(isMe?' me':'');
+                const rc=i===0?'g':i===1?'s':i===2?'b':'';
+                div.innerHTML=`<div class="end-lb-rank ${rc}">${medals[i]||(i+1)}</div><div class="end-lb-user">${e.username}${isMe?' 👈':''}</div><div class="end-lb-score">${e.score.toLocaleString()}</div>`;
+                lbRows.appendChild(div);
+              });
+            });
+          }
+        }
+      }).catch(()=>{});
     }
   },
 
-  endBtn1(){Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next)this.play(next.id);else this.toMap();},
-  endBtn2(){Confetti.stop();this.play(this.lv.id);},
+  endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next)this.play(next.id);else this.toMap();},
+  endBtn2(){clearTimeout(this._lbTimer);Confetti.stop();this.play(this.lv.id);},
 
   // ── LOSE ──
   lose(){
