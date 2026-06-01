@@ -106,7 +106,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .map-lb-btn:hover{background:var(--sky2)}
 
 /* ══ GAME — MOBILE ══ */
-#s-game{background:var(--sky);padding:0;position:relative;width:100%;height:100vh;overflow:hidden}
+#s-game{background:var(--sky);background-image:radial-gradient(circle,rgba(168,216,239,.25) 1px,transparent 1px);background-size:28px 28px;padding:0;position:relative;width:100%;height:100vh;overflow:hidden}
 .hud{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(80,160,210,.08);flex-shrink:0}
 .hud-block{display:flex;flex-direction:column;align-items:center;gap:0}
 .hud-val{font-family:'Fredoka One',cursive;font-size:22px;color:var(--ink);line-height:1}
@@ -116,17 +116,44 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .target-pill{display:flex;align-items:center;gap:4px;background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;font-weight:800;color:var(--ink2)}
 .target-pill.done{opacity:.4;text-decoration:line-through}
 .target-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.prog-wrap{width:100%;height:6px;background:var(--sky2);flex-shrink:0}
-.prog-fill{height:100%;background:linear-gradient(90deg,#50c880,#a0e840);transition:width .4s ease}
+.prog-wrap{width:100%;height:8px;background:var(--sky2);flex-shrink:0}
+.prog-fill{height:100%;background:linear-gradient(90deg,#40c870,#80e840);transition:width .4s ease;border-radius:0 4px 4px 0}
 .game-body{display:flex;flex-direction:column;flex:1;width:100%;min-height:0;overflow:hidden}
 .board-area{display:flex;align-items:flex-start;justify-content:center;padding:4px 4px 0;flex:1;position:relative;min-height:0;overflow:hidden}
 .board{display:grid;gap:3px;padding:8px;background:var(--panel);border-radius:16px;border:1.5px solid var(--border);box-shadow:var(--shadow)}
 .side-panel{display:none}
-.bottom-bar{display:flex;gap:4px;padding:5px 8px;width:100%;background:var(--panel);border-top:1.5px solid var(--border);justify-content:center;flex-wrap:wrap;flex-shrink:0}
-.btn-sm{background:var(--panel2);border:1.5px solid var(--border);border-radius:9px;padding:5px 9px;font-size:10px;font-weight:800;cursor:pointer;color:var(--ink2);font-family:'Nunito',sans-serif;transition:transform .1s,background .1s}
+.bottom-bar{display:flex;gap:6px;padding:6px 10px;width:100%;background:var(--panel);border-top:1.5px solid var(--border);justify-content:center;align-items:center;flex-shrink:0}
+/* Icon boost buttons */
+.btn-boost{
+  position:relative;
+  background:var(--panel2);border:1.5px solid var(--border);
+  border-radius:14px;width:52px;height:52px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;cursor:pointer;color:var(--ink2);
+  font-family:'Nunito',sans-serif;transition:transform .1s,background .1s;
+  flex-shrink:0;
+}
+.btn-boost:hover{background:var(--sky2)}
+.btn-boost:active{transform:scale(.91)}
+.btn-boost .bi{font-size:22px;line-height:1}
+.btn-boost .bl{font-size:8px;font-weight:900;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+.btn-boost .bc-badge{
+  position:absolute;top:4px;right:4px;
+  background:var(--ink);color:#fff;
+  font-size:8px;font-weight:900;
+  border-radius:999px;padding:1px 4px;
+  line-height:1.3;
+}
+.btn-boost .bc-badge.empty{background:#d0d8e0;color:#8a9aaa}
+.btn-boost-guide{background:#fff8e0;border-color:#e8c860}
+.btn-boost-guide .bl{color:#8a6200}
+/* Separator */
+.bar-sep{width:1px;height:36px;background:var(--border);flex-shrink:0;margin:0 2px}
+/* Small text buttons (Guide, Back) */
+.btn-sm{background:transparent;border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer;color:var(--ink2);font-family:'Nunito',sans-serif;transition:transform .1s,background .1s;white-space:nowrap}
 .btn-sm:hover{background:var(--sky2)}
 .btn-sm:active{transform:scale(.93)}
-.btn-back{color:var(--muted)}
+.btn-back{color:var(--muted);border-color:transparent}
 .btn-guide{background:#fff8e0;border-color:#e8c860;color:#8a6200}
 .fact-zone{position:fixed;bottom:68px;left:8px;right:8px;z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center}
 
@@ -134,18 +161,22 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @media(min-width:860px){
   #s-game{flex-direction:column;height:100vh;overflow:hidden}
   .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1400px;margin:0 auto;padding:12px 32px;gap:24px;min-height:0;overflow:hidden}
-  /* Board fills all remaining space */
-  .board-area{flex:1;min-width:0;padding:0;align-items:flex-start;justify-content:center;overflow:hidden}
-  /* Side panel: wider so fact text doesn't wrap/cut */
+  /* Board centered in its area */
+  .board-area{flex:1;min-width:0;padding:0;align-items:center;justify-content:center;overflow:hidden}
+  /* Side panel */
   .side-panel{display:flex;flex-direction:column;flex:0 0 360px;gap:8px;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
-  /* Fact zone: grows naturally, no overflow cut */
+  /* Fact zone right below David */
   .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible}
   .bottom-bar{border-top:none;background:transparent;justify-content:flex-start;padding:0;flex-wrap:wrap;gap:6px}
   #mobile-bar{display:none}
   .david-avatar{width:72px;height:72px;flex-shrink:0}
   .david-card{padding:10px;gap:8px;flex-direction:row;align-items:flex-start}
-  .david-name{display:none}
+  /* Show David name on desktop */
+  .david-name{display:block;font-size:11px;font-family:'Fredoka One',cursive;color:var(--ink2);margin-top:2px;text-align:center}
   .david-speech{min-height:32px;font-size:10.5px;flex:1}
+  /* Desktop boost buttons: slightly smaller, row layout */
+  .btn-boost{width:48px;height:48px}
+  .btn-boost .bi{font-size:20px}
 }
 /* NO shake animation on desktop david card on mobile */
 .hud-david-mini{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:1.5px solid var(--border);display:block;margin:0 auto 2px;background:var(--sky2)}
@@ -173,13 +204,15 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ MOBILE DAVID ZONE ══ */
 .david-zone{
-  display:flex;align-items:flex-end;gap:10px;
-  padding:6px 10px 6px;width:100%;
-  background:var(--panel);border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  padding:7px 12px;width:100%;
+  background:var(--panel2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
   flex-shrink:0;overflow:hidden;
-  transition:all .3s ease;
+  transition:all .3s ease;min-height:56px;
 }
-.dz-empty{min-height:0;padding:0;border-top:none}
+.dz-empty{min-height:0;padding:0;border:none;display:none!important}
 @media(min-width:860px){.david-zone{display:none}}
 .dz-avatar{
   width:44px;height:44px;border-radius:50%;
@@ -415,9 +448,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .dead-btn-y{background:linear-gradient(135deg,#3aae5c,#58d278);color:#fff}
 .dead-btn-n{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);color:#fff}
 
-/* ══ BOOST CHARGE BADGE ══ */
-.bc{font-size:9px;font-weight:900;background:rgba(0,0,0,.12);border-radius:999px;padding:1px 5px;margin-left:3px;vertical-align:middle}
-.bc.empty{opacity:.35;text-decoration:line-through}
+/* bc legacy removed — see .bc-badge in .btn-boost */
 
 /* ══ TUTORIAL ══ */
 .tut-label{
@@ -552,33 +583,62 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
           <img id="d-think" src="https://raw.githubusercontent.com/pipit10364/David/main/david%20thinking.png" alt="" class="hidden" onerror="this.style.display='none'">
           <img id="d-wow"   src="https://raw.githubusercontent.com/pipit10364/David/main/Untitled11_20260517083604.png" alt="" class="hidden" onerror="this.style.display='none'">
         </div>
-        <div class="david-name">David 🧪</div>
-        <div class="david-speech" id="david-speech">Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <div class="david-name">David 🧪</div>
+          <div class="david-speech" id="david-speech">Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!</div>
+        </div>
+      </div>
+      <div class="fact-zone" id="fact-zone-desktop"></div>
+      <div class="bottom-bar">
+        <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
+          <div class="bi">💡</div>
+          <div class="bl">Hint</div>
+          <span class="bc-badge" id="bc-hint-d">×3</span>
+        </button>
+        <button class="btn-boost" onclick="G.boost('shuffle')" title="Shuffle">
+          <div class="bi">🔀</div>
+          <div class="bl">Shuffle</div>
+          <span class="bc-badge" id="bc-shuffle-d">×2</span>
+        </button>
+        <button class="btn-boost" onclick="G.boost('catalyst')" title="Catalyst">
+          <div class="bi">⚡</div>
+          <div class="bl">Catalyst</div>
+          <span class="bc-badge" id="bc-catalyst-d">×2</span>
+        </button>
+        <div class="bar-sep"></div>
+        <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
+        <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
       </div>
       <div class="rx-history" id="rx-history">
         <div class="rx-history-title">Riwayat Reaksi</div>
         <div class="rx-empty" id="rx-empty">Belum ada reaksi...</div>
       </div>
-      <div class="bottom-bar">
-        <button class="btn-sm" onclick="G.boost('hint')">💡 Hint<span class="bc" id="bc-hint-d">×3</span></button>
-        <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle<span class="bc" id="bc-shuffle-d">×2</span></button>
-        <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst<span class="bc" id="bc-catalyst-d">×2</span></button>
-        <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
-        <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
-      </div>
-      <div class="fact-zone" id="fact-zone-desktop"></div>
     </div>
   </div>
 
+  <!-- Mobile David zone: sits between board and action bar -->
+  <div class="david-zone dz-empty" id="david-zone"></div>
+
   <div class="bottom-bar" id="mobile-bar">
-    <button class="btn-sm" onclick="G.boost('hint')">💡 Hint<span class="bc" id="bc-hint-m">×3</span></button>
-    <button class="btn-sm" onclick="G.boost('shuffle')">🔀 Shuffle<span class="bc" id="bc-shuffle-m">×2</span></button>
-    <button class="btn-sm" onclick="G.boost('catalyst')">⚡ Catalyst<span class="bc" id="bc-catalyst-m">×2</span></button>
+    <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
+      <div class="bi">💡</div>
+      <div class="bl">Hint</div>
+      <span class="bc-badge" id="bc-hint-m">×3</span>
+    </button>
+    <button class="btn-boost" onclick="G.boost('shuffle')" title="Shuffle">
+      <div class="bi">🔀</div>
+      <div class="bl">Shuffle</div>
+      <span class="bc-badge" id="bc-shuffle-m">×2</span>
+    </button>
+    <button class="btn-boost" onclick="G.boost('catalyst')" title="Catalyst">
+      <div class="bi">⚡</div>
+      <div class="bl">Catalyst</div>
+      <span class="bc-badge" id="bc-catalyst-m">×2</span>
+    </button>
+    <div class="bar-sep"></div>
     <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
     <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
   </div>
-  <!-- Mobile David zone: shows David + fact bubble below buttons -->
-  <div class="david-zone dz-empty" id="david-zone"></div>
 </div>
 
 <!-- ══ END SCREEN ══ -->
@@ -1088,7 +1148,8 @@ const G={
       const mbar=document.getElementById('mobile-bar');
       const prog=document.querySelector('.prog-wrap');
       const dzone=document.getElementById('david-zone');
-      const usedH=(hud?hud.offsetHeight:52)+(tbar?tbar.offsetHeight:32)+(prog?prog.offsetHeight:6)+(mbar?mbar.offsetHeight:48)+(dzone&&!dzone.classList.contains('dz-empty')?60:0)+20;
+      const dzH=dzone&&!dzone.classList.contains('dz-empty')?58:0;
+      const usedH=(hud?hud.offsetHeight:52)+(tbar?tbar.offsetHeight:32)+(prog?prog.offsetHeight:8)+(mbar?mbar.offsetHeight:64)+dzH+20;
       const availH=window.innerHeight-usedH;
       const availW=Math.min(window.innerWidth-12,400);
       const szW=Math.floor((availW-20)/lv.cols);
@@ -1521,7 +1582,10 @@ const G={
       [id1,id2].forEach(id=>{
         const el=document.getElementById(id);if(!el)return;
         el.textContent=txt;
-        if(n<=0)el.classList.add('empty');else el.classList.remove('empty');
+        if(n<=0){el.classList.add('empty');}else{el.classList.remove('empty');}
+        // Dim the parent button too
+        const btn=el.closest('.btn-boost');
+        if(btn){btn.style.opacity=n<=0?'.45':'1';btn.style.pointerEvents=n<=0?'none':'auto';}
       });
     });
   },
