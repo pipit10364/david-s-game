@@ -184,36 +184,38 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .dt-boost-float .btn-boost .bi{font-size:20px}
   /* Side panel — right side, 2-column internal layout */
   .side-panel{
-    display:flex;flex-direction:column;flex:0 0 300px;
+    display:flex;flex-direction:column;flex:0 0 420px;
     background:rgba(255,255,255,.06);border-left:1px solid rgba(255,255,255,.1);
     overflow:hidden;
   }
   .side-panel-cols{display:flex;flex:1;min-height:0;overflow:hidden}
-  /* David + Fact column */
+  /* David + Fact column — slightly wider */
   .col-david{
-    flex:1;display:flex;flex-direction:column;gap:8px;
-    padding:12px 10px;border-right:1px solid rgba(255,255,255,.08);
+    flex:0 0 220px;display:flex;flex-direction:column;gap:10px;
+    padding:14px 12px;border-right:1px solid rgba(255,255,255,.08);
     overflow-y:auto;
   }
   .col-david::-webkit-scrollbar{width:3px}
   .col-david::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-  /* Riwayat column */
-  .col-rx{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  /* Riwayat column — takes remaining space, expands naturally */
+  .col-rx{flex:1;display:flex;flex-direction:column;overflow-y:auto;min-width:180px}
+  .col-rx::-webkit-scrollbar{width:3px}
+  .col-rx::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
   /* Bottom bar inside side panel — none, hide on desktop */
   .bottom-bar{display:none}
   #mobile-bar{display:none}
   /* David card desktop */
   .david-card{
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;
+    border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;
   }
-  .david-avatar{width:60px;height:60px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);background:#c4e5f5;flex-shrink:0}
+  .david-avatar{width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);background:#c4e5f5;flex-shrink:0}
   .david-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top}
-  .david-name{display:block;font-size:10px;font-family:'Fredoka One',cursive;color:rgba(168,216,239,.9);text-align:center}
+  .david-name{display:block;font-size:11px;font-family:'Fredoka One',cursive;color:rgba(168,216,239,.9);text-align:center}
   .david-speech{
-    font-size:10px;color:rgba(200,232,248,.85);line-height:1.55;
+    font-size:12px;color:rgba(200,232,248,.9);line-height:1.6;
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-    border-radius:8px;padding:6px 8px;width:100%;
+    border-radius:8px;padding:8px 10px;width:100%;
   }
   /* Fact zone desktop */
   .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible;padding:0}
@@ -221,21 +223,22 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     background:rgba(255,255,255,.07)!important;
     border:1px solid rgba(255,255,255,.12)!important;
     box-shadow:none!important;
+    border-radius:10px!important;
+    padding:10px 12px!important;
   }
-  .fact-reaction{color:#ffd060!important}
-  .fact-title{color:rgba(168,216,239,.9)!important}
-  .fact-body{color:rgba(200,232,248,.75)!important}
+  .fact-reaction{color:#ffd060!important;font-size:13px!important}
+  .fact-title{color:rgba(168,216,239,.9)!important;font-size:11px!important}
+  .fact-body{color:rgba(200,232,248,.8)!important;font-size:11px!important;line-height:1.6!important}
   .fact-noreact{background:rgba(200,60,60,.12)!important;border-color:rgba(220,100,100,.25)!important}
   .fact-noreact .fact-reaction{color:#ff9090!important}
-  /* Riwayat desktop */
+  /* Riwayat desktop — no max items, expands freely */
   .rx-history{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-  .rx-history::-webkit-scrollbar{width:3px}
-  .rx-history::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-  .rx-history-title{font-size:8px;font-weight:800;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;padding:8px 10px 4px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-  .rx-item{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:9px}
-  .rx-product{color:#ffd060;font-weight:800}
-  .rx-pts{color:#60d890;font-weight:900}
-  .rx-empty{font-size:10px;color:rgba(122,170,191,.5);padding:12px 10px;font-style:italic}
+  .rx-history-title{font-size:9px;font-weight:800;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;padding:10px 12px 6px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+  .rx-item{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;gap:6px}
+  .rx-badge{font-size:10px;color:rgba(168,216,239,.7);font-weight:700;flex-shrink:0}
+  .rx-product{color:#ffd060;font-weight:800;flex:1}
+  .rx-pts{color:#60d890;font-weight:900;flex-shrink:0}
+  .rx-empty{font-size:11px;color:rgba(122,170,191,.5);padding:14px 12px;font-style:italic}
   /* target bar dark */
   .target-bar{background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08)}
   .target-pill{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:rgba(200,232,248,.8)}
@@ -244,6 +247,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .prog-wrap{background:rgba(255,255,255,.1)}
   /* hud-david-mini hidden on desktop */
   .hud-david-mini{display:none}
+  /* also remove log limit — show all rx history on desktop */
+  .rx-history .rx-item:nth-child(n+9){display:flex}
 }
 /* NO shake animation on desktop david card on mobile */
 .hud-david-mini{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:1.5px solid var(--border);display:block;margin:0 auto 2px;background:var(--sky2)}
@@ -1407,8 +1412,8 @@ const G={
     const bd=document.getElementById('board');
     let sz;
     if(this.isDesktop()){
-      // viewport - right panel (300px) - boost col (66px) - board padding (32px)
-      const availW=Math.max(300, window.innerWidth - 300 - 66 - 32);
+      // viewport - right panel (420px) - boost col (66px) - board padding (32px)
+      const availW=Math.max(300, window.innerWidth - 420 - 66 - 32);
       const availH=Math.max(300, window.innerHeight - 130);
       const szW=Math.floor(availW/lv.cols);
       const szH=Math.floor(availH/lv.rows);
@@ -1489,7 +1494,9 @@ const G={
     this.comboBonus+=earnedPts-rx.pts;
     this.score+=earnedPts;
     this.reactions++;
-    this.rxLog.unshift(rx);if(this.rxLog.length>8)this.rxLog.pop();
+    this.rxLog.unshift(rx);
+    const logLimit=this.isDesktop()?50:8;
+    if(this.rxLog.length>logLimit)this.rxLog.pop();
     this.floatPts(earnedPts,r1,c1);
     if(this.streak>=2){this.showCombo(this.streak,mult,r2,c2);SFX.combo(this.streak);}
     else{SFX.react();}
@@ -1553,7 +1560,7 @@ const G={
     const lv=this.lv;
     let sz;
     if(this.isDesktop()){
-      const availW=Math.max(300, window.innerWidth - 300 - 66 - 32);
+      const availW=Math.max(300, window.innerWidth - 420 - 66 - 32);
       const availH=Math.max(300, window.innerHeight - 130);
       sz=Math.min(64,Math.floor(availW/lv.cols),Math.floor(availH/lv.rows));
     }else{
