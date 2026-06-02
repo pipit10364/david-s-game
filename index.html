@@ -18,8 +18,8 @@
 html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito',sans-serif;color:var(--ink);overflow-x:hidden}
 .screen{display:none;flex-direction:column;align-items:center;min-height:100vh}
 .screen.on{display:flex}
-/* Game screen specifically needs exact height, not min-height */
-#s-game.on{min-height:unset;height:100vh}
+/* Game screen: use dvh so Chrome mobile browser bars don't eat the layout */
+#s-game.on{min-height:unset;height:100vh;height:100dvh}
 
 /* ══ INTRO ══ */
 #s-intro{
@@ -99,6 +99,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .lvl-bubble.unlocked{background:#e6f8ec;border-color:#70c880;color:#1a6030}
 .lvl-bubble.current{background:#e4eeff;border-color:#6090e0;color:#1a3888;animation:boblv 2s ease-in-out infinite}
 .lvl-bubble.done{background:#e4f2fc;border-color:#60aad0;color:#1a4870}
+.lvl-bubble.lvl-cleared{background:linear-gradient(135deg,#1a3a50,#2a5a78)!important;border-color:#ffd700!important;color:#ffd700!important;cursor:default!important;box-shadow:0 0 0 2px rgba(255,215,0,.25);}
+.lvl-bubble.lvl-cleared:hover{transform:none!important}
 .lvl-stars{font-size:11px;letter-spacing:2px;color:var(--gold)}
 .lv-name{font-size:9px;color:var(--muted);text-align:center;max-width:72px;line-height:1.3;font-weight:800}
 @keyframes boblv{0%,100%{box-shadow:0 0 0 0 rgba(96,144,224,.35)}50%{box-shadow:0 0 0 8px rgba(96,144,224,0)}}
@@ -106,77 +108,142 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .map-lb-btn:hover{background:var(--sky2)}
 
 /* ══ GAME — MOBILE ══ */
-#s-game{background:var(--sky);background-image:radial-gradient(circle,rgba(168,216,239,.25) 1px,transparent 1px);background-size:28px 28px;padding:0;position:relative;width:100%;height:100vh;overflow:hidden}
-.hud{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(80,160,210,.08);flex-shrink:0}
+#s-game{
+  background:#1a3a50;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(64,180,120,.07) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(80,140,200,.09) 0%, transparent 45%),
+    repeating-linear-gradient(0deg, transparent, transparent 32px, rgba(168,216,239,.03) 32px, rgba(168,216,239,.03) 33px),
+    repeating-linear-gradient(90deg, transparent, transparent 32px, rgba(168,216,239,.03) 32px, rgba(168,216,239,.03) 33px);
+  padding:0;position:relative;width:100%;height:100vh;height:100dvh;overflow:hidden
+}
+.hud{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);box-shadow:0 2px 8px rgba(80,160,210,.08);flex-shrink:0;gap:6px}
+.hud-icon-btn{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;cursor:pointer;transition:transform .1s,background .1s;border:1.5px solid}
+.hud-icon-btn:active{transform:scale(.9)}
+.hud-back{background:var(--panel2);border-color:var(--border);color:var(--ink2)}
+.hud-guide{background:#fff8e0;border-color:#e8c860;color:#8a6200}
 .hud-block{display:flex;flex-direction:column;align-items:center;gap:0}
+.hud-mid{flex:1;display:flex;justify-content:space-evenly;align-items:center}
 .hud-val{font-family:'Fredoka One',cursive;font-size:22px;color:var(--ink);line-height:1}
 .hud-lbl{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
 .hud-lv{font-size:10px;color:var(--ink2);font-weight:800;text-align:center;max-width:150px;line-height:1.2}
-.target-bar{display:flex;gap:5px;padding:4px 10px;width:100%;overflow-x:auto;background:var(--panel2);border-bottom:1px solid var(--border);flex-shrink:0}
-.target-pill{display:flex;align-items:center;gap:4px;background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;font-weight:800;color:var(--ink2)}
-.target-pill.done{opacity:.4;text-decoration:line-through}
+.target-bar{display:flex;gap:5px;padding:4px 10px;width:100%;overflow-x:auto;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.target-pill{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;font-weight:800;color:rgba(200,232,248,.8)}
+.target-pill.done{opacity:.3;text-decoration:line-through}
 .target-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.prog-wrap{width:100%;height:8px;background:var(--sky2);flex-shrink:0}
+.prog-wrap{width:100%;height:8px;background:rgba(255,255,255,.1);flex-shrink:0}
 .prog-fill{height:100%;background:linear-gradient(90deg,#40c870,#80e840);transition:width .4s ease;border-radius:0 4px 4px 0}
 .game-body{display:flex;flex-direction:column;flex:1;width:100%;min-height:0;overflow:hidden}
 .board-area{display:flex;align-items:flex-start;justify-content:center;padding:4px 4px 0;flex:1;position:relative;min-height:0;overflow:hidden}
+/* hide desktop boost col on mobile */
+.dt-boost-float{display:none}
 .board{display:grid;gap:3px;padding:8px;background:var(--panel);border-radius:16px;border:1.5px solid var(--border);box-shadow:var(--shadow)}
 .side-panel{display:none}
-.bottom-bar{display:flex;gap:6px;padding:6px 10px;width:100%;background:var(--panel);border-top:1.5px solid var(--border);justify-content:center;align-items:center;flex-shrink:0}
+.bottom-bar{display:flex;gap:6px;padding:6px 10px;width:100%;background:rgba(10,28,44,.75);border-top:1px solid rgba(255,255,255,.1);justify-content:center;align-items:center;flex-shrink:0}
 /* Icon boost buttons */
 .btn-boost{
   position:relative;
-  background:var(--panel2);border:1.5px solid var(--border);
+  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);
   border-radius:14px;width:52px;height:52px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:1px;cursor:pointer;color:var(--ink2);
   font-family:'Nunito',sans-serif;transition:transform .1s,background .1s;
   flex-shrink:0;
 }
-.btn-boost:hover{background:var(--sky2)}
+.btn-boost:hover{background:rgba(255,255,255,.2)}
 .btn-boost:active{transform:scale(.91)}
 .btn-boost .bi{font-size:22px;line-height:1}
-.btn-boost .bl{font-size:8px;font-weight:900;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+.btn-boost .bl{font-size:8px;font-weight:900;color:rgba(200,232,248,.7);letter-spacing:.3px;text-transform:uppercase}
 .btn-boost .bc-badge{
   position:absolute;top:4px;right:4px;
-  background:var(--ink);color:#fff;
+  background:#ffd060;color:#1a3a50;
   font-size:8px;font-weight:900;
   border-radius:999px;padding:1px 4px;
   line-height:1.3;
 }
-.btn-boost .bc-badge.empty{background:#d0d8e0;color:#8a9aaa}
-.btn-boost-guide{background:#fff8e0;border-color:#e8c860}
-.btn-boost-guide .bl{color:#8a6200}
+.btn-boost .bc-badge.empty{background:rgba(255,255,255,.2);color:rgba(200,232,248,.5)}
 /* Separator */
-.bar-sep{width:1px;height:36px;background:var(--border);flex-shrink:0;margin:0 2px}
-/* Small text buttons (Guide, Back) */
-.btn-sm{background:transparent;border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer;color:var(--ink2);font-family:'Nunito',sans-serif;transition:transform .1s,background .1s;white-space:nowrap}
-.btn-sm:hover{background:var(--sky2)}
+.bar-sep{width:1px;height:36px;background:rgba(255,255,255,.15);flex-shrink:0;margin:0 2px}
+/* Small text buttons (Guide, Back) — hidden on mobile now */
+.btn-sm{background:transparent;border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer;color:rgba(200,232,248,.7);font-family:'Nunito',sans-serif;transition:transform .1s,background .1s;white-space:nowrap}
+.btn-sm:hover{background:rgba(255,255,255,.1)}
 .btn-sm:active{transform:scale(.93)}
-.btn-back{color:var(--muted);border-color:transparent}
-.btn-guide{background:#fff8e0;border-color:#e8c860;color:#8a6200}
+.btn-back{color:rgba(200,232,248,.5);border-color:transparent}
+.btn-guide{background:rgba(255,240,180,.12);border-color:rgba(232,200,96,.4);color:#ffd060}
 .fact-zone{position:fixed;bottom:68px;left:8px;right:8px;z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center}
 
 /* ══ GAME — DESKTOP ══ */
 @media(min-width:860px){
-  #s-game{flex-direction:column;height:100vh;overflow:hidden}
-  .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1400px;margin:0 auto;padding:12px 32px;gap:24px;min-height:0;overflow:hidden}
-  /* Board centered in its area */
-  .board-area{flex:1;min-width:0;padding:0;align-items:center;justify-content:center;overflow:hidden}
-  /* Side panel */
-  .side-panel{display:flex;flex-direction:column;flex:0 0 360px;gap:8px;overflow-y:auto;overflow-x:hidden;padding-bottom:4px}
-  /* Fact zone right below David */
-  .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible}
-  .bottom-bar{border-top:none;background:transparent;justify-content:flex-start;padding:0;flex-wrap:wrap;gap:6px}
+  #s-game{flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+  .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1400px;margin:0 auto;padding:0;gap:0;min-height:0;overflow:hidden}
+  /* Board area — centered, fills space */
+  .board-area{flex:1;min-width:0;padding:16px;align-items:center;justify-content:center;overflow:hidden;position:relative}
+  /* Floating boost — LEFT of board */
+  .dt-boost-float{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:12px 8px;flex-shrink:0;order:-1}
+  .dt-boost-float .btn-boost{width:50px;height:54px}
+  .dt-boost-float .btn-boost .bi{font-size:20px}
+  /* Side panel — right side, 2-column internal layout */
+  .side-panel{
+    display:flex;flex-direction:column;flex:0 0 300px;
+    background:rgba(255,255,255,.06);border-left:1px solid rgba(255,255,255,.1);
+    overflow:hidden;
+  }
+  .side-panel-cols{display:flex;flex:1;min-height:0;overflow:hidden}
+  /* David + Fact column */
+  .col-david{
+    flex:1;display:flex;flex-direction:column;gap:8px;
+    padding:12px 10px;border-right:1px solid rgba(255,255,255,.08);
+    overflow-y:auto;
+  }
+  .col-david::-webkit-scrollbar{width:3px}
+  .col-david::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+  /* Riwayat column */
+  .col-rx{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  /* Bottom bar inside side panel — none, hide on desktop */
+  .bottom-bar{display:none}
   #mobile-bar{display:none}
-  .david-avatar{width:72px;height:72px;flex-shrink:0}
-  .david-card{padding:10px;gap:8px;flex-direction:row;align-items:flex-start}
-  /* Show David name on desktop */
-  .david-name{display:block;font-size:11px;font-family:'Fredoka One',cursive;color:var(--ink2);margin-top:2px;text-align:center}
-  .david-speech{min-height:32px;font-size:10.5px;flex:1}
-  /* Desktop boost buttons: slightly smaller, row layout */
-  .btn-boost{width:48px;height:48px}
-  .btn-boost .bi{font-size:20px}
+  /* David card desktop */
+  .david-card{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  .david-avatar{width:60px;height:60px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);background:#c4e5f5;flex-shrink:0}
+  .david-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top}
+  .david-name{display:block;font-size:10px;font-family:'Fredoka One',cursive;color:rgba(168,216,239,.9);text-align:center}
+  .david-speech{
+    font-size:10px;color:rgba(200,232,248,.85);line-height:1.55;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    border-radius:8px;padding:6px 8px;width:100%;
+  }
+  /* Fact zone desktop */
+  .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible;padding:0}
+  .fact-card{
+    background:rgba(255,255,255,.07)!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    box-shadow:none!important;
+  }
+  .fact-reaction{color:#ffd060!important}
+  .fact-title{color:rgba(168,216,239,.9)!important}
+  .fact-body{color:rgba(200,232,248,.75)!important}
+  .fact-noreact{background:rgba(200,60,60,.12)!important;border-color:rgba(220,100,100,.25)!important}
+  .fact-noreact .fact-reaction{color:#ff9090!important}
+  /* Riwayat desktop */
+  .rx-history{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+  .rx-history::-webkit-scrollbar{width:3px}
+  .rx-history::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+  .rx-history-title{font-size:8px;font-weight:800;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;padding:8px 10px 4px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+  .rx-item{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.04);font-size:9px}
+  .rx-product{color:#ffd060;font-weight:800}
+  .rx-pts{color:#60d890;font-weight:900}
+  .rx-empty{font-size:10px;color:rgba(122,170,191,.5);padding:12px 10px;font-style:italic}
+  /* target bar dark */
+  .target-bar{background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08)}
+  .target-pill{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:rgba(200,232,248,.8)}
+  .target-pill.done{opacity:.3}
+  /* prog bar stays */
+  .prog-wrap{background:rgba(255,255,255,.1)}
+  /* hud-david-mini hidden on desktop */
+  .hud-david-mini{display:none}
 }
 /* NO shake animation on desktop david card on mobile */
 .hud-david-mini{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:1.5px solid var(--border);display:block;margin:0 auto 2px;background:var(--sky2)}
@@ -196,6 +263,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   box-shadow:0 0 0 3px rgba(224,64,64,.3)!important;
   background:rgba(255,200,200,.6)!important;
 }
+/* Too-far tap feedback — red outline flash */
+@keyframes tooFarFlash{0%,100%{outline-color:rgba(200,80,80,.8)}50%{outline-color:rgba(200,80,80,.1)}}
+.cell.cell-toofar{outline:3px solid rgba(200,80,80,.7)!important;outline-offset:2px;animation:tooFarFlash .32s ease!important}
 
 /* Mobile: hide fact paragraph, just show formula + name */
 @media(max-width:859px){
@@ -206,9 +276,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .david-zone{
   display:flex;align-items:center;gap:10px;
   padding:7px 12px;width:100%;
-  background:var(--panel2);
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.08);
+  border-top:1px solid rgba(255,255,255,.1);
+  border-bottom:1px solid rgba(255,255,255,.08);
   flex-shrink:0;overflow:hidden;
   transition:all .3s ease;min-height:56px;
 }
@@ -217,19 +287,19 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .dz-avatar{
   width:44px;height:44px;border-radius:50%;
   object-fit:cover;object-position:center top;
-  border:2px solid var(--border);flex-shrink:0;
-  background:linear-gradient(135deg,#e8f6fc,#d0ecf8);
+  border:2px solid rgba(255,255,255,.2);flex-shrink:0;
+  background:linear-gradient(135deg,#c4e5f5,#a8d8ef);
 }
 .dz-bubble{
-  flex:1;background:var(--gold-light);
-  border:1.5px solid #e8c860;border-radius:12px;border-bottom-left-radius:3px;
+  flex:1;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);border-radius:12px;border-bottom-left-radius:3px;
   padding:7px 10px;animation:slideUp .25s ease;
 }
-.dz-bubble.nope{background:#fff0f0;border-color:#f0a0a0}
-.dz-reaction{font-size:13px;font-weight:900;color:var(--gold)}
-.dz-bubble.nope .dz-reaction{color:#c04040}
-.dz-name{font-size:11px;font-weight:800;color:var(--ink2)}
-.dz-fact{font-size:10.5px;color:var(--ink2);line-height:1.5;margin-top:3px;opacity:.85}
+.dz-bubble.nope{background:rgba(200,60,60,.15);border-color:rgba(220,100,100,.3)}
+.dz-reaction{font-size:13px;font-weight:900;color:#ffd060}
+.dz-bubble.nope .dz-reaction{color:#ff9090}
+.dz-name{font-size:11px;font-weight:800;color:rgba(200,232,248,.7)}
+.dz-fact{font-size:10.5px;color:rgba(200,232,248,.85);line-height:1.5;margin-top:3px}
 
 /* ══ END SCREEN INLINE LEADERBOARD ══ */
 .end-lb-section{
@@ -239,13 +309,15 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   border-radius:20px;overflow:hidden;
   flex-shrink:0;
 }
-.end-lb-head{
-  padding:10px 16px;
+.end-lb-section .end-lb-head{
+  padding:14px 16px;
   background:rgba(255,255,255,.06);
-  font-family:'Fredoka One',cursive;font-size:16px;color:#fff;
+  font-family:'Fredoka One',cursive;font-size:17px;color:#fff;
   display:flex;align-items:center;gap:8px;
   border-bottom:1px solid rgba(255,255,255,.08);
+  flex-shrink:0;
 }
+.end-lb-section #end-lb-rows{overflow-y:auto;flex:1}
 .end-lb-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
 .end-lb-row:last-child{border-bottom:none}
 .end-lb-row.me{background:rgba(212,138,8,.18)}
@@ -340,6 +412,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .fact-noreact{border-color:#f0a0a0;background:#fff5f5}
 .fact-noreact .fact-reaction{color:#c04040}
 @keyframes slideUp{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+/* Tile drop-in from top when spawned */
+@keyframes tileDrop{from{transform:translateY(-18px) scale(.85);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.cell.tile-new{animation:tileDrop .28s cubic-bezier(.34,1.4,.64,1) forwards}
 .float-txt{position:absolute;font-size:17px;font-weight:900;pointer-events:none;animation:floatUp .9s ease forwards;color:var(--gold);font-family:'Nunito',sans-serif;z-index:60;text-shadow:0 1px 4px rgba(0,0,0,.12)}
 @keyframes floatUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-48px);opacity:0}}
 
@@ -361,7 +436,60 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .btn-p{background:linear-gradient(135deg,#40b060,#60d080);color:#fff}
 .btn-s{background:var(--sky2);color:var(--ink);border:1.5px solid var(--border)}
 
-/* ══ REACTION GUIDE ══ */
+/* ══ GRADUATION SCREEN ══ */
+#s-grad{
+  background:linear-gradient(160deg,#0e1a2e 0%,#1a3a50 50%,#0e2a1a 100%);
+  justify-content:center;align-items:center;padding:32px 20px;gap:0;
+  position:relative;overflow:hidden;
+}
+.grad-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.grad-card{
+  background:rgba(255,255,255,.07);border:1.5px solid rgba(255,215,0,.3);
+  border-radius:28px;padding:28px 24px 24px;width:100%;max-width:380px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+  backdrop-filter:blur(12px);position:relative;z-index:2;
+  animation:modalIn .5s cubic-bezier(.34,1.2,.64,1);
+}
+.grad-chibi{width:160px;height:auto;filter:drop-shadow(0 8px 32px rgba(255,215,0,.3));animation:chibiFloat 3s ease-in-out infinite}
+@keyframes chibiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.grad-title{font-family:'Fredoka One',cursive;font-size:28px;color:#ffd700;text-align:center;line-height:1.2;text-shadow:0 2px 20px rgba(255,215,0,.4)}
+.grad-sub{font-size:11px;color:rgba(168,216,239,.7);letter-spacing:2px;text-transform:uppercase;font-weight:800;text-align:center}
+.grad-msg{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,215,0,.2);
+  border-radius:16px;padding:14px 16px;font-size:13px;color:rgba(220,240,255,.9);
+  line-height:1.7;text-align:center;font-weight:700;font-style:italic;
+  min-height:72px;display:flex;align-items:center;justify-content:center;
+}
+.grad-score-row{display:flex;gap:12px;width:100%}
+.grad-score-box{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:10px;text-align:center}
+.grad-score-lbl{font-size:8px;font-weight:900;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.grad-score-val{font-family:'Fredoka One',cursive;font-size:22px;color:#fff}
+.grad-btns{display:flex;flex-direction:column;gap:8px;width:100%}
+.btn-grad-share{
+  background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a2a10;
+  border:none;border-radius:50px;padding:14px;font-family:'Fredoka One',cursive;
+  font-size:17px;cursor:pointer;transition:transform .12s;text-align:center;
+  box-shadow:0 4px 20px rgba(255,215,0,.35);
+}
+.btn-grad-share:active{transform:scale(.96)}
+.btn-grad-map{
+  background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);
+  border-radius:50px;padding:12px;font-family:'Fredoka One',cursive;font-size:15px;
+  cursor:pointer;color:#fff;text-align:center;transition:transform .12s;
+}
+.btn-grad-map:active{transform:scale(.96)}
+/* Share card (hidden, used for screenshot) */
+#share-card{
+  position:fixed;left:-9999px;top:0;width:400px;
+  background:linear-gradient(160deg,#0e1a2e,#1a3a50,#0e2a1a);
+  padding:32px 28px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  font-family:'Nunito',sans-serif;z-index:-1;
+}
+@media(min-width:860px){
+  .grad-card{max-width:440px}
+  .grad-chibi{width:200px}
+  .grad-title{font-size:34px}
+}
 .rg-bg{position:fixed;inset:0;background:rgba(14,34,51,.85);z-index:250;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(8px)}
 .rg-bg.on{display:flex}
 .rg-box{background:var(--panel);border-radius:20px;width:100%;max-width:400px;max-height:88vh;display:flex;flex-direction:column;animation:modalIn .25s ease;overflow:hidden}
@@ -379,8 +507,14 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .rg-note{padding:10px 12px;font-size:10px;color:var(--muted);font-style:italic;text-align:center;border-top:1px solid var(--border)}
 
 /* ══ END SCREEN ══ */
-#s-end{background:linear-gradient(160deg,#0e2233,#1a3a50);justify-content:center;align-items:center;padding:32px 20px;gap:16px}
+#s-end{background:linear-gradient(160deg,#0e2233,#1a3a50);justify-content:center;align-items:center;padding:32px 20px;gap:16px;overflow-y:auto}
 .end-card{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);border-radius:24px;padding:24px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(10px)}
+@media(min-width:860px){
+  #s-end{flex-direction:row;align-items:flex-start;justify-content:center;padding:48px 40px;gap:28px}
+  .end-card{max-width:380px;flex-shrink:0}
+  .end-lb-section{flex:1;max-width:380px;align-self:stretch}
+  #s-end .end-lb-section{display:flex!important;flex-direction:column}
+}
 .end-title{font-family:'Fredoka One',cursive;font-size:26px;color:#fff;text-align:center}
 .end-stars{font-size:38px;letter-spacing:8px;text-align:center;display:flex;justify-content:center;gap:6px}
 .star-pop{display:inline-block;animation:starPop .45s cubic-bezier(.34,1.56,.64,1) both}
@@ -557,14 +691,18 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 <!-- ══ GAME ══ -->
 <div id="s-game" class="screen">
   <div class="hud">
-    <div class="hud-block"><div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div></div>
-    <div class="hud-block">
-      <img class="hud-david-mini" id="hud-david-mini" src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="" onerror="this.style.display='none'">
-      <div class="hud-lv" id="h-lv">Level 1</div>
-      <div class="hud-val" id="h-score">0</div>
-      <div class="hud-lbl">Skor</div>
+    <button class="hud-icon-btn hud-back" onclick="G.toMap()" title="Kembali ke Map">←</button>
+    <div class="hud-mid">
+      <div class="hud-block"><div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div></div>
+      <div class="hud-block">
+        <img class="hud-david-mini" id="hud-david-mini" src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="" onerror="this.style.display='none'">
+        <div class="hud-lv" id="h-lv">Level 1</div>
+        <div class="hud-val" id="h-score">0</div>
+        <div class="hud-lbl">Skor</div>
+      </div>
+      <div class="hud-block"><div class="hud-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
     </div>
-    <div class="hud-block"><div class="hud-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
+    <button class="hud-icon-btn hud-guide" onclick="G.openGuide()" title="Panduan Reaksi">📖</button>
   </div>
   <div class="target-bar" id="target-bar"></div>
   <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
@@ -575,43 +713,47 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
       <div class="board" id="board"></div>
     </div>
 
+    <!-- Desktop floating boost column -->
+    <div class="dt-boost-float" id="dt-boost-float">
+      <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
+        <div class="bi">💡</div>
+        <div class="bl">Hint</div>
+        <span class="bc-badge" id="bc-hint-d">×3</span>
+      </button>
+      <button class="btn-boost" onclick="G.boost('shuffle')" title="Shuffle">
+        <div class="bi">🔀</div>
+        <div class="bl">Shuffle</div>
+        <span class="bc-badge" id="bc-shuffle-d">×2</span>
+      </button>
+      <button class="btn-boost" onclick="G.boost('catalyst')" title="Catalyst">
+        <div class="bi">⚡</div>
+        <div class="bl">Catalyst</div>
+        <span class="bc-badge" id="bc-catalyst-d">×2</span>
+      </button>
+    </div>
+
+    <!-- Desktop side panel: 2-column (David+Fact | Riwayat) -->
     <div class="side-panel">
-      <div class="david-card">
-        <div class="david-avatar">
-          <img id="d-idle"  src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="David" onerror="this.style.display='none'">
-          <img id="d-aha"   src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png" alt="" class="hidden" onerror="this.style.display='none'">
-          <img id="d-think" src="https://raw.githubusercontent.com/pipit10364/David/main/david%20thinking.png" alt="" class="hidden" onerror="this.style.display='none'">
-          <img id="d-wow"   src="https://raw.githubusercontent.com/pipit10364/David/main/Untitled11_20260517083604.png" alt="" class="hidden" onerror="this.style.display='none'">
+      <div class="side-panel-cols">
+        <div class="col-david">
+          <div class="david-card">
+            <div class="david-avatar">
+              <img id="d-idle"  src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="David" onerror="this.style.display='none'">
+              <img id="d-aha"   src="https://raw.githubusercontent.com/pipit10364/David/main/David%20aha.png" alt="" class="hidden" onerror="this.style.display='none'">
+              <img id="d-think" src="https://raw.githubusercontent.com/pipit10364/David/main/david%20thinking.png" alt="" class="hidden" onerror="this.style.display='none'">
+              <img id="d-wow"   src="https://raw.githubusercontent.com/pipit10364/David/main/Untitled11_20260517083604.png" alt="" class="hidden" onerror="this.style.display='none'">
+            </div>
+            <div class="david-name">David 🧪</div>
+            <div class="david-speech" id="david-speech">Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!</div>
+          </div>
+          <div class="fact-zone" id="fact-zone-desktop"></div>
         </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
-          <div class="david-name">David 🧪</div>
-          <div class="david-speech" id="david-speech">Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!</div>
+        <div class="col-rx">
+          <div class="rx-history" id="rx-history">
+            <div class="rx-history-title">Riwayat Reaksi</div>
+            <div class="rx-empty" id="rx-empty">Belum ada reaksi...</div>
+          </div>
         </div>
-      </div>
-      <div class="fact-zone" id="fact-zone-desktop"></div>
-      <div class="bottom-bar">
-        <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
-          <div class="bi">💡</div>
-          <div class="bl">Hint</div>
-          <span class="bc-badge" id="bc-hint-d">×3</span>
-        </button>
-        <button class="btn-boost" onclick="G.boost('shuffle')" title="Shuffle">
-          <div class="bi">🔀</div>
-          <div class="bl">Shuffle</div>
-          <span class="bc-badge" id="bc-shuffle-d">×2</span>
-        </button>
-        <button class="btn-boost" onclick="G.boost('catalyst')" title="Catalyst">
-          <div class="bi">⚡</div>
-          <div class="bl">Catalyst</div>
-          <span class="bc-badge" id="bc-catalyst-d">×2</span>
-        </button>
-        <div class="bar-sep"></div>
-        <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
-        <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
-      </div>
-      <div class="rx-history" id="rx-history">
-        <div class="rx-history-title">Riwayat Reaksi</div>
-        <div class="rx-empty" id="rx-empty">Belum ada reaksi...</div>
       </div>
     </div>
   </div>
@@ -635,9 +777,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
       <div class="bl">Catalyst</div>
       <span class="bc-badge" id="bc-catalyst-m">×2</span>
     </button>
-    <div class="bar-sep"></div>
-    <button class="btn-sm btn-guide" onclick="G.openGuide()">📖 Panduan</button>
-    <button class="btn-sm btn-back" onclick="G.toMap()">← Map</button>
   </div>
 </div>
 
@@ -670,13 +809,50 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   </div>
 </div>
 
+<!-- ══ GRADUATION SCREEN ══ -->
+<div id="s-grad" class="screen">
+  <div class="grad-particles" id="grad-particles"></div>
+  <div class="grad-card">
+    <img class="grad-chibi" src="https://raw.githubusercontent.com/pipit10364/David/main/david%20wisuda.png" id="grad-chibi-img" alt="David Wisuda" onerror="this.style.fontSize='80px';this.outerHTML='<div style=\'font-size:80px;animation:chibiFloat 3s ease-in-out infinite\'>🎓</div>'">
+    <div class="grad-title">🎓 Selamat, David!</div>
+    <div class="grad-sub">Chem Crush · All Levels Cleared</div>
+    <div class="grad-msg" id="grad-msg">Loading...</div>
+    <div class="grad-score-row">
+      <div class="grad-score-box">
+        <div class="grad-score-lbl">Total Skor</div>
+        <div class="grad-score-val" id="grad-total-score">0</div>
+      </div>
+      <div class="grad-score-box">
+        <div class="grad-score-lbl">Level Selesai</div>
+        <div class="grad-score-val" id="grad-levels">0</div>
+      </div>
+    </div>
+    <div class="grad-btns">
+      <button class="btn-grad-share" onclick="G.shareGrad()">📸 Share Pencapaianmu</button>
+      <button class="btn-grad-map" onclick="G.toMap()">← Kembali ke Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden share card for screenshot -->
+<div id="share-card">
+  <div style="font-family:'Fredoka One',cursive;font-size:32px;color:#ffd700;text-align:center">⚗️ Chem Crush</div>
+  <div style="font-size:11px;color:rgba(168,216,239,.7);letter-spacing:2px;text-transform:uppercase;font-weight:800;text-align:center">A Tribute Game for David</div>
+  <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:16px 20px;font-size:13px;color:rgba(220,240,255,.9);line-height:1.7;text-align:center;font-weight:700;font-style:italic" id="share-msg-inner"></div>
+  <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:14px 20px;text-align:center;width:100%">
+    <div style="font-size:9px;font-weight:900;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">My Score</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:28px;color:#fff" id="share-score-inner">0</div>
+  </div>
+  <div style="font-size:11px;color:rgba(122,170,191,.6);text-align:center;font-weight:700">I just completed Chem Crush — a tribute game for David — and scored <span id="share-pts-inner">0</span> points across <span id="share-lvl-inner">0</span> levels! 🧪🎓</div>
+</div>
+
 <!-- ══ LEADERBOARD ══ -->
 <div id="s-lb" class="screen">
   <div class="lb-topbar">
     <button class="lb-back" onclick="G.backLB()">← Kembali</button>
     <div class="lb-title-row">
       <div class="lb-title">🏆 Leaderboard</div>
-      <div class="lb-subtitle">Chem Crush · Best Score</div>
+      <div class="lb-subtitle">Chem Crush · Total Kumulatif Semua Level</div>
     </div>
     <div style="width:80px"></div>
   </div>
@@ -882,10 +1058,27 @@ async function fbSubmit(username,score,level){
       db.ref('chemcrush/lb/'+key).once('value'),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),7000))
     ]);
-    const ex=snap.val();
-    if(!ex||score>ex.score){
-      await db.ref('chemcrush/lb/'+key).set({username:'@'+username,score,level,ts:Date.now()});
-      return true;
+    const ex=snap.val()||{};
+    // Track best score per level, recompute cumulative total
+    const perLevel=ex.perLevel||{};
+    const prevBest=perLevel[level]||0;
+    let updated=false;
+    if(score>prevBest){
+      perLevel[level]=score;
+      updated=true;
+    }
+    // Total = sum of best scores across all levels
+    const total=Object.values(perLevel).reduce((a,b)=>a+b,0);
+    // Always write if new hs on any level, or first entry
+    if(updated||!ex.score){
+      await db.ref('chemcrush/lb/'+key).set({
+        username:'@'+username,
+        score:total,
+        perLevel,
+        level:Object.keys(perLevel).length, // levels completed
+        ts:Date.now()
+      });
+      return updated;
     }
     return false;
   }catch(e){
@@ -929,7 +1122,54 @@ const Confetti={
   }
 };
 
-// ─── REACTION GUIDE BUILD ───
+// ─── SOUND ───
+const SFX={
+  _ctx:null,
+  _get(){
+    if(!this._ctx)try{this._ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
+    return this._ctx;
+  },
+  _tone(freq,type,vol,dur,delay=0){
+    const ctx=this._get();if(!ctx)return;
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type=type;o.frequency.setValueAtTime(freq,ctx.currentTime+delay);
+    g.gain.setValueAtTime(0,ctx.currentTime+delay);
+    g.gain.linearRampToValueAtTime(vol,ctx.currentTime+delay+.01);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+delay+dur);
+    o.start(ctx.currentTime+delay);o.stop(ctx.currentTime+delay+dur+.05);
+  },
+  react(){
+    // Cheerful ascending two-tone
+    this._tone(440,'sine',.18,.12);
+    this._tone(660,'sine',.14,.1,.1);
+  },
+  noReact(){
+    // Low thud
+    this._tone(150,'square',.12,.15);
+  },
+  combo(streak){
+    // Higher + more sparkly per streak
+    const base=400+streak*80;
+    this._tone(base,'sine',.15,.1);
+    this._tone(base*1.5,'sine',.1,.08,.08);
+    if(streak>=3)this._tone(base*2,'sine',.07,.06,.15);
+  },
+  win(){
+    // Ascending fanfare
+    [261,329,392,523].forEach((f,i)=>this._tone(f,'sine',.2,.2,i*.12));
+  },
+  tap(){
+    // Soft click
+    this._tone(600,'sine',.06,.05);
+  },
+  boost(){
+    this._tone(320,'triangle',.12,.15);
+    this._tone(480,'triangle',.09,.12,.1);
+  },
+};
+
+
 function buildGuide(){
   const body=document.getElementById('rg-body');if(!body)return;
   body.innerHTML='';
@@ -943,20 +1183,19 @@ function buildGuide(){
 // ─── GAME ───
 const G={
   lv:null,board:[],sel:null,score:0,moves:0,reactions:0,busy:false,
-  stars:{},scores:{},isWin:false,rxLog:[],idleTimer:null,
+  stars:{},scores:{},cleared:{},isWin:false,rxLog:[],idleTimer:null,
   username:null,lbFrom:'intro',
-  // New: game state tracking
   streak:0,
   boostCharges:{hint:3,shuffle:2,catalyst:2},
-  rxBaseScore:0,    // pts from reactions (no combo)
-  comboBonus:0,     // extra pts from combo multiplier
-  movesBonus:0,     // bonus moves at win
-  tutDone:false,    // tutorial shown this session
+  rxBaseScore:0,
+  comboBonus:0,
+  movesBonus:0,
+  tutDone:false,
 
-  save(){try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username}));}catch(e){}},
+  save(){try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared}));}catch(e){}},
   load(){
-    try{const d=JSON.parse(localStorage.getItem(SAVE)||'{}');this.stars=d.stars||{};this.scores=d.scores||{};this.username=d.username||null;}
-    catch(e){this.stars={};this.scores={};this.username=null;}
+    try{const d=JSON.parse(localStorage.getItem(SAVE)||'{}');this.stars=d.stars||{};this.scores=d.scores||{};this.username=d.username||null;this.tutDone=d.tutDone||false;this.cleared=d.cleared||{};}
+    catch(e){this.stars={};this.scores={};this.username=null;this.tutDone=false;this.cleared={};}
   },
 
   show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');},
@@ -1007,21 +1246,28 @@ const G={
     const doneIds=Object.keys(this.stars).map(Number).filter(k=>!isNaN(k)&&(this.stars[k]||0)>0);
     const maxU=doneIds.length>0?Math.max(...doneIds)+1:1;
     LEVELS.forEach(lv=>{
+      const cleared=!!this.cleared[lv.id];
       const done=(this.stars[lv.id]||0)>0;
       const unlocked=lv.id<=maxU;
       const cur=lv.id===maxU&&!done;
-      const cls=done?'done':cur?'current':unlocked?'unlocked':'';
-      const st=done?'★'.repeat(this.stars[lv.id])+'☆'.repeat(3-this.stars[lv.id]):'';
+      const cls=cleared?'done':cur?'current':unlocked?'unlocked':'';
+      const starCount=this.stars[lv.id]||0;
+      const st=done?'★'.repeat(starCount)+'☆'.repeat(3-starCount):'';
       const nd=document.createElement('div');nd.className='lvl-node';
-      const bb=document.createElement('div');bb.className='lvl-bubble'+(cls?' '+cls:'');
-      // Locked levels get a lock icon so they're clearly visible
+      const bb=document.createElement('div');
+      bb.className='lvl-bubble'+(cls?' '+cls:'')+(cleared?' lvl-cleared':'');
       if(!unlocked){
         bb.innerHTML='<span style="font-size:22px">🔒</span>';
+      }else if(cleared){
+        // Once-in-lifetime: show stars on bubble, not clickable
+        bb.innerHTML='<span style="font-size:13px;font-family:Fredoka One,cursive">'+lv.id+'</span><span style="font-size:11px;color:#ffd700;letter-spacing:1px">'+'★'.repeat(starCount)+'</span>';
+        bb.title='Level ini sudah selesai';
       }else{
         bb.innerHTML='<span>'+lv.id+'</span><span style="font-size:9px;opacity:.7">'+lv.elems.slice(0,2).join('·')+'</span>';
         bb.onclick=()=>G.play(lv.id);
       }
-      const sd=document.createElement('div');sd.className='lvl-stars';sd.textContent=st;
+      const sd=document.createElement('div');sd.className='lvl-stars';
+      sd.textContent=cleared?'':st; // stars shown on bubble for cleared
       const nm=document.createElement('div');nm.className='lv-name';nm.textContent=lv.name;
       nd.appendChild(bb);nd.appendChild(sd);nd.appendChild(nm);
       g.appendChild(nd);
@@ -1049,8 +1295,8 @@ const G={
   },
 
   // ── GUIDE ──
-  openGuide(){document.getElementById('rg-wrap').classList.add('on');},
-  closeGuide(){document.getElementById('rg-wrap').classList.remove('on');},
+  openGuide(){document.getElementById('rg-wrap').classList.add('on');clearTimeout(this.idleTimer);},
+  closeGuide(){document.getElementById('rg-wrap').classList.remove('on');if(this.lv)this.scheduleIdle();},
 
   // ── LEADERBOARD ──
   async showLB(from){
@@ -1079,10 +1325,11 @@ const G={
       const r=document.createElement('div');r.className='lb-row'+(isMe?' lb-me':'');
       const rankTxt=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
       const rankCls=i<3?medals[i]:'';
-      r.innerHTML=`<div class="lb-rank ${rankCls}">${rankTxt}</div><div class="lb-user">${e.username}${isMe?' 👈':''}</div><div class="lb-score">${e.score.toLocaleString()}</div>`;
+      const lvlTag=e.level?`<span style="font-size:9px;color:rgba(168,216,239,.5);font-weight:700;margin-left:4px">${e.level} lvl</span>`:'';
+      r.innerHTML=`<div class="lb-rank ${rankCls}">${rankTxt}</div><div class="lb-user">${e.username}${isMe?' 👈':''}${lvlTag}</div><div class="lb-score">${e.score.toLocaleString()}</div>`;
       card.appendChild(r);
     });
-    card.innerHTML+=`<div class="lb-fb-note">Skor terbaik per pemain dari semua level</div>`;
+    card.innerHTML+=`<div class="lb-fb-note">Total kumulatif best score dari semua level yang pernah dimainkan</div>`;
   },
 
   backLB(){
@@ -1122,11 +1369,35 @@ const G={
   initBoard(){
     const lv=this.lv;
     const obsSet=new Set(lv.obstacles.map(([c,r])=>r+','+c));
-    this.board=[];
-    for(let r=0;r<lv.rows;r++){
-      this.board[r]=[];
-      for(let c=0;c<lv.cols;c++)
-        this.board[r][c]={elem:obsSet.has(r+','+c)?null:this.rndElem(),obstacle:obsSet.has(r+','+c)};
+    let attempts=0;
+    do{
+      this.board=[];
+      for(let r=0;r<lv.rows;r++){
+        this.board[r]=[];
+        for(let c=0;c<lv.cols;c++)
+          this.board[r][c]={elem:obsSet.has(r+','+c)?null:this.rndElem(),obstacle:obsSet.has(r+','+c)};
+      }
+      attempts++;
+      // Safety: after 20 failed attempts, force-inject a valid pair
+      if(attempts>=20){this.forceValidPair();break;}
+    }while(!this.hasValidMoves());
+  },
+  // Force at least one valid adjacent pair onto the board
+  forceValidPair(){
+    const lv=this.lv,b=this.board;
+    const rxPair=REACTIONS.find(rx=>lv.elems.includes(rx.elems[0])&&lv.elems.includes(rx.elems[1]));
+    if(!rxPair)return;
+    // Find first two adjacent non-obstacle cells
+    for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++){
+      if(b[r][c].obstacle||!b[r][c].elem)continue;
+      for(const[dr,dc]of[[0,1],[1,0]]){
+        const nr=r+dr,nc=c+dc;
+        if(nr>=lv.rows||nc>=lv.cols)continue;
+        if(b[nr][nc].obstacle||!b[nr][nc].elem)continue;
+        b[r][c].elem=rxPair.elems[0];
+        b[nr][nc].elem=rxPair.elems[1];
+        return;
+      }
     }
   },
   rndElem(){return this.lv.elems[Math.floor(Math.random()*this.lv.elems.length)];},
@@ -1136,8 +1407,8 @@ const G={
     const bd=document.getElementById('board');
     let sz;
     if(this.isDesktop()){
-      // viewport - side panel (360) - padding (64px total) - gap (24px) - board padding (16px)
-      const availW=Math.max(360, window.innerWidth - 360 - 64 - 24 - 16);
+      // viewport - right panel (300px) - boost col (66px) - board padding (32px)
+      const availW=Math.max(300, window.innerWidth - 300 - 66 - 32);
       const availH=Math.max(300, window.innerHeight - 130);
       const szW=Math.floor(availW/lv.cols);
       const szH=Math.floor(availH/lv.rows);
@@ -1162,8 +1433,7 @@ const G={
     bd.style.padding='8px';
     bd.innerHTML='';
     for(let r=0;r<lv.rows;r++){
-      for(let c=0;c<lv.cols;c++){
-        const cell=b[r][c];
+      for(let c=0;c<lv.cols;c++){        const cell=b[r][c];
         const div=document.createElement('div');
         div.className='cell';div.dataset.r=r;div.dataset.c=c;
         div.style.width=sz+'px';div.style.height=sz+'px';
@@ -1174,6 +1444,7 @@ const G={
           const el=ELEMENTS[cell.elem];
           div.innerHTML=`<div class="cs">${el.sym}</div><div class="cn">${el.name.substring(0,6)}</div>`;
           if(this.sel&&this.sel[0]===r&&this.sel[1]===c)div.classList.add('selected');
+          if(this._newCells&&this._newCells.has(r+','+c))div.classList.add('tile-new');
           div.onclick=()=>this.tap(r,c);
         }else{
           div.classList.add('inert-cell');
@@ -1181,17 +1452,25 @@ const G={
         bd.appendChild(div);
       }
     }
+    this._newCells=null; // clear after render
   },
 
   tap(r,c){
     if(this.busy)return;
     const cell=this.board[r][c];
     if(!cell.elem||cell.obstacle)return;
+    SFX.tap();
     if(!this.sel){this.sel=[r,c];this.renderBoard();return;}
     const[sr,sc]=this.sel;
     if(sr===r&&sc===c){this.sel=null;this.renderBoard();return;}
-    if(Math.abs(sr-r)+Math.abs(sc-c)===1){this.sel=null;this.trySwap(sr,sc,r,c);}
-    else{this.sel=[r,c];this.renderBoard();}
+    if(Math.abs(sr-r)+Math.abs(sc-c)===1){
+      this.sel=null;this.trySwap(sr,sc,r,c);
+    }else{
+      // Not adjacent — flash the selected cell to signal "too far"
+      this.sel=[r,c];this.renderBoard();
+      const prevEl=document.querySelector(`[data-r="${sr}"][data-c="${sc}"]`);
+      if(prevEl){prevEl.classList.add('cell-toofar');setTimeout(()=>prevEl.classList.remove('cell-toofar'),320);}
+    }
   },
 
   trySwap(r1,c1,r2,c2){
@@ -1212,7 +1491,8 @@ const G={
     this.reactions++;
     this.rxLog.unshift(rx);if(this.rxLog.length>8)this.rxLog.pop();
     this.floatPts(earnedPts,r1,c1);
-    if(this.streak>=2)this.showCombo(this.streak,mult,r2,c2);
+    if(this.streak>=2){this.showCombo(this.streak,mult,r2,c2);SFX.combo(this.streak);}
+    else{SFX.react();}
     this.showFact(rx);
     this.davidSay(rx.davidSay,'react');this.davidExpr('aha');
     this.renderRxHistory();
@@ -1236,6 +1516,7 @@ const G={
     [ce1,ce2].forEach(el=>{if(el)el.classList.add('noreact-anim');});
     this.streak=0;
     this.busy=true;
+    SFX.noReact();
     this.showNoReact();
     this.davidSay('Tidak bereaksi — posisi balik otomatis. Cek 📖 Panduan Reaksi!','nope');
     this.davidExpr('wow');
@@ -1260,8 +1541,9 @@ const G={
   },
   fillBoard(){
     const lv=this.lv,b=this.board;
+    this._newCells=new Set();
     for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)
-      if(!b[r][c].obstacle&&!b[r][c].elem)b[r][c].elem=this.rndElem();
+      if(!b[r][c].obstacle&&!b[r][c].elem){b[r][c].elem=this.rndElem();this._newCells.add(r+','+c);}
   },
 
   floatPts(pts,r,c){
@@ -1271,7 +1553,7 @@ const G={
     const lv=this.lv;
     let sz;
     if(this.isDesktop()){
-      const availW=Math.max(360, window.innerWidth - 360 - 64 - 24 - 16);
+      const availW=Math.max(300, window.innerWidth - 300 - 66 - 32);
       const availH=Math.max(300, window.innerHeight - 130);
       sz=Math.min(64,Math.floor(availW/lv.cols),Math.floor(availH/lv.rows));
     }else{
@@ -1348,8 +1630,8 @@ const G={
     document.getElementById('prog').style.width=Math.round(pct)+'%';
   },
   updateSidePanel(){
-    const sm=document.getElementById('sp-moves'),ss=document.getElementById('sp-score'),sr=document.getElementById('sp-rx');
-    if(sm)sm.textContent=this.moves;if(ss)ss.textContent=this.score.toLocaleString();if(sr)sr.textContent=this.reactions;
+    // sp-moves / sp-score / sp-rx no longer exist in redesigned layout
+    // HUD is the source of truth — updateHUD() handles everything
   },
   renderRxHistory(){
     const hist=document.getElementById('rx-history'),empty=document.getElementById('rx-empty');if(!hist)return;
@@ -1395,15 +1677,17 @@ const G={
     const prevScore=this.scores[lv.id]||0;
     const isNewHS=this.score>prevScore;
     if(isNewHS)this.scores[lv.id]=this.score;
+    // Mark as cleared forever (once-in-lifetime)
+    this.cleared[lv.id]=true;
     this.save();
 
     Confetti.start();
+    SFX.win();
     this.davidExpr('aha');
     document.getElementById('modal-wrap').classList.remove('on');
 
     // ── Populate end screen synchronously (no await) ──
-    const isLast=lv.id>=LEVELS.length;
-    document.getElementById('end-title').textContent=isLast?'🏆 Ahli Kimia Sejati!':'🎉 Sintesis Berhasil!';
+    document.getElementById('end-title').textContent='🎉 Sintesis Berhasil!';
 
     const starsEl=document.getElementById('end-stars');starsEl.innerHTML='';
     for(let i=1;i<=3;i++){
@@ -1434,19 +1718,23 @@ const G={
     }
 
     const btn1=document.getElementById('end-btn1');
-    if(btn1){
-      if(isLast){btn1.textContent='🔄 Main Lagi';btn1.onclick=()=>G.toMap();}
-      else{btn1.textContent='Level Berikutnya →';btn1.onclick=()=>G.endBtn1();}
-    }
+    if(btn1){btn1.textContent='Level Berikutnya →';btn1.onclick=()=>G.endBtn1();}
 
-    // ── Show end screen NOW ──
+    // ── Show end screen or graduation ──
+    const isLast=lv.id>=LEVELS.length;
+    if(isLast){
+      // Small delay so confetti starts first
+      setTimeout(()=>this.showGrad(),600);
+      return;
+    }
     this.show('s-end');
 
     // ── Inline leaderboard: show section, fetch in background ──
     const lbSection=document.getElementById('end-lb-section');
     const lbRows=document.getElementById('end-lb-rows');
-    if(FB_ON&&lbSection){
-      lbSection.style.display='block';
+    const showLB=FB_ON&&lbSection;
+    if(showLB){
+      lbSection.style.display= this.isDesktop() ? 'flex' : 'block';
       lbRows.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
       fbGetLB().then(entries=>{
         if(!entries||!entries.length){lbRows.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
@@ -1532,6 +1820,7 @@ const G={
     }
     this.boostCharges[type]--;
     this.updateBoostButtons();
+    SFX.boost();
 
     if(type==='hint'){
       const lv=this.lv,b=this.board;
@@ -1564,11 +1853,27 @@ const G={
       this.davidExpr('idle');
     }
     if(type==='catalyst'){
-      const lv=this.lv,b=this.board,cands=[];
-      for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)cands.push([r,c]);
-      cands.sort(()=>Math.random()-.5).slice(0,3).forEach(([r,c])=>{b[r][c].elem=this.rndElem();});
+      const lv=this.lv,b=this.board;
+      // Gather all non-obstacle cells
+      const allCells=[];
+      for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)
+        if(!b[r][c].obstacle&&b[r][c].elem)allCells.push([r,c]);
+      // Score each cell: 0 = has valid neighbor pair (don't touch), 1 = no pairs (prime target)
+      const lonely=allCells.filter(([r,c])=>{
+        for(const[dr,dc]of[[-1,0],[1,0],[0,-1],[0,1]]){
+          const nr=r+dr,nc=c+dc;
+          if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
+          if(b[nr][nc].obstacle||!b[nr][nc].elem)continue;
+          if(getRx(b[r][c].elem,b[nr][nc].elem))return false;
+        }
+        return true;
+      });
+      // Pick from lonely cells first, fall back to random if not enough
+      const pool=[...lonely,...allCells.filter(x=>!lonely.includes(x))];
+      pool.slice(0,3).forEach(([r,c])=>{b[r][c].elem=this.rndElem();});
+      this._newCells=new Set(pool.slice(0,3).map(([r,c])=>r+','+c));
       this.renderBoard();
-      this.davidSay('Katalis aktif! 3 elemen diganti. Katalis mempercepat reaksi tanpa ikut bereaksi!','react');
+      this.davidSay('Katalis aktif! Elemen tanpa pasangan diganti. Katalis mempercepat reaksi tanpa ikut bereaksi!','react');
       this.davidExpr('aha');
     }
   },
@@ -1651,7 +1956,59 @@ const G={
     setTimeout(()=>el.remove(),1150);
   },
 
-  // ── TUTORIAL (level 1 only) ──
+  // ── GRADUATION CELEBRATION ──
+  showGrad(){
+    Confetti.start();SFX.win();
+    // Pick a random message
+    const msg=GRAD_MSGS[Math.floor(Math.random()*GRAD_MSGS.length)];
+    document.getElementById('grad-msg').textContent=msg;
+    // Total score across all levels
+    const totalScore=Object.values(this.scores).reduce((a,b)=>a+b,0);
+    const levelsCleared=Object.keys(this.cleared).length;
+    document.getElementById('grad-total-score').textContent=totalScore.toLocaleString();
+    document.getElementById('grad-levels').textContent=levelsCleared+'/'+LEVELS.length;
+    // Preload share card
+    document.getElementById('share-msg-inner').textContent=msg;
+    document.getElementById('share-score-inner').textContent=totalScore.toLocaleString();
+    document.getElementById('share-pts-inner').textContent=totalScore.toLocaleString();
+    document.getElementById('share-lvl-inner').textContent=levelsCleared;
+    // Store for share
+    this._gradMsg=msg;this._gradScore=totalScore;this._gradLevels=levelsCleared;
+    // Load chibi from user upload
+    const chibi=document.getElementById('grad-chibi-img');
+    chibi.src='https://raw.githubusercontent.com/pipit10364/David/main/david%20wisuda.png';
+    this.show('s-grad');
+    // Float particles
+    this.spawnGradParticles();
+  },
+  spawnGradParticles(){
+    const wrap=document.getElementById('grad-particles');if(!wrap)return;
+    wrap.innerHTML='';
+    const emojis=['🎓','⚗️','🧪','✨','⭐','🌟','🔬','💫'];
+    for(let i=0;i<18;i++){
+      const el=document.createElement('div');
+      el.style.cssText=`position:absolute;font-size:${16+Math.random()*18}px;left:${Math.random()*100}%;top:${100+Math.random()*20}%;animation:riseBub ${4+Math.random()*4}s linear ${Math.random()*3}s infinite;opacity:${.5+Math.random()*.5}`;
+      el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      wrap.appendChild(el);
+    }
+  },
+  shareGrad(){
+    // Try native share first (mobile)
+    const text=`I just completed Chem Crush — a tribute game for David — and scored ${this._gradScore.toLocaleString()} points across ${this._gradLevels} levels! 🧪🎓`;
+    if(navigator.share){
+      navigator.share({title:'Chem Crush 🎓',text,url:window.location.href}).catch(()=>{});
+      return;
+    }
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.querySelector('.btn-grad-share');
+      const orig=btn.textContent;btn.textContent='✅ Disalin!';
+      setTimeout(()=>btn.textContent=orig,2200);
+    }).catch(()=>{
+      // Last fallback: show text
+      prompt('Copy teks ini:',text);
+    });
+  },
   showTutorial(){
     if(this.tutDone||this.lv.id!==1)return;
     const lv=this.lv,b=this.board;
@@ -1684,13 +2041,48 @@ const G={
             },3200);
           }
           this.davidSay('Halo! Swap dua elemen yang berkilau itu untuk memulai reaksi pertamamu! ✨','react');
-          this.tutDone=true;
+          this.tutDone=true;this.save();
           return;
         }
       }
     }
   },
 };
+
+// ── GRADUATION MESSAGES ──
+const GRAD_MSGS=[
+  "David, you didn't just study chemistry. You became the reaction itself. Congratulations! 🎓",
+  "Full GPA every year. Every. Single. Year. That's not luck, David. That's you.",
+  "The lab coat suits you, but the graduation robe suits you even more. Congratulations, David!",
+  "David, your passion for chemistry is contagious and so is your success. Congrats!",
+  "Here's to the late nights, the hard problems, and the perfect GPA at the end of it all.",
+  "Today the world gets to call you a graduate. We've always known you were extraordinary.",
+  "You balanced equations and responsibilities like no one else. Now go celebrate, you earned it!",
+  "The elements on your periodic table couldn't outshine you today. Congratulations!",
+  "David, your story is the best reaction we've ever seen: effort + passion = greatness.",
+  "This isn't the end of your journey. It's the most beautiful catalyst for what's next.",
+  "Selamat wisuda, David! Semoga ilmu yang kamu bawa pulang mengubah dunia jadi tempat yang lebih baik.",
+  "Kami ikut bahagia hari ini, David. Selamat menempuh babak baru kehidupanmu!",
+  "Katanya kimia itu susah. Tapi buat kamu sepertinya nggak. Atau mungkin kamu yang luar biasa? Selamat wisuda, David!",
+  "Reaksi paling keren hari ini bukan di lab. Tapi saat nama kamu dipanggil di atas panggung. Selamat wisuda!",
+  "The hardest reaction to master is consistency. You nailed it, David.",
+  "Chemistry chose you as much as you chose it. Congratulations, graduate!",
+  "Every element has its place in the periodic table. Yours, David, is among the brightest.",
+  "The most complex molecules are also the most beautiful. So are the people who study them.",
+  "You turned years of hard work into something the world will feel for a long time.",
+  "Empat tahun di negeri orang, tetap konsisten, tetap bersinar. Selamat wisuda, David!",
+  "Kamu buktiin bahwa passion yang tulus selalu menemukan jalannya. Selamat!",
+  "Hari ini, meski dari kejauhan, kami bangga sama kamu. Selamat wisuda, David 🎓",
+  "The experiment was a success. Congratulations, David.",
+  "Bro cracked the code, literally and academically. Congrats, David!",
+  "If dedication had a face, it would look a lot like yours. Selamat wisuda!",
+  "Honestly? We're not even shocked. We're just really, really happy for you.",
+  "Happy graduation, David! May this beautiful ending be the start of the brightest chapter in your life.",
+  "So proud of you today and always, David. Cheers to your graduation and your beautiful journey ahead.",
+  "Selamat ya, David! Hari ini adalah bukti nyata dari ketulusan dan kerja keras kamu selama ini.",
+  "Selamat wisuda, David. Bangga luar biasa bisa menjadi salah satu orang yang melihatmu sukses hari ini.",
+  "Congratulations, David! Thank you for always giving your best.",
+];
 
 // ── INIT ──
 G.load();
