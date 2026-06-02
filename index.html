@@ -189,18 +189,18 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     overflow:hidden;
   }
   .side-panel-cols{display:flex;flex:1;min-height:0;overflow:hidden}
-  /* David + Fact column — slightly wider */
+  /* David + Fact column — fixed width, scrollable if content overflows */
   .col-david{
     flex:0 0 220px;display:flex;flex-direction:column;gap:10px;
     padding:14px 12px;border-right:1px solid rgba(255,255,255,.08);
     overflow-y:auto;
   }
-  .col-david::-webkit-scrollbar{width:3px}
-  .col-david::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-  /* Riwayat column — takes remaining space, expands naturally */
-  .col-rx{flex:1;display:flex;flex-direction:column;overflow-y:auto;min-width:180px}
+  /* Riwayat column — fills remaining space, scrolls when full */
+  .col-rx{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:180px}
   .col-rx::-webkit-scrollbar{width:3px}
   .col-rx::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+  /* rx-history fills the col-rx fully */
+  .rx-history{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0}
   /* Bottom bar inside side panel — none, hide on desktop */
   .bottom-bar{display:none}
   #mobile-bar{display:none}
@@ -231,8 +231,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .fact-body{color:rgba(200,232,248,.8)!important;font-size:11px!important;line-height:1.6!important}
   .fact-noreact{background:rgba(200,60,60,.12)!important;border-color:rgba(220,100,100,.25)!important}
   .fact-noreact .fact-reaction{color:#ff9090!important}
-  /* Riwayat desktop — no max items, expands freely */
-  .rx-history{flex:1;overflow-y:auto;display:flex;flex-direction:column}
   .rx-history-title{font-size:9px;font-weight:800;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;padding:10px 12px 6px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
   .rx-item{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;gap:6px}
   .rx-badge{font-size:10px;color:rgba(168,216,239,.7);font-weight:700;flex-shrink:0}
@@ -359,7 +357,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .rx-empty{font-size:11px;color:var(--muted);font-style:italic}
 
 /* ══ TILES ══ */
-.cell{border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;border:2px solid transparent;transition:transform .1s;box-shadow:0 2px 5px rgba(0,0,0,.07)}
+.cell{border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;border:2px solid transparent;transition:transform .1s;box-shadow:0 2px 5px rgba(0,0,0,.07);overflow:hidden}
 .cell:active{transform:scale(.9)}
 .cell.selected{transform:scale(1.1);z-index:2;outline:3px solid var(--gold);outline-offset:2px;box-shadow:0 4px 14px rgba(212,138,8,.3)}
 .cell.hint-glow{animation:hintpls .85s ease infinite}
@@ -387,7 +385,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .cell[data-elem="K"]{background:#e8e8ff;border-color:#9090e0}
 .cell[data-elem="K"] .cs{color:#1a1a88}.cell[data-elem="K"] .cn{color:#4040aa}
 .cs{font-size:16px;font-weight:900;line-height:1}
-.cn{font-size:8px;font-weight:800;line-height:1;margin-top:1px;opacity:.8}
+.cn{font-size:7px;font-weight:800;line-height:1;margin-top:1px;opacity:.8;width:100%;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 1px}
 /* Fact toast — inside board-area, overlays top of board on mobile */
 .fact-zone-toast{
   position:absolute;
@@ -1447,7 +1445,7 @@ const G={
         }else if(cell.elem){
           div.dataset.elem=cell.elem;
           const el=ELEMENTS[cell.elem];
-          div.innerHTML=`<div class="cs">${el.sym}</div><div class="cn">${el.name.substring(0,6)}</div>`;
+          div.innerHTML=`<div class="cs">${el.sym}</div><div class="cn">${el.name}</div>`;
           if(this.sel&&this.sel[0]===r&&this.sel[1]===c)div.classList.add('selected');
           if(this._newCells&&this._newCells.has(r+','+c))div.classList.add('tile-new');
           div.onclick=()=>this.tap(r,c);
