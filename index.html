@@ -1547,8 +1547,10 @@ const G={
     setTimeout(()=>{
       this.gravity();this.fillBoard();
       this.renderBoard();this.updateHUD();this.buildTargetBar();this.updateSidePanel();
-      this.busy=false;
-      if(!this.checkEnd())this.checkDeadBoard();
+      if(!this.checkEnd()){
+        this.busy=false;
+        this.checkDeadBoard();
+      }
     },600);
   },
 
@@ -1571,8 +1573,9 @@ const G={
       [b[r1][c1].elem,b[r2][c2].elem]=[b[r2][c2].elem,b[r1][c1].elem];
       this.moves--;
       this.renderBoard();this.updateHUD();this.updateSidePanel();
-      this.busy=false;
-      if(this.moves<=0)this.checkEnd();
+      if(!this.checkEnd()){
+        this.busy=false;
+      }
     },420);
   },
 
@@ -1708,7 +1711,6 @@ const G={
     if(this.moves<=0){this.lose();return true;}
     return false;
   },
-
   // ── WIN ──
   win(){
     clearTimeout(this.idleTimer);this.busy=true;
