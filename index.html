@@ -174,40 +174,85 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ GAME — DESKTOP ══ */
 @media(min-width:860px){
-  #s-game{flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
-  .game-body{flex-direction:row;flex:1;align-items:stretch;width:100%;max-width:1400px;margin:0 auto;padding:0;gap:0;min-height:0;overflow:hidden}
-  /* Board area — centered, fills space */
+  /* Chain: #s-game → .game-body → .side-panel → .side-panel-cols → .col-rx → .rx-history */
+  #s-game{
+    flex-direction:column;
+    height:100vh;height:100dvh;
+    overflow:hidden;
+    display:flex;
+  }
+  .game-body{
+    flex-direction:row;
+    flex:1;
+    height:0; /* force flex child to not overflow parent */
+    align-items:stretch;
+    width:100%;
+    max-width:1400px;
+    margin:0 auto;
+    padding:0;gap:0;
+    overflow:hidden;
+  }
+  /* Board area */
   .board-area{flex:1;min-width:0;padding:16px;align-items:center;justify-content:center;overflow:hidden;position:relative}
   /* Floating boost — LEFT of board */
   .dt-boost-float{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:12px 8px;flex-shrink:0;order:-1}
   .dt-boost-float .btn-boost{width:50px;height:54px}
   .dt-boost-float .btn-boost .bi{font-size:20px}
-  /* Side panel — right side, 2-column internal layout */
+  /* Side panel — stretches full height via align-items:stretch on parent */
   .side-panel{
-    display:flex;flex-direction:column;flex:0 0 420px;
-    background:rgba(255,255,255,.06);border-left:1px solid rgba(255,255,255,.1);
+    display:flex;
+    flex-direction:column;
+    flex:0 0 420px;
+    height:100%; /* fill game-body height */
+    background:rgba(255,255,255,.06);
+    border-left:1px solid rgba(255,255,255,.1);
     overflow:hidden;
   }
-  .side-panel-cols{display:flex;flex:1;min-height:0;overflow:hidden}
-  /* David + Fact column — fixed width, scrollable if content overflows */
-  .col-david{
-    flex:0 0 220px;display:flex;flex-direction:column;gap:10px;
-    padding:14px 12px;border-right:1px solid rgba(255,255,255,.08);
-    overflow-y:auto;
+  /* side-panel-cols takes ALL remaining height after any header in side-panel */
+  .side-panel-cols{
+    display:flex;
+    flex:1;
+    height:0; /* same trick — let flex:1 work correctly */
+    overflow:hidden;
   }
-  /* Riwayat column — fills remaining space, scrolls when full */
-  .col-rx{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:180px}
-  .col-rx::-webkit-scrollbar{width:3px}
-  .col-rx::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-  /* rx-history fills the col-rx fully */
-  .rx-history{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-height:0}
-  /* Bottom bar inside side panel — none, hide on desktop */
+  /* David + Fact column */
+  .col-david{
+    flex:0 0 220px;
+    display:flex;flex-direction:column;gap:10px;
+    padding:14px 12px;
+    border-right:1px solid rgba(255,255,255,.08);
+    overflow-y:auto;
+    height:100%;
+  }
+  .col-david::-webkit-scrollbar{width:3px}
+  .col-david::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+  /* Riwayat column — fills ALL remaining width + full height */
+  .col-rx{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    overflow:hidden;
+    min-width:180px;
+  }
+  /* rx-history fills col-rx completely, scrolls when items overflow */
+  .rx-history{
+    flex:1;
+    height:0; /* critical: lets flex:1 fill without overflowing */
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+  }
+  .rx-history::-webkit-scrollbar{width:3px}
+  .rx-history::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+  /* Bottom bar — hide on desktop */
   .bottom-bar{display:none}
   #mobile-bar{display:none}
-  /* David card desktop */
+  /* David card */
   .david-card{
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
     border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;
+    flex-shrink:0;
   }
   .david-avatar{width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);background:#c4e5f5;flex-shrink:0}
   .david-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top}
@@ -215,37 +260,32 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .david-speech{
     font-size:12px;color:rgba(200,232,248,.9);line-height:1.6;
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-    border-radius:8px;padding:8px 10px;width:100%;
+    border-radius:8px;padding:8px 10px;width:100%;flex-shrink:0;
   }
-  /* Fact zone desktop */
-  .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible;padding:0}
+  /* Fact zone */
+  .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible;padding:0;flex-shrink:0}
   .fact-card{
-    background:rgba(255,255,255,.07)!important;
-    border:1px solid rgba(255,255,255,.12)!important;
-    box-shadow:none!important;
-    border-radius:10px!important;
-    padding:10px 12px!important;
+    background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.12)!important;
+    box-shadow:none!important;border-radius:10px!important;padding:10px 12px!important;
   }
   .fact-reaction{color:#ffd060!important;font-size:13px!important}
   .fact-title{color:rgba(168,216,239,.9)!important;font-size:11px!important}
   .fact-body{color:rgba(200,232,248,.8)!important;font-size:11px!important;line-height:1.6!important}
   .fact-noreact{background:rgba(200,60,60,.12)!important;border-color:rgba(220,100,100,.25)!important}
   .fact-noreact .fact-reaction{color:#ff9090!important}
+  /* Riwayat items */
   .rx-history-title{font-size:9px;font-weight:800;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;padding:10px 12px 6px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-  .rx-item{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;gap:6px}
+  .rx-item{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;gap:6px;flex-shrink:0}
   .rx-badge{font-size:10px;color:rgba(168,216,239,.7);font-weight:700;flex-shrink:0}
   .rx-product{color:#ffd060;font-weight:800;flex:1}
   .rx-pts{color:#60d890;font-weight:900;flex-shrink:0}
-  .rx-empty{font-size:11px;color:rgba(122,170,191,.5);padding:14px 12px;font-style:italic}
-  /* target bar dark */
+  .rx-empty{font-size:11px;color:rgba(122,170,191,.5);padding:14px 12px;font-style:italic;flex-shrink:0}
+  /* Target bar */
   .target-bar{background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08)}
   .target-pill{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:rgba(200,232,248,.8)}
   .target-pill.done{opacity:.3}
-  /* prog bar stays */
   .prog-wrap{background:rgba(255,255,255,.1)}
-  /* hud-david-mini hidden on desktop */
   .hud-david-mini{display:none}
-  /* also remove log limit — show all rx history on desktop */
   .rx-history .rx-item:nth-child(n+9){display:flex}
 }
 /* NO shake animation on desktop david card on mobile */
