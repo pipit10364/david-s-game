@@ -935,25 +935,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   </div>
 </div>
 
-<script>
-// ═══════════════════════════════════════════════════
-//  ⚠️  FIREBASE CONFIG — GANTI DENGAN MILIKMU
-//  1. console.firebase.google.com → buat project
-//  2. Add Web App → salin config di bawah
-//  3. Enable Realtime Database (start in test mode)
-// ═══════════════════════════════════════════════════
-const FIREBASE_CONFIG={
-  apiKey:"AIzaSyA3LqJS1OcSHwcOMP3oGwD_uME-4UC7dG0",
-  authDomain:"david-chem.firebaseapp.com",
-  databaseURL:"https://david-chem-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId:"david-chem",
-  storageBucket:"david-chem.firebasestorage.app",
-  messagingSenderId:"209480977161",
-  appId:"1:209480977161:web:f874933ab5bbfb392161d8",
-  measurementId:"G-DVJEB34ZT5"
-};
-const FB_ON=true; // Firebase configured
-
+<script type="module">
 // ─── ELEMENTS ───
 const ELEMENTS={
   H:{sym:'H',name:'Hidrogen'},O:{sym:'O',name:'Oksigen'},
@@ -1044,92 +1026,88 @@ const LEVELS=[
 
 const SAVE='chemcrush_v4';
 
-// ─── FIREBASE ───
-let _fbDB=null;
-if(FB_ON){
-  const s1=document.createElement('script');
-  s1.src='https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
-  s1.onload=()=>{
-    const s2=document.createElement('script');
-    s2.src='https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js';
-    s2.onload=()=>{
-      try{
-        firebase.initializeApp(FIREBASE_CONFIG);
-        _fbDB=firebase.database();
-        console.log('Firebase Realtime DB ready ✓');
-      }catch(e){console.warn('Firebase init error:',e);}
-    };
-    document.head.appendChild(s2);
-  };
-  s1.onerror=()=>console.warn('Firebase SDK gagal dimuat. Cek koneksi internet.');
-  document.head.appendChild(s1);
-}
+// ─── FIREBASE (Firestore) ───
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import {
+  getFirestore,doc,getDoc,setDoc,
+  collection,query,orderBy,limit,getDocs
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-// Tunggu _fbDB siap, timeout dalam ms
-function waitForDB(ms=6000){
-  if(_fbDB)return Promise.resolve(_fbDB);
-  return new Promise((res,rej)=>{
-    const t0=Date.now();
-    const poll=()=>{
-      if(_fbDB)return res(_fbDB);
-      if(Date.now()-t0>ms)return rej(new Error('DB timeout'));
-      setTimeout(poll,250);
-    };
-    poll();
-  });
-}
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyA3LqJS1OcSHwcOMP3oGwD_uME-4UC7dG0",
+  authDomain:"david-chem.firebaseapp.com",
+  projectId:"david-chem",
+  storageBucket:"david-chem.firebasestorage.app",
+  messagingSenderId:"209480977161",
+  appId:"1:209480977261:web:f874933ab5bbfb392161d8",
+};
+const FB_ON=true;
 
+let _db=null;
+try{
+  const app=initializeApp(FIREBASE_CONFIG);
+  _db=getFirestore(app);
+  console.log('Firestore ready ✓');
+}catch(e){console.warn('Firebase init error:',e);}
+
+// ── LEADERBOARD ──
 async function fbGetLB(){
+  if(!_db)return null;
   try{
-    const db=await waitForDB(6000);
+    const q=query(collection(_db,'chemcrush_lb'),orderBy('score','desc'),limit(20));
     const snap=await Promise.race([
-      db.ref('chemcrush/lb').orderByChild('score').limitToLast(20).once('value'),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('query timeout')),7000))
+      getDocs(q),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),7000))
     ]);
-    const data=snap.val()||{};
-    return Object.values(data).sort((a,b)=>b.score-a.score).slice(0,10);
-  }catch(e){
-    console.warn('fbGetLB error:',e.message);
-    return null; // null = error, [] = empty
-  }
+    return snap.docs.map(d=>d.data());
+  }catch(e){console.warn('fbGetLB:',e.message);return null;}
 }
 
 async function fbSubmit(username,score,level){
-  if(!username)return false;
+  if(!username||!_db)return false;
   try{
-    const db=await waitForDB(6000);
-    const key=username.replace(/[.#$[\]/]/g,'_');
+    const key=username.toLowerCase().replace(/[^a-z0-9._]/g,'_');
+    const ref=doc(_db,'chemcrush_lb',key);
     const snap=await Promise.race([
-      db.ref('chemcrush/lb/'+key).once('value'),
+      getDoc(ref),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),7000))
     ]);
-    const ex=snap.val()||{};
-    // Track best score per level, recompute cumulative total
+    const ex=snap.exists()?snap.data():{};
     const perLevel=ex.perLevel||{};
     const prevBest=perLevel[level]||0;
     let updated=false;
-    if(score>prevBest){
-      perLevel[level]=score;
-      updated=true;
-    }
-    // Total = sum of best scores across all levels
+    if(score>prevBest){perLevel[level]=score;updated=true;}
     const total=Object.values(perLevel).reduce((a,b)=>a+b,0);
-    // Always write if new hs on any level, or first entry
     if(updated||!ex.score){
-      await db.ref('chemcrush/lb/'+key).set({
-        username:'@'+username,
-        score:total,
-        perLevel,
-        level:Object.keys(perLevel).length, // levels completed
-        ts:Date.now()
+      await setDoc(ref,{
+        username:'@'+username,score:total,
+        perLevel,level:Object.keys(perLevel).length,ts:Date.now()
       });
       return updated;
     }
     return false;
-  }catch(e){
-    console.warn('fbSubmit error:',e.message);
-    return false;
-  }
+  }catch(e){console.warn('fbSubmit:',e.message);return false;}
+}
+
+// ── PROGRESS SYNC ──
+async function fbSaveProgress(username,data){
+  if(!username||!_db)return;
+  try{
+    const key=username.toLowerCase().replace(/[^a-z0-9._]/g,'_');
+    await setDoc(doc(_db,'chemcrush_progress',key),{...data,username,ts:Date.now()});
+  }catch(e){console.warn('fbSaveProgress:',e.message);}
+}
+
+async function fbLoadProgress(username){
+  if(!username||!_db)return null;
+  try{
+    const key=username.toLowerCase().replace(/[^a-z0-9._]/g,'_');
+    const snap=await Promise.race([
+      getDoc(doc(_db,'chemcrush_progress',key)),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    return snap.exists()?snap.data():null;
+  }catch(e){console.warn('fbLoadProgress:',e.message);return null;}
 }
 
 // ─── CONFETTI ───
@@ -1237,10 +1215,43 @@ const G={
   movesBonus:0,
   tutDone:false,
 
-  save(){try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared}));}catch(e){}},
+  save(){
+    const data={stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared};
+    try{localStorage.setItem(SAVE,JSON.stringify(data));}catch(e){}
+    // Sync to Firestore in background
+    if(this.username)fbSaveProgress(this.username,{stars:this.stars,scores:this.scores,cleared:this.cleared,tutDone:this.tutDone});
+  },
   load(){
-    try{const d=JSON.parse(localStorage.getItem(SAVE)||'{}');this.stars=d.stars||{};this.scores=d.scores||{};this.username=d.username||null;this.tutDone=d.tutDone||false;this.cleared=d.cleared||{};}
-    catch(e){this.stars={};this.scores={};this.username=null;this.tutDone=false;this.cleared={};}
+    // 1. Load from localStorage first (instant, offline-safe)
+    try{
+      const d=JSON.parse(localStorage.getItem(SAVE)||'{}');
+      this.stars=d.stars||{};this.scores=d.scores||{};
+      this.username=d.username||null;this.tutDone=d.tutDone||false;
+      this.cleared=d.cleared||{};
+    }catch(e){this.stars={};this.scores={};this.username=null;this.tutDone=false;this.cleared={};}
+  },
+  // Pull progress from Firestore and merge — called after username is set
+  async syncFromCloud(username){
+    if(!username||!FB_ON)return;
+    try{
+      const remote=await fbLoadProgress(username);
+      if(!remote)return;
+      // Merge: take the more complete data (more cleared levels wins)
+      const localCleared=Object.keys(this.cleared).length;
+      const remoteCleared=Object.keys(remote.cleared||{}).length;
+      if(remoteCleared>=localCleared){
+        // Remote is ahead — override local
+        this.stars=remote.stars||this.stars;
+        this.scores=remote.scores||this.scores;
+        this.cleared=remote.cleared||this.cleared;
+        this.tutDone=remote.tutDone||this.tutDone;
+        // Save merged back to localStorage
+        try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared}));}catch(e){}
+        // Refresh map if currently showing
+        if(document.getElementById('s-map').classList.contains('on'))this.buildMap();
+        console.log('Progress synced from cloud ✓');
+      }
+    }catch(e){console.warn('syncFromCloud error:',e.message);}
   },
 
   show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');},
@@ -1250,13 +1261,19 @@ const G={
   // ── INTRO / USERNAME ──
   startIntro(){
     if(!this.username){document.getElementById('un-wrap').classList.add('on');}
-    else{this.toMap();}
+    else{
+      // Already logged in — sync progress from cloud silently
+      this.syncFromCloud(this.username);
+      this.toMap();
+    }
   },
   saveUsername(){
     const v=document.getElementById('un-input').value.trim().replace(/^@/,'');
     if(!v){document.getElementById('un-input').focus();return;}
     this.username=v;this.save();
     document.getElementById('un-wrap').classList.remove('on');
+    // Pull cloud progress — will refresh map if data found
+    this.syncFromCloud(v);
     this.toMap();
   },
   skipUsername(){
