@@ -1750,6 +1750,7 @@ const G={
     // Moves bonus
     this.movesBonus=this.moves*20;
     this.score+=this.movesBonus;
+    console.log('win() step 1 — movesBonus done');
 
     let stars=this.moves>=Math.floor(lv.moves*.5)?3:this.moves>=Math.floor(lv.moves*.15)?2:1;
     const prev=this.stars[lv.id]||0;
@@ -1757,17 +1758,21 @@ const G={
     const prevScore=this.scores[lv.id]||0;
     const isNewHS=this.score>prevScore;
     if(isNewHS)this.scores[lv.id]=this.score;
-    // Mark as cleared forever (once-in-lifetime)
     this.cleared[lv.id]=true;
     this.save();
+    console.log('win() step 2 — save done');
 
     Confetti.start();
     SFX.win();
     this.davidExpr('aha');
-    document.getElementById('modal-wrap').classList.remove('on');
+    console.log('win() step 3 — confetti done');
 
-    // ── Populate end screen synchronously (no await) ──
+    const mw=document.getElementById('modal-wrap');
+    if(mw)mw.classList.remove('on');
+    console.log('win() step 4 — modal cleared');
+
     document.getElementById('end-title').textContent='🎉 Sintesis Berhasil!';
+    console.log('win() step 5 — title set');
 
     const starsEl=document.getElementById('end-stars');starsEl.innerHTML='';
     for(let i=1;i<=3;i++){
@@ -1777,6 +1782,7 @@ const G={
       s.textContent=i<=stars?'★':'☆';
       starsEl.appendChild(s);
     }
+    console.log('win() step 6 — stars done');
 
     const scoreEl=document.getElementById('end-score');
     if(scoreEl)scoreEl.textContent=this.score.toLocaleString();
@@ -1784,6 +1790,7 @@ const G={
     const rxEl=document.getElementById('eb-rx');if(rxEl)rxEl.textContent='+'+this.rxBaseScore.toLocaleString();
     const cbEl=document.getElementById('eb-combo');if(cbEl)cbEl.textContent=this.comboBonus>0?'🔥 +'+this.comboBonus.toLocaleString():'—';
     const mvEl=document.getElementById('eb-moves');if(mvEl)mvEl.textContent=this.movesBonus>0?'+'+this.movesBonus.toLocaleString():'—';
+    console.log('win() step 7 — scores done');
 
     const hsEl=document.getElementById('end-hs'),prevEl=document.getElementById('end-prev');
     if(isNewHS&&prevScore>0){
@@ -1796,18 +1803,20 @@ const G={
       if(hsEl)hsEl.style.display='none';
       if(prevEl)prevEl.style.display='none';
     }
+    console.log('win() step 8 — hs done');
 
     const btn1=document.getElementById('end-btn1');
     if(btn1){btn1.textContent='Level Berikutnya →';btn1.onclick=()=>G.endBtn1();}
+    console.log('win() step 9 — btn done');
 
-    // ── Show end screen or graduation ──
     const isLast=lv.id>=LEVELS.length;
+    console.log('win() step 10 — isLast:',isLast,'lv.id:',lv.id,'LEVELS.length:',LEVELS.length);
     if(isLast){
-      // Small delay so confetti starts first
       setTimeout(()=>this.showGrad(),600);
       return;
     }
     this.show('s-end');
+    console.log('win() step 11 — show s-end done');
 
     // ── Inline leaderboard: show section, fetch in background ──
     const lbSection=document.getElementById('end-lb-section');
