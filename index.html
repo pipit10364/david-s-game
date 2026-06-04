@@ -1724,12 +1724,26 @@ const G={
     const t=this.lv.target;
     const rxOk=!t.reactions||(this.reactions>=t.reactions);
     const scOk=!t.score||(this.score>=t.score);
-    if(rxOk&&scOk){this.win();return true;}
-    if(this.moves<=0){this.lose();return true;}
+    if(rxOk&&scOk){
+      try{this.win();}catch(e){
+        console.error('win() error:',e);
+        // Force show end screen even if win() throws
+        this.show('s-end');
+      }
+      return true;
+    }
+    if(this.moves<=0){
+      try{this.lose();}catch(e){
+        console.error('lose() error:',e);
+        this.toMap();
+      }
+      return true;
+    }
     return false;
   },
   // ── WIN ──
   win(){
+    console.log('win() called — level:',this.lv?.id,'reactions:',this.reactions,'score:',this.score);
     clearTimeout(this.idleTimer);this.busy=true;
     const lv=this.lv;
 
