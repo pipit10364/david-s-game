@@ -947,46 +947,46 @@ const ELEMENTS={
 
 // ─── REACTIONS (14 unik, tidak ada duplikat key) ───
 const REACTIONS=[
-  {elems:['H','O'],product:'H₂O',pts:150,name:'Air',
+  {id:'H2O',  elems:['H','O'],product:'H₂O',pts:150,name:'Air',
    davidSay:'Air! H₂O — pelarut universal. 2 hidrogen + 1 oksigen, ikatan polar!',
    fact:'H₂O terbentuk dari 2 atom hidrogen + 1 oksigen. Ikatan kovalen polar-nya bikin air bisa melarutkan hampir segalanya — itulah kenapa air disebut "universal solvent".'},
-  {elems:['Na','Cl'],product:'NaCl',pts:180,name:'Garam dapur',
+  {id:'NaCl', elems:['Na','Cl'],product:'NaCl',pts:180,name:'Garam dapur',
    davidSay:'NaCl! Dari logam yang meledak + gas beracun, jadi garam dapur. Kimia itu ajaib!',
    fact:'NaCl terbentuk dari reaksi hebat antara Na yang meledak di air dan gas Cl₂ yang beracun. Hasilnya: kristal yang aman dimakan!'},
-  {elems:['C','O'],product:'CO₂',pts:160,name:'Karbon dioksida',
+  {id:'CO2',  elems:['C','O'],product:'CO₂',pts:160,name:'Karbon dioksida',
    davidSay:'CO₂! Produk pembakaran sekaligus respirasi sel. Tiap napasmu mengandung ini.',
    fact:'CO₂ dihasilkan dari pembakaran karbon dengan oksigen — juga produk respirasi selular. Tiap napas yang kamu keluarkan mengandung CO₂ hasil metabolisme.'},
-  {elems:['N','H'],product:'NH₃',pts:200,name:'Amonia',
+  {id:'NH3',  elems:['N','H'],product:'NH₃',pts:200,name:'Amonia',
    davidSay:'NH₃! Amonia — dasar dari semua protein di tubuhmu. Proses Haber-Bosch mengubah dunia!',
    fact:'NH₃ penting dalam biosintesis protein. Proses Haber-Bosch yang mensintesisnya dari N₂+H₂ adalah penemuan kimia terpenting abad 20.'},
-  {elems:['Ca','O'],product:'CaO',pts:170,name:'Kapur bakar',
+  {id:'CaO',  elems:['Ca','O'],product:'CaO',pts:170,name:'Kapur bakar',
    davidSay:'CaO — kapur bakar! Tambah air jadi semen. Literally bahan bangunan peradaban.',
    fact:'CaO dari pemanasan batu kapur. Dicampur air jadi Ca(OH)₂ — bahan semen yang membangun peradaban manusia ribuan tahun.'},
-  {elems:['Fe','O'],product:'Fe₂O₃',pts:160,name:'Karat besi',
+  {id:'Fe2O3',elems:['Fe','O'],product:'Fe₂O₃',pts:160,name:'Karat besi',
    davidSay:'Fe₂O₃ — karat! Mars berwarna merah karena planet itu sedang berkarat. Serius!',
    fact:'Fe₂O₃ adalah karat besi. Di Mars, Fe₂O₃ yang melimpah bikin planet itu berwarna merah — Mars adalah planet yang sedang berkarat!'},
-  {elems:['S','O'],product:'SO₂',pts:175,name:'Sulfur dioksida',
+  {id:'SO2',  elems:['S','O'],product:'SO₂',pts:175,name:'Sulfur dioksida',
    davidSay:'SO₂ — biang hujan asam. Gas ini dari pembakaran batu bara.',
    fact:'SO₂ dari pembakaran bahan bakar fosil. Di atmosfer bereaksi jadi H₂SO₄ — hujan asam yang merusak hutan dan bangunan bersejarah.'},
-  {elems:['K','O'],product:'K₂O',pts:165,name:'Kalium oksida',
+  {id:'K2O',  elems:['K','O'],product:'K₂O',pts:165,name:'Kalium oksida',
    davidSay:'Kalium + Oksigen! Hati-hati, logam K bisa terbakar spontan di udara lho!',
    fact:'Kalium sangat reaktif — bisa terbakar spontan di udara dan meledak jika kena air. Logam alkali disimpan dalam minyak mineral.'},
-  {elems:['Na','O'],product:'Na₂O',pts:170,name:'Natrium oksida',
+  {id:'Na2O', elems:['Na','O'],product:'Na₂O',pts:170,name:'Natrium oksida',
    davidSay:'Na₂O! Kena air langsung jadi soda api. Reaksi berantai yang berbahaya!',
    fact:'Na₂O kena air langsung jadi NaOH (soda api) yang sangat korosif. Dipakai untuk membuat sabun dan memurnikan aluminium.'},
-  {elems:['C','N'],product:'CN⁻',pts:220,name:'Sianida',
+  {id:'CN',   elems:['C','N'],product:'CN⁻',pts:220,name:'Sianida',
    davidSay:'CN⁻ — sianida! Beracun karena blokir respirasi sel. Tapi dipakai murni emas. Paradoks!',
    fact:'Ion CN⁻ sangat beracun — blokir sitokrom c oksidase, enzim vital respirasi sel. Ironisnya, dipakai industri perhiasan untuk memurnikan emas.'},
-  {elems:['H','S'],product:'H₂S',pts:165,name:'Hidrogen sulfida',
+  {id:'H2S',  elems:['H','S'],product:'H₂S',pts:165,name:'Hidrogen sulfida',
    davidSay:'H₂S — bau telur busuk alias bau kentut! Dihasilkan bakteri dan gunung berapi.',
    fact:'H₂S berbau sangat busuk seperti telur busuk — dihasilkan bakteri pengurai protein. Di gunung berapi dan sumur belerang, konsentrasinya bisa sangat mematikan.'},
-  {elems:['Ca','Cl'],product:'CaCl₂',pts:185,name:'Kalsium klorida',
+  {id:'CaCl2',elems:['Ca','Cl'],product:'CaCl₂',pts:185,name:'Kalsium klorida',
    davidSay:'CaCl₂! Super higroskopis — nyedot uap air dari udara. Ion Ca²⁺ bikin otot kontraksi!',
    fact:'CaCl₂ sangat higroskopis — menyerap uap air dari udara. Di sel tubuh, Ca²⁺ adalah sinyal penting untuk kontraksi otot dan transmisi sinyal saraf.'},
-  {elems:['Fe','S'],product:'FeS',pts:175,name:'Besi sulfida',
+  {id:'FeS',  elems:['Fe','S'],product:'FeS',pts:175,name:'Besi sulfida',
    davidSay:'FeS — mineral kerak bumi! Ada di mana-mana, dari tanah sampai inti bumi.',
    fact:'FeS terbentuk dari reaksi langsung besi dan sulfur saat dipanaskan. Mineral ini banyak ditemukan di kerak bumi!'},
-  {elems:['K','Cl'],product:'KCl',pts:180,name:'Kalium klorida',
+  {id:'KCl',  elems:['K','Cl'],product:'KCl',pts:180,name:'Kalium klorida',
    davidSay:'KCl — pengganti garam untuk hipertensi! Ion K⁺ juga ngatur ritme jantungmu.',
    fact:'KCl digunakan sebagai pengganti garam bagi penderita hipertensi. Ion K⁺ sangat vital mengatur ritme detak jantung.'},
 ];
@@ -1007,21 +1007,27 @@ function getRx(a,b){return RXMAP[[a,b].sort().join('|')]||null;}
 // ─── LEVELS (15 total) ───
 // obstacles: [col, row] format
 const LEVELS=[
+  // Lv 1-3: Tutorial — no specific targets
   {id:1, name:'H₂O & NaCl',     moves:28, elems:['H','O','Na','Cl'],                       cols:6, rows:6, target:{reactions:5},          obstacles:[]},
   {id:2, name:'Karbon Masuk',    moves:28, elems:['H','O','C','N'],                          cols:6, rows:6, target:{reactions:6,score:900},  obstacles:[]},
   {id:3, name:'Lab Berbatu',     moves:28, elems:['H','O','Na','Cl','C'],                    cols:6, rows:7, target:{reactions:7},            obstacles:[[2,2],[3,4]]},
-  {id:4, name:'Logam Alkali',    moves:30, elems:['Na','Cl','Ca','K'],                       cols:7, rows:6, target:{reactions:8,score:1400}, obstacles:[]},
-  {id:5, name:'Reaksi Besi',     moves:28, elems:['Fe','O','S','C','N'],                     cols:7, rows:7, target:{reactions:9},            obstacles:[[0,3],[6,3]]},
-  {id:6, name:'Full Periodik',   moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe'],      cols:7, rows:7, target:{reactions:10,score:2000},obstacles:[[2,2],[4,4],[2,4]]},
-  {id:7, name:'Chaos Lab',       moves:28, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:7,rows:7,target:{reactions:12,score:2500},obstacles:[[3,0],[3,6],[0,3],[6,3]]},
-  {id:8, name:'Grand Synthesis', moves:32, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:8,rows:8,target:{reactions:15,score:3500},obstacles:[[0,0],[7,0],[0,7],[7,7],[3,3],[4,4]]},
-  {id:9, name:'Asam Kuat',       moves:30, elems:['H','N','O','Cl','S'],                     cols:7, rows:8, target:{reactions:13,score:2800},obstacles:[[1,3],[5,1],[3,6]]},
-  {id:10,name:'Metal Oksida',    moves:32, elems:['Fe','O','Ca','K','Na'],                   cols:8, rows:7, target:{reactions:14,score:3000},obstacles:[[0,4],[6,3],[3,6],[3,0]]},
-  {id:11,name:'Senyawa Baru',    moves:30, elems:['H','O','N','C','S','K'],                  cols:8, rows:8, target:{reactions:15,score:3200},obstacles:[[2,2],[5,5],[2,5],[5,2]]},
-  {id:12,name:'Lab Penuh',       moves:32, elems:['Na','Cl','Ca','Fe','S','K'],              cols:8, rows:8, target:{reactions:14,score:3000},obstacles:[[0,0],[0,7],[7,0],[7,7],[3,3],[4,4]]},
-  {id:13,name:'Reaksi Berantai', moves:30, elems:['H','O','Na','Cl','C','N','Fe','S'],       cols:8, rows:8, target:{reactions:16,score:3500},obstacles:[[3,3],[4,3],[3,4],[4,4]]},
-  {id:14,name:'Kimia Kompleks',  moves:35, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:8,target:{reactions:18,score:4000},obstacles:[[2,2],[2,6],[6,2],[6,6],[4,4]]},
-  {id:15,name:'Ahli Kimia Sejati',moves:40,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:9,target:{reactions:20,score:5000},obstacles:[[0,0],[0,8],[8,0],[8,8],[4,0],[4,8],[0,4],[8,4],[3,3],[5,5],[3,5],[5,3]]},
+  // Lv 4-5: Introduce specific targets (simple, 1 reaction)
+  {id:4, name:'Logam Alkali',    moves:30, elems:['Na','Cl','Ca','K'],                       cols:7, rows:6, target:{reactions:8,score:1400, specific:[{rx:'NaCl',count:3}]}, obstacles:[]},
+  {id:5, name:'Reaksi Besi',     moves:28, elems:['Fe','O','S','C','N'],                     cols:7, rows:7, target:{reactions:9,            specific:[{rx:'Fe2O3',count:2}]}, obstacles:[[0,3],[6,3]]},
+  // Lv 6-7: Two specific targets
+  {id:6, name:'Full Periodik',   moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe'],      cols:7, rows:7, target:{reactions:10,score:2000, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:2}]}, obstacles:[[2,2],[4,4],[2,4]]},
+  {id:7, name:'Chaos Lab',       moves:28, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:7,rows:7,target:{reactions:12,score:2500,  specific:[{rx:'CaCl2',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,0],[3,6],[0,3],[6,3]]},
+  // Lv 8-10: Harder specific targets
+  {id:8, name:'Grand Synthesis', moves:32, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:8,rows:8,target:{reactions:15,score:3500, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'CaCl2',count:2}]}, obstacles:[[0,0],[7,0],[0,7],[7,7],[3,3],[4,4]]},
+  {id:9, name:'Asam Kuat',       moves:30, elems:['H','N','O','Cl','S'],                     cols:7, rows:8, target:{reactions:13,score:2800, specific:[{rx:'NH3',count:3},{rx:'H2S',count:3}]}, obstacles:[[1,3],[5,1],[3,6]]},
+  {id:10,name:'Metal Oksida',    moves:32, elems:['Fe','O','Ca','K','Na'],                   cols:8, rows:7, target:{reactions:14,score:3000, specific:[{rx:'Fe2O3',count:3},{rx:'CaO',count:3}]}, obstacles:[[0,4],[6,3],[3,6],[3,0]]},
+  // Lv 11-13: Three specific targets
+  {id:11,name:'Senyawa Baru',    moves:30, elems:['H','O','N','C','S','K'],                  cols:8, rows:8, target:{reactions:15,score:3200, specific:[{rx:'H2O',count:4},{rx:'NH3',count:3},{rx:'SO2',count:3}]}, obstacles:[[2,2],[5,5],[2,5],[5,2]]},
+  {id:12,name:'Lab Penuh',       moves:32, elems:['Na','Cl','Ca','Fe','S','K'],              cols:8, rows:8, target:{reactions:14,score:3000, specific:[{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'FeS',count:2}]}, obstacles:[[0,0],[0,7],[7,0],[7,7],[3,3],[4,4]]},
+  {id:13,name:'Reaksi Berantai', moves:30, elems:['H','O','Na','Cl','C','N','Fe','S'],       cols:8, rows:8, target:{reactions:16,score:3500, specific:[{rx:'H2O',count:3},{rx:'CO2',count:3},{rx:'NaCl',count:3}]}, obstacles:[[3,3],[4,3],[3,4],[4,4]]},
+  // Lv 14-15: Boss — many specific targets
+  {id:14,name:'Kimia Kompleks',  moves:35, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:8,target:{reactions:18,score:4000, specific:[{rx:'H2O',count:4},{rx:'NaCl',count:3},{rx:'CaCl2',count:3},{rx:'CO2',count:3}]}, obstacles:[[2,2],[2,6],[6,2],[6,6],[4,4]]},
+  {id:15,name:'Ahli Kimia Sejati',moves:40,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:9,target:{reactions:20,score:5000, specific:[{rx:'H2O',count:5},{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'NH3',count:3},{rx:'CO2',count:3}]}, obstacles:[[0,0],[0,8],[8,0],[8,8],[4,0],[4,8],[0,4],[8,4],[3,3],[5,5],[3,5],[5,3]]},
 ];
 
 const SAVE='chemcrush_v4';
@@ -1210,10 +1216,9 @@ const G={
   username:null,lbFrom:'intro',
   streak:0,
   boostCharges:{hint:3,shuffle:2,catalyst:2},
-  rxBaseScore:0,
-  comboBonus:0,
-  movesBonus:0,
+  rxBaseScore:0,comboBonus:0,movesBonus:0,
   tutDone:false,
+  specificProgress:{}, // tracks {rxId: count} for current level
 
   save(){
     const data={stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared};
@@ -1343,6 +1348,9 @@ const G={
     this.sel=null;this.busy=false;this.rxLog=[];
     this.streak=0;this.rxBaseScore=0;this.comboBonus=0;this.movesBonus=0;
     this.boostCharges={hint:3,shuffle:2,catalyst:2};
+    // Init specific reaction progress
+    this.specificProgress={};
+    if(lv.target.specific){lv.target.specific.forEach(s=>{this.specificProgress[s.rx]=0;});}
     this.initBoard();this.renderBoard();this.updateHUD();this.buildTargetBar();
     this.updateSidePanel();this.renderRxHistory();this.updateBoostButtons();
     this.show('s-game');
@@ -1551,6 +1559,10 @@ const G={
     this.comboBonus+=earnedPts-rx.pts;
     this.score+=earnedPts;
     this.reactions++;
+    // Track specific reaction progress
+    if(this.specificProgress.hasOwnProperty(rx.id)){
+      this.specificProgress[rx.id]++;
+    }
     this.rxLog.unshift(rx);
     const logLimit=this.isDesktop()?50:8;
     if(this.rxLog.length>logLimit)this.rxLog.pop();
@@ -1713,44 +1725,44 @@ const G={
   },
   buildTargetBar(){
     const t=this.lv.target,bar=document.getElementById('target-bar');bar.innerHTML='';
+    const RX_ICONS={H2O:'💧',NaCl:'🧂',CaCl2:'🧊',CO2:'🌫️',NH3:'🌿',H2S:'⚗️',Fe2O3:'🔴',CaO:'🪨',SO2:'🌋',FeS:'⛏️',NaO:'🔶',KCl:'💜',K2O:'🟣',Na2O:'🟠'};
     const add=(color,text,done)=>{
       const p=document.createElement('div');p.className='target-pill'+(done?' done':'');
       p.innerHTML=`<div class="target-dot" style="background:${color}"></div>${text}`;bar.appendChild(p);
     };
     if(t.reactions)add('#a060f0',`${this.reactions}/${t.reactions} reaksi`,this.reactions>=t.reactions);
     if(t.score)add('#d48a08',`${this.score.toLocaleString()}/${t.score.toLocaleString()} skor`,this.score>=t.score);
+    if(t.specific){
+      t.specific.forEach(s=>{
+        const cur=this.specificProgress[s.rx]||0;
+        const done=cur>=s.count;
+        const icon=RX_ICONS[s.rx]||'⚗️';
+        add(done?'#40c870':'#60b8e8',`${icon} ${cur}/${s.count} ${s.rx}`,done);
+      });
+    }
   },
   checkEnd(){
     const t=this.lv.target;
     const rxOk=!t.reactions||(this.reactions>=t.reactions);
     const scOk=!t.score||(this.score>=t.score);
-    if(rxOk&&scOk){
-      try{this.win();}catch(e){
-        console.error('win() error:',e);
-        // Force show end screen even if win() throws
-        this.show('s-end');
-      }
+    const spOk=!t.specific||t.specific.every(s=>(this.specificProgress[s.rx]||0)>=s.count);
+    if(rxOk&&scOk&&spOk){
+      try{this.win();}catch(e){console.error('win() error:',e);this.show('s-end');}
       return true;
     }
     if(this.moves<=0){
-      try{this.lose();}catch(e){
-        console.error('lose() error:',e);
-        this.toMap();
-      }
+      try{this.lose();}catch(e){console.error('lose() error:',e);this.toMap();}
       return true;
     }
     return false;
   },
   // ── WIN ──
   win(){
-    console.log('win() called — level:',this.lv?.id,'reactions:',this.reactions,'score:',this.score);
     clearTimeout(this.idleTimer);this.busy=true;
     const lv=this.lv;
 
-    // Moves bonus
     this.movesBonus=this.moves*20;
     this.score+=this.movesBonus;
-    console.log('win() step 1 — movesBonus done');
 
     let stars=this.moves>=Math.floor(lv.moves*.5)?3:this.moves>=Math.floor(lv.moves*.15)?2:1;
     const prev=this.stars[lv.id]||0;
@@ -1760,19 +1772,14 @@ const G={
     if(isNewHS)this.scores[lv.id]=this.score;
     this.cleared[lv.id]=true;
     this.save();
-    console.log('win() step 2 — save done');
 
     Confetti.start();
     SFX.win();
     this.davidExpr('aha');
-    console.log('win() step 3 — confetti done');
-
     const mw=document.getElementById('modal-wrap');
     if(mw)mw.classList.remove('on');
-    console.log('win() step 4 — modal cleared');
 
     document.getElementById('end-title').textContent='🎉 Sintesis Berhasil!';
-    console.log('win() step 5 — title set');
 
     const starsEl=document.getElementById('end-stars');starsEl.innerHTML='';
     for(let i=1;i<=3;i++){
@@ -1782,15 +1789,12 @@ const G={
       s.textContent=i<=stars?'★':'☆';
       starsEl.appendChild(s);
     }
-    console.log('win() step 6 — stars done');
 
     const scoreEl=document.getElementById('end-score');
     if(scoreEl)scoreEl.textContent=this.score.toLocaleString();
-
     const rxEl=document.getElementById('eb-rx');if(rxEl)rxEl.textContent='+'+this.rxBaseScore.toLocaleString();
     const cbEl=document.getElementById('eb-combo');if(cbEl)cbEl.textContent=this.comboBonus>0?'🔥 +'+this.comboBonus.toLocaleString():'—';
     const mvEl=document.getElementById('eb-moves');if(mvEl)mvEl.textContent=this.movesBonus>0?'+'+this.movesBonus.toLocaleString():'—';
-    console.log('win() step 7 — scores done');
 
     const hsEl=document.getElementById('end-hs'),prevEl=document.getElementById('end-prev');
     if(isNewHS&&prevScore>0){
@@ -1803,20 +1807,16 @@ const G={
       if(hsEl)hsEl.style.display='none';
       if(prevEl)prevEl.style.display='none';
     }
-    console.log('win() step 8 — hs done');
 
     const btn1=document.getElementById('end-btn1');
     if(btn1){btn1.textContent='Level Berikutnya →';btn1.onclick=()=>G.endBtn1();}
-    console.log('win() step 9 — btn done');
 
     const isLast=lv.id>=LEVELS.length;
-    console.log('win() step 10 — isLast:',isLast,'lv.id:',lv.id,'LEVELS.length:',LEVELS.length);
     if(isLast){
       setTimeout(()=>this.showGrad(),600);
       return;
     }
     this.show('s-end');
-    console.log('win() step 11 — show s-end done');
 
     // ── Inline leaderboard: show section, fetch in background ──
     const lbSection=document.getElementById('end-lb-section');
