@@ -2152,6 +2152,11 @@ const GRAD_MSGS=[
 
 // ── INIT ──
 G.load();
+// ── EXPOSE TO WINDOW (needed because script type="module" scopes vars) ──
+window.G=G;
+window.Confetti=Confetti;
+window.SFX=SFX;
+
 buildGuide();
 Confetti.init();
 
