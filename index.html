@@ -127,10 +127,25 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .hud-val{font-family:'Fredoka One',cursive;font-size:22px;color:var(--ink);line-height:1}
 .hud-lbl{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
 .hud-lv{font-size:10px;color:var(--ink2);font-weight:800;text-align:center;max-width:150px;line-height:1.2}
-.target-bar{display:flex;gap:5px;padding:4px 10px;width:100%;overflow-x:auto;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
-.target-pill{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap;font-weight:800;color:rgba(200,232,248,.8)}
-.target-pill.done{opacity:.3;text-decoration:line-through}
-.target-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.target-bar{display:flex;gap:6px;padding:5px 10px;width:100%;overflow-x:auto;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;align-items:center}
+.target-bar::-webkit-scrollbar{display:none}
+/* Target bubble — element tile style */
+.target-bubble{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0}
+.tb-elem{
+  width:38px;height:38px;border-radius:10px;border:1.5px solid;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s ease;
+}
+.tb-product{font-family:'Fredoka One',cursive;font-size:11px;color:#fff;font-weight:700;text-align:center;line-height:1.1}
+.tb-count{font-family:'Fredoka One',cursive;font-size:16px;color:#fff;font-weight:700;line-height:1;transition:all .3s ease}
+.tb-done{color:#40c870!important}
+.target-done .tb-elem{background:rgba(64,200,112,.25)!important;border-color:rgba(64,200,112,.6)!important}
+/* Mobile smaller */
+@media(max-width:859px){
+  .tb-elem{width:34px;height:34px;border-radius:9px}
+  .tb-product{font-size:10px}
+  .tb-count{font-size:14px}
+}
 .prog-wrap{width:100%;height:8px;background:rgba(255,255,255,.1);flex-shrink:0}
 .prog-fill{height:100%;background:linear-gradient(90deg,#40c870,#80e840);transition:width .4s ease;border-radius:0 4px 4px 0}
 .game-body{display:flex;flex-direction:column;flex:1;width:100%;min-height:0;overflow:hidden}
@@ -194,10 +209,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   }
   /* Board area */
   .board-area{flex:1;min-width:0;padding:16px;align-items:center;justify-content:center;overflow:hidden;position:relative}
-  /* Floating boost — LEFT of board */
-  .dt-boost-float{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:12px 8px;flex-shrink:0;order:-1}
-  .dt-boost-float .btn-boost{width:50px;height:54px}
-  .dt-boost-float .btn-boost .bi{font-size:20px}
+  /* Floating boost — LEFT of board, 2x2 grid */
+  .dt-boost-float{display:flex;flex-direction:column;justify-content:center;gap:6px;padding:8px 6px;flex-shrink:0;order:-1}
+  .boost-section-label{font-size:8px;font-weight:900;color:rgba(168,216,239,.5);text-transform:uppercase;letter-spacing:1.5px;text-align:center;padding:2px 0}
+  .boost-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  .dt-boost-float .btn-boost{width:48px;height:52px}
+  .dt-boost-float .btn-boost .bi{font-size:18px}
   /* Side panel — stretches full height via align-items:stretch on parent */
   .side-panel{
     display:flex;
@@ -306,7 +323,26 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   box-shadow:0 0 0 3px rgba(224,64,64,.3)!important;
   background:rgba(255,200,200,.6)!important;
 }
-/* Too-far tap feedback — red outline flash */
+/* Boost reward popup */
+.boost-reward-pop{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a2a10;
+  font-family:'Fredoka One',cursive;font-size:16px;
+  padding:10px 20px;border-radius:50px;
+  animation:boostRewardAnim 2.2s ease forwards;
+  pointer-events:none;z-index:100;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(255,215,0,.5);
+}
+@keyframes boostRewardAnim{
+  0%{opacity:0;transform:translate(-50%,-60%) scale(.8)}
+  15%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}
+  70%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-40%) scale(.95)}
+}
+@keyframes hammerPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,80,80,.6)}50%{box-shadow:0 0 0 4px rgba(255,80,80,.3)}}
+@keyframes energizerPulse{0%,100%{box-shadow:0 0 0 2px rgba(80,200,255,.6)}50%{box-shadow:0 0 0 4px rgba(80,200,255,.3)}}
+.cell.hammer-mode{animation:hammerPulse .8s ease infinite!important;cursor:crosshair!important}
+.cell.energizer-mode{animation:energizerPulse .8s ease infinite!important;cursor:cell!important}
 @keyframes tooFarFlash{0%,100%{outline-color:rgba(200,80,80,.8)}50%{outline-color:rgba(200,80,80,.1)}}
 .cell.cell-toofar{outline:3px solid rgba(200,80,80,.7)!important;outline-offset:2px;animation:tooFarFlash .32s ease!important}
 
@@ -758,24 +794,27 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
       <div class="board" id="board"></div>
     </div>
 
-    <!-- Desktop floating boost column -->
-    <div class="dt-boost-float" id="dt-boost-float">
-      <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
-        <div class="bi">💡</div>
-        <div class="bl">Hint</div>
-        <span class="bc-badge" id="bc-hint-d">×3</span>
-      </button>
-      <button class="btn-boost" onclick="G.boost('shuffle')" title="Shuffle">
-        <div class="bi">🔀</div>
-        <div class="bl">Shuffle</div>
-        <span class="bc-badge" id="bc-shuffle-d">×2</span>
-      </button>
-      <button class="btn-boost" onclick="G.boost('catalyst')" title="Catalyst">
-        <div class="bi">⚡</div>
-        <div class="bl">Catalyst</div>
-        <span class="bc-badge" id="bc-catalyst-d">×2</span>
-      </button>
-    </div>
+        <div class="dt-boost-float" id="dt-boost-float">
+          <div class="boost-section-label">BOOST</div>
+          <div class="boost-grid">
+            <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
+              <div class="bi">💡</div><div class="bl">Hint</div>
+              <span class="bc-badge" id="bc-hint-d">×3</span>
+            </button>
+            <button class="btn-boost" onclick="G.boost('shuffle')" title="Shuffle">
+              <div class="bi">🔀</div><div class="bl">Shuffle</div>
+              <span class="bc-badge" id="bc-shuffle-d">×2</span>
+            </button>
+            <button class="btn-boost" onclick="G.boost('hammer')" title="Hammer">
+              <div class="bi">🔨</div><div class="bl">Hammer</div>
+              <span class="bc-badge" id="bc-hammer-d">×2</span>
+            </button>
+            <button class="btn-boost" onclick="G.boost('energizer')" title="Energizer">
+              <div class="bi">⚗️</div><div class="bl">Energize</div>
+              <span class="bc-badge" id="bc-energizer-d">×1</span>
+            </button>
+          </div>
+        </div>
 
     <!-- Desktop side panel: 2-column (David+Fact | Riwayat) -->
     <div class="side-panel">
@@ -808,19 +847,20 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
   <div class="bottom-bar" id="mobile-bar">
     <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
-      <div class="bi">💡</div>
-      <div class="bl">Hint</div>
+      <div class="bi">💡</div><div class="bl">Hint</div>
       <span class="bc-badge" id="bc-hint-m">×3</span>
     </button>
     <button class="btn-boost" onclick="G.boost('shuffle')" title="Shuffle">
-      <div class="bi">🔀</div>
-      <div class="bl">Shuffle</div>
+      <div class="bi">🔀</div><div class="bl">Shuffle</div>
       <span class="bc-badge" id="bc-shuffle-m">×2</span>
     </button>
-    <button class="btn-boost" onclick="G.boost('catalyst')" title="Catalyst">
-      <div class="bi">⚡</div>
-      <div class="bl">Catalyst</div>
-      <span class="bc-badge" id="bc-catalyst-m">×2</span>
+    <button class="btn-boost" onclick="G.boost('hammer')" title="Hammer">
+      <div class="bi">🔨</div><div class="bl">Hammer</div>
+      <span class="bc-badge" id="bc-hammer-m">×2</span>
+    </button>
+    <button class="btn-boost" onclick="G.boost('energizer')" title="Energizer">
+      <div class="bi">⚗️</div><div class="bl">Energize</div>
+      <span class="bc-badge" id="bc-energizer-m">×1</span>
     </button>
   </div>
 </div>
@@ -1215,16 +1255,17 @@ const G={
   stars:{},scores:{},cleared:{},isWin:false,rxLog:[],idleTimer:null,
   username:null,lbFrom:'intro',
   streak:0,
-  boostCharges:{hint:3,shuffle:2,catalyst:2},
+  boostCharges:{hint:3,shuffle:2,hammer:2,energizer:1},
   rxBaseScore:0,comboBonus:0,movesBonus:0,
   tutDone:false,
-  specificProgress:{}, // tracks {rxId: count} for current level
+  specificProgress:{},
+  hammerMode:false,   // waiting for user to tap cell to destroy
+  energizerMode:false, // waiting for user to tap cell to energize
 
   save(){
-    const data={stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared};
+    const data={stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared,boostCharges:this.boostCharges};
     try{localStorage.setItem(SAVE,JSON.stringify(data));}catch(e){}
-    // Sync to Firestore in background
-    if(this.username)fbSaveProgress(this.username,{stars:this.stars,scores:this.scores,cleared:this.cleared,tutDone:this.tutDone});
+    if(this.username)fbSaveProgress(this.username,{stars:this.stars,scores:this.scores,cleared:this.cleared,tutDone:this.tutDone,boostCharges:this.boostCharges});
   },
   load(){
     // 1. Load from localStorage first (instant, offline-safe)
@@ -1233,7 +1274,8 @@ const G={
       this.stars=d.stars||{};this.scores=d.scores||{};
       this.username=d.username||null;this.tutDone=d.tutDone||false;
       this.cleared=d.cleared||{};
-    }catch(e){this.stars={};this.scores={};this.username=null;this.tutDone=false;this.cleared={};}
+      this.boostCharges=d.boostCharges||{hint:3,shuffle:2,hammer:2,energizer:1};
+    }catch(e){this.stars={};this.scores={};this.username=null;this.tutDone=false;this.cleared={};this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};}
   },
   // Pull progress from Firestore and merge — called after username is set
   async syncFromCloud(username){
@@ -1250,6 +1292,7 @@ const G={
         this.scores=remote.scores||this.scores;
         this.cleared=remote.cleared||this.cleared;
         this.tutDone=remote.tutDone||this.tutDone;
+        if(remote.boostCharges)this.boostCharges=remote.boostCharges;
         // Save merged back to localStorage
         try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared}));}catch(e){}
         // Refresh map if currently showing
@@ -1347,8 +1390,12 @@ const G={
     this.lv=lv;this.score=0;this.moves=lv.moves;this.reactions=0;
     this.sel=null;this.busy=false;this.rxLog=[];
     this.streak=0;this.rxBaseScore=0;this.comboBonus=0;this.movesBonus=0;
-    this.boostCharges={hint:3,shuffle:2,catalyst:2};
-    // Init specific reaction progress
+    // Carry over boosts from previous level, only reset if first play
+    if(!this._boostCarry){
+      this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};
+    }
+    this._boostCarry=false;
+    this.hammerMode=false;this.energizerMode=false;
     this.specificProgress={};
     if(lv.target.specific){lv.target.specific.forEach(s=>{this.specificProgress[s.rx]=0;});}
     this.initBoard();this.renderBoard();this.updateHUD();this.buildTargetBar();
@@ -1515,6 +1562,8 @@ const G={
           div.innerHTML=`<div class="cs">${el.sym}</div><div class="cn">${el.name}</div>`;
           if(this.sel&&this.sel[0]===r&&this.sel[1]===c)div.classList.add('selected');
           if(this._newCells&&this._newCells.has(r+','+c))div.classList.add('tile-new');
+          if(this.hammerMode)div.classList.add('hammer-mode');
+          if(this.energizerMode)div.classList.add('energizer-mode');
           div.onclick=()=>this.tap(r,c);
         }else{
           div.classList.add('inert-cell');
@@ -1528,6 +1577,20 @@ const G={
   tap(r,c){
     if(this.busy)return;
     const cell=this.board[r][c];
+    // Handle hammer mode
+    if(this.hammerMode){
+      if(cell.obstacle||!cell.elem){
+        this.davidSay('Tidak bisa hancurkan obstacle!','nope');return;
+      }
+      this.applyHammer(r,c);return;
+    }
+    // Handle energizer mode
+    if(this.energizerMode){
+      if(cell.obstacle||!cell.elem){
+        this.davidSay('Pilih elemen yang valid!','nope');return;
+      }
+      this.applyEnergizer(r,c);return;
+    }
     if(!cell.elem||cell.obstacle)return;
     SFX.tap();
     if(!this.sel){this.sel=[r,c];this.renderBoard();return;}
@@ -1536,7 +1599,6 @@ const G={
     if(Math.abs(sr-r)+Math.abs(sc-c)===1){
       this.sel=null;this.trySwap(sr,sc,r,c);
     }else{
-      // Not adjacent — flash the selected cell to signal "too far"
       this.sel=[r,c];this.renderBoard();
       const prevEl=document.querySelector(`[data-r="${sr}"][data-c="${sc}"]`);
       if(prevEl){prevEl.classList.add('cell-toofar');setTimeout(()=>prevEl.classList.remove('cell-toofar'),320);}
@@ -1569,6 +1631,14 @@ const G={
     this.floatPts(earnedPts,r1,c1);
     if(this.streak>=2){this.showCombo(this.streak,mult,r2,c2);SFX.combo(this.streak);}
     else{SFX.react();}
+    // Combo streak boost rewards
+    const streakRewards={3:{type:'hint',label:'💡 Hint'},5:{type:'energizer',label:'⚗️ Energizer'},7:{type:'hammer',label:'🔨 Hammer'},10:{type:'shuffle',label:'🔀 Shuffle'}};
+    if(streakRewards[this.streak]){
+      const reward=streakRewards[this.streak];
+      this.boostCharges[reward.type]=(this.boostCharges[reward.type]||0)+1;
+      this.updateBoostButtons();
+      this.showBoostReward(reward.label);
+    }
     this.showFact(rx);
     this.davidSay(rx.davidSay,'react');this.davidExpr('aha');
     this.renderRxHistory();
@@ -1724,21 +1794,36 @@ const G={
     });
   },
   buildTargetBar(){
-    const t=this.lv.target,bar=document.getElementById('target-bar');bar.innerHTML='';
-    const RX_ICONS={H2O:'💧',NaCl:'🧂',CaCl2:'🧊',CO2:'🌫️',NH3:'🌿',H2S:'⚗️',Fe2O3:'🔴',CaO:'🪨',SO2:'🌋',FeS:'⛏️',NaO:'🔶',KCl:'💜',K2O:'🟣',Na2O:'🟠'};
-    const add=(color,text,done)=>{
-      const p=document.createElement('div');p.className='target-pill'+(done?' done':'');
-      p.innerHTML=`<div class="target-dot" style="background:${color}"></div>${text}`;bar.appendChild(p);
-    };
-    if(t.reactions)add('#a060f0',`${this.reactions}/${t.reactions} reaksi`,this.reactions>=t.reactions);
-    if(t.score)add('#d48a08',`${this.score.toLocaleString()}/${t.score.toLocaleString()} skor`,this.score>=t.score);
-    if(t.specific){
+    const t=this.lv.target,bar=document.getElementById('target-bar');
+    bar.innerHTML='';
+    // Only show specific targets as element bubbles (countdown style)
+    // Score and reaction count shown in HUD — no redundancy
+    if(t.specific&&t.specific.length>0){
       t.specific.forEach(s=>{
         const cur=this.specificProgress[s.rx]||0;
-        const done=cur>=s.count;
-        const icon=RX_ICONS[s.rx]||'⚗️';
-        add(done?'#40c870':'#60b8e8',`${icon} ${cur}/${s.count} ${s.rx}`,done);
+        const remaining=Math.max(0,s.count-cur);
+        const done=remaining===0;
+        const rx=REACTIONS.find(r=>r.id===s.rx);
+        const pill=document.createElement('div');
+        pill.className='target-bubble'+(done?' target-done':'');
+        // Element style bubble like board tiles
+        const color=done?'rgba(64,200,112,.25)':'rgba(255,255,255,.1)';
+        const border=done?'rgba(64,200,112,.6)':'rgba(255,255,255,.2)';
+        pill.innerHTML=`
+          <div class="tb-elem" style="background:${color};border-color:${border}">
+            <div class="tb-product">${rx?rx.product:s.rx}</div>
+          </div>
+          <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
+        `;
+        bar.appendChild(pill);
       });
+    }else{
+      // No specific targets — show simple reaction count pill
+      const done=!t.reactions||(this.reactions>=t.reactions);
+      const pill=document.createElement('div');
+      pill.className='target-bubble'+(done?' target-done':'');
+      pill.innerHTML=`<div class="tb-elem" style="background:rgba(160,96,240,.15);border-color:rgba(160,96,240,.4)"><div class="tb-product" style="font-size:10px">⚗️</div></div><div class="tb-count ${done?'tb-done':''}">${done?'✓':Math.max(0,(t.reactions||0)-this.reactions)}</div>`;
+      bar.appendChild(pill);
     }
   },
   checkEnd(){
@@ -1864,7 +1949,7 @@ const G={
     }
   },
 
-  endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next)this.play(next.id);else this.toMap();},
+  endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next){this._boostCarry=true;this.play(next.id);}else this.toMap();},
   endBtn2(){clearTimeout(this._lbTimer);Confetti.stop();this.play(this.lv.id);},
 
   // ── LOSE ──
@@ -1902,16 +1987,16 @@ const G={
   // ── BOOSTS ──
   boost(type){
     if(this.busy)return;
-    // Check charges
+    // Cancel active mode if tapping same boost again
+    if(type==='hammer'&&this.hammerMode){this.hammerMode=false;this.renderBoard();this.davidSay('Hammer dibatalkan.','');return;}
+    if(type==='energizer'&&this.energizerMode){this.energizerMode=false;this.renderBoard();this.davidSay('Energizer dibatalkan.','');return;}
     if((this.boostCharges[type]||0)<=0){
-      this.davidSay(`${type==='hint'?'Hint':type==='shuffle'?'Shuffle':'Catalyst'} sudah habis untuk level ini!`,'nope');
-      return;
+      const names={hint:'Hint',shuffle:'Shuffle',hammer:'Hammer',energizer:'Energizer'};
+      this.davidSay(`${names[type]} sudah habis!`,'nope');return;
     }
-    this.boostCharges[type]--;
-    this.updateBoostButtons();
     SFX.boost();
-
     if(type==='hint'){
+      this.moves--;this.boostCharges.hint--;this.updateBoostButtons();this.updateHUD();
       const lv=this.lv,b=this.board;
       for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++){
         if(!b[r][c].elem||b[r][c].obstacle)continue;
@@ -1924,52 +2009,101 @@ const G={
              document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`)]
             .forEach(el=>{if(el){el.classList.add('hint-glow');setTimeout(()=>el.classList.remove('hint-glow'),1300);}});
             this.davidSay('Itu dia! Coba swap dua yang aku highlight 👆','react');
-            this.davidExpr('think');return;
+            this.davidExpr('think');
+            if(!this.checkEnd()){}
+            return;
           }
         }
       }
       this.davidSay('Tidak ada pasangan tersisa. Coba Shuffle! 🔀','nope');
       this.davidExpr('wow');
+      if(!this.checkEnd()){}
     }
     if(type==='shuffle'){
+      this.moves--;this.boostCharges.shuffle--;this.updateBoostButtons();this.updateHUD();
       const lv=this.lv,b=this.board,pool=[];
       for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)pool.push(b[r][c].elem);
       pool.sort(()=>Math.random()-.5);let i=0;
       for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)b[r][c].elem=pool[i++];
-      this.renderBoard();
-      this.streak=0;
+      this.streak=0;this.renderBoard();
       this.davidSay('Board diacak! Cari pasangan yang bisa bereaksi 🔍','');
       this.davidExpr('idle');
+      if(!this.checkEnd())this.checkDeadBoard();
     }
-    if(type==='catalyst'){
-      const lv=this.lv,b=this.board;
-      // Gather all non-obstacle cells
-      const allCells=[];
-      for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)
-        if(!b[r][c].obstacle&&b[r][c].elem)allCells.push([r,c]);
-      // Score each cell: 0 = has valid neighbor pair (don't touch), 1 = no pairs (prime target)
-      const lonely=allCells.filter(([r,c])=>{
-        for(const[dr,dc]of[[-1,0],[1,0],[0,-1],[0,1]]){
-          const nr=r+dr,nc=c+dc;
-          if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
-          if(b[nr][nc].obstacle||!b[nr][nc].elem)continue;
-          if(getRx(b[r][c].elem,b[nr][nc].elem))return false;
-        }
-        return true;
-      });
-      // Pick from lonely cells first, fall back to random if not enough
-      const pool=[...lonely,...allCells.filter(x=>!lonely.includes(x))];
-      pool.slice(0,3).forEach(([r,c])=>{b[r][c].elem=this.rndElem();});
-      this._newCells=new Set(pool.slice(0,3).map(([r,c])=>r+','+c));
-      this.renderBoard();
-      this.davidSay('Katalis aktif! Elemen tanpa pasangan diganti. Katalis mempercepat reaksi tanpa ikut bereaksi!','react');
+    if(type==='hammer'){
+      // Enter hammer mode — next tap on board destroys that cell
+      this.hammerMode=true;this.energizerMode=false;
+      this.renderBoard(); // re-render with hammer highlight
+      this.davidSay('🔨 Tap elemen yang mau dihancurkan!','react');
       this.davidExpr('aha');
     }
+    if(type==='energizer'){
+      // Enter energizer mode — next tap transforms cell to react with neighbor
+      this.energizerMode=true;this.hammerMode=false;
+      this.renderBoard(); // re-render with energizer highlight
+      this.davidSay('⚗️ Tap elemen yang mau di-energize — dia akan berubah jadi pasangan tetangganya!','react');
+      this.davidExpr('think');
+    }
+  },
+
+  // Called from tap() when hammerMode or energizerMode is active
+  applyHammer(r,c){
+    this.hammerMode=false;
+    this.moves--;this.boostCharges.hammer--;
+    this.updateBoostButtons();this.updateHUD();
+    this.board[r][c].elem=null;
+    this._newCells=new Set();
+    this.gravity();this.fillBoard();
+    this.renderBoard();this.updateHUD();this.buildTargetBar();
+    this.davidSay('💥 Hancur! Elemen dihapus dari board.','react');
+    this.davidExpr('aha');
+    if(!this.checkEnd())this.checkDeadBoard();
+  },
+
+  applyEnergizer(r,c){
+    this.energizerMode=false;
+    this.moves--;this.boostCharges.energizer--;
+    this.updateBoostButtons();this.updateHUD();
+    const lv=this.lv,b=this.board;
+    // Find neighbors and pick the one with a known reaction
+    const neighbors=[];
+    for(const[dr,dc]of[[-1,0],[1,0],[0,-1],[0,1]]){
+      const nr=r+dr,nc=c+dc;
+      if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
+      if(b[nr][nc].obstacle||!b[nr][nc].elem)continue;
+      neighbors.push({r:nr,c:nc,elem:b[nr][nc].elem});
+    }
+    // Find which reaction partner exists in our REACTIONS list
+    let transformed=false;
+    for(const nb of neighbors){
+      // Try to find a reaction where nb.elem is one of the elems
+      const partner=REACTIONS.find(rx=>rx.elems.includes(nb.elem));
+      if(partner){
+        // Transform current cell to the OTHER elem in that reaction
+        const newElem=partner.elems.find(e=>e!==nb.elem)||partner.elems[0];
+        b[r][c].elem=newElem;
+        transformed=true;
+        this.davidSay(`⚗️ Energized! ${b[r][c].elem} → ${newElem}. Sekarang bisa bereaksi dengan ${nb.elem}!`,'react');
+        break;
+      }
+    }
+    if(!transformed){
+      // No neighbor has a known reaction — pick random reaction and transform
+      const rx=REACTIONS[Math.floor(Math.random()*REACTIONS.length)];
+      b[r][c].elem=rx.elems[0];
+      this.davidSay(`⚗️ Energized! Elemen berubah menjadi ${rx.elems[0]}.`,'react');
+    }
+    this.renderBoard();this.updateHUD();
+    this.davidExpr('aha');
+    if(!this.checkEnd())this.checkDeadBoard();
   },
 
   updateBoostButtons(){
     const bc=this.boostCharges;
-    [['hint','bc-hint-d','bc-hint-m'],['shuffle','bc-shuffle-d','bc-shuffle-m'],['catalyst','bc-catalyst-d','bc-catalyst-m']]
+    [['hint','bc-hint-d','bc-hint-m'],
+     ['shuffle','bc-shuffle-d','bc-shuffle-m'],
+     ['hammer','bc-hammer-d','bc-hammer-m'],
+     ['energizer','bc-energizer-d','bc-energizer-m']]
     .forEach(([type,id1,id2])=>{
       const n=bc[type]||0;
       const txt='×'+n;
@@ -1977,9 +2111,14 @@ const G={
         const el=document.getElementById(id);if(!el)return;
         el.textContent=txt;
         if(n<=0){el.classList.add('empty');}else{el.classList.remove('empty');}
-        // Dim the parent button too
         const btn=el.closest('.btn-boost');
-        if(btn){btn.style.opacity=n<=0?'.45':'1';btn.style.pointerEvents=n<=0?'none':'auto';}
+        if(btn){
+          btn.style.opacity=n<=0?'.45':'1';
+          btn.style.pointerEvents=n<=0?'none':'auto';
+          // Active mode highlight
+          const isActive=(type==='hammer'&&this.hammerMode)||(type==='energizer'&&this.energizerMode);
+          btn.style.outline=isActive?'2px solid #ffd700':'none';
+        }
       });
     });
   },
@@ -2028,7 +2167,13 @@ const G={
   },
 
   // ── COMBO FLOAT TEXT ──
-  showCombo(streak,mult,r,c){
+  showBoostReward(label){
+    const el=document.createElement('div');
+    el.className='boost-reward-pop';
+    el.innerHTML=`🎁 Combo bonus! ${label} +1`;
+    document.getElementById('board-area').appendChild(el);
+    setTimeout(()=>el.remove(),2200);
+  },
     const ba=document.getElementById('board-area');
     const bdRect=document.getElementById('board').getBoundingClientRect();
     const baRect=ba.getBoundingClientRect();
