@@ -2174,6 +2174,7 @@ const G={
     document.getElementById('board-area').appendChild(el);
     setTimeout(()=>el.remove(),2200);
   },
+  showCombo(streak,mult,r,c){
     const ba=document.getElementById('board-area');
     const bdRect=document.getElementById('board').getBoundingClientRect();
     const baRect=ba.getBoundingClientRect();
