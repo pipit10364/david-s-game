@@ -140,12 +140,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .tb-count{font-family:'Fredoka One',cursive;font-size:16px;color:#fff;font-weight:700;line-height:1;transition:all .3s ease}
 .tb-done{color:#40c870!important}
 .target-done .tb-elem{background:rgba(64,200,112,.25)!important;border-color:rgba(64,200,112,.6)!important}
-/* Mobile smaller */
-@media(max-width:859px){
-  .tb-elem{width:34px;height:34px;border-radius:9px}
-  .tb-product{font-size:10px}
-  .tb-count{font-size:14px}
-}
+  /* Target bar — mobile only */
+  #target-bar-wrap{display:block}
+  @media(min-width:860px){
+    #target-bar-wrap{display:none}
+    .target-bar{display:none}
+  }
 .prog-wrap{width:100%;height:8px;background:rgba(255,255,255,.1);flex-shrink:0}
 .prog-fill{height:100%;background:linear-gradient(90deg,#40c870,#80e840);transition:width .4s ease;border-radius:0 4px 4px 0}
 .game-body{display:flex;flex-direction:column;flex:1;width:100%;min-height:0;overflow:hidden}
@@ -209,12 +209,25 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   }
   /* Board area */
   .board-area{flex:1;min-width:0;padding:16px;align-items:center;justify-content:center;overflow:hidden;position:relative}
-  /* Floating boost — LEFT of board, 2x2 grid */
-  .dt-boost-float{display:flex;flex-direction:column;justify-content:center;gap:6px;padding:8px 6px;flex-shrink:0;order:-1}
-  .boost-section-label{font-size:8px;font-weight:900;color:rgba(168,216,239,.5);text-transform:uppercase;letter-spacing:1.5px;text-align:center;padding:2px 0}
+  /* Floating left column — target on top, boost below, 2x2 grids */
+  .dt-boost-float{
+    display:flex;flex-direction:column;justify-content:center;
+    gap:4px;padding:8px 6px;flex-shrink:0;order:-1;
+  }
+  .boost-section-label{
+    font-size:7px;font-weight:900;color:rgba(168,216,239,.45);
+    text-transform:uppercase;letter-spacing:1.5px;text-align:center;
+    padding:3px 0 1px;
+  }
   .boost-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  .left-col-sep{height:1px;background:rgba(255,255,255,.08);margin:4px 2px}
   .dt-boost-float .btn-boost{width:48px;height:52px}
   .dt-boost-float .btn-boost .bi{font-size:18px}
+  /* Target bubbles in desktop left column */
+  #dt-target-grid .target-bubble{cursor:default}
+  #dt-target-grid .tb-elem{width:48px;height:48px;border-radius:12px}
+  #dt-target-grid .tb-product{font-size:12px}
+  #dt-target-grid .tb-count{font-size:18px}
   /* Side panel — stretches full height via align-items:stretch on parent */
   .side-panel{
     display:flex;
@@ -795,6 +808,13 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     </div>
 
         <div class="dt-boost-float" id="dt-boost-float">
+          <!-- TARGET section -->
+          <div class="boost-section-label">TARGET</div>
+          <div class="boost-grid" id="dt-target-grid">
+            <!-- Populated by buildTargetBar() -->
+          </div>
+          <div class="left-col-sep"></div>
+          <!-- BOOST section -->
           <div class="boost-section-label">BOOST</div>
           <div class="boost-grid">
             <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
@@ -1794,37 +1814,48 @@ const G={
     });
   },
   buildTargetBar(){
-    const t=this.lv.target,bar=document.getElementById('target-bar');
-    bar.innerHTML='';
-    // Only show specific targets as element bubbles (countdown style)
-    // Score and reaction count shown in HUD — no redundancy
-    if(t.specific&&t.specific.length>0){
-      t.specific.forEach(s=>{
-        const cur=this.specificProgress[s.rx]||0;
-        const remaining=Math.max(0,s.count-cur);
-        const done=remaining===0;
-        const rx=REACTIONS.find(r=>r.id===s.rx);
+    const t=this.lv.target;
+    const mobileBar=document.getElementById('target-bar');
+    const desktopGrid=document.getElementById('dt-target-grid');
+    // Build target bubbles
+    const makeBubbles=(container)=>{
+      if(!container)return;
+      container.innerHTML='';
+      if(t.specific&&t.specific.length>0){
+        t.specific.forEach(s=>{
+          const cur=this.specificProgress[s.rx]||0;
+          const remaining=Math.max(0,s.count-cur);
+          const done=remaining===0;
+          const rx=REACTIONS.find(r=>r.id===s.rx);
+          const pill=document.createElement('div');
+          pill.className='target-bubble'+(done?' target-done':'');
+          const color=done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)';
+          const border=done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)';
+          pill.innerHTML=`
+            <div class="tb-elem" style="background:${color};border-color:${border}">
+              <div class="tb-product">${rx?rx.product:s.rx}</div>
+            </div>
+            <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
+          `;
+          container.appendChild(pill);
+        });
+      }else{
+        // No specific — show total reaction count
+        const done=!t.reactions||(this.reactions>=t.reactions);
+        const remaining=Math.max(0,(t.reactions||0)-this.reactions);
         const pill=document.createElement('div');
         pill.className='target-bubble'+(done?' target-done':'');
-        // Element style bubble like board tiles
-        const color=done?'rgba(64,200,112,.25)':'rgba(255,255,255,.1)';
-        const border=done?'rgba(64,200,112,.6)':'rgba(255,255,255,.2)';
         pill.innerHTML=`
-          <div class="tb-elem" style="background:${color};border-color:${border}">
-            <div class="tb-product">${rx?rx.product:s.rx}</div>
+          <div class="tb-elem" style="background:rgba(160,96,240,.15);border-color:rgba(160,96,240,.35)">
+            <div class="tb-product" style="font-size:9px">⚗️</div>
           </div>
           <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
         `;
-        bar.appendChild(pill);
-      });
-    }else{
-      // No specific targets — show simple reaction count pill
-      const done=!t.reactions||(this.reactions>=t.reactions);
-      const pill=document.createElement('div');
-      pill.className='target-bubble'+(done?' target-done':'');
-      pill.innerHTML=`<div class="tb-elem" style="background:rgba(160,96,240,.15);border-color:rgba(160,96,240,.4)"><div class="tb-product" style="font-size:10px">⚗️</div></div><div class="tb-count ${done?'tb-done':''}">${done?'✓':Math.max(0,(t.reactions||0)-this.reactions)}</div>`;
-      bar.appendChild(pill);
-    }
+        container.appendChild(pill);
+      }
+    };
+    makeBubbles(mobileBar);
+    makeBubbles(desktopGrid);
   },
   checkEnd(){
     const t=this.lv.target;
