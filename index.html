@@ -2515,8 +2515,8 @@ const G={
     document.body.appendChild(el);
     setTimeout(()=>el.remove(),750);
   },
+  showBoostReward(label){
     const el=document.createElement('div');
-    el.className='boost-reward-pop';
     el.innerHTML=`🎁 Combo bonus! ${label} +1`;
     document.getElementById('board-area').appendChild(el);
     setTimeout(()=>el.remove(),2200);
