@@ -448,30 +448,81 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @media(max-width:859px){
   .rx-history{max-height:160px}
 }
-/* ══ GLASS OBSTACLE ══ */
+/* ══ GRADUATION CAP OBSTACLE ══ */
+.cell.grad-cap{
+  background:linear-gradient(135deg,#1a2a3a,#2a3a50)!important;
+  border:2px solid rgba(255,215,0,.6)!important;
+  box-shadow:0 0 12px rgba(255,215,0,.25),inset 0 1px 3px rgba(255,255,255,.1)!important;
+  cursor:default;
+}
+.cell.grad-cap .gc-icon{font-size:20px;line-height:1;filter:drop-shadow(0 1px 3px rgba(255,215,0,.5))}
+.cell.grad-cap .gc-count{
+  font-family:'Fredoka One',cursive;font-size:11px;
+  color:#ffd700;font-weight:700;line-height:1;margin-top:1px;
+}
+.cell.grad-cap.gc-done{
+  background:linear-gradient(135deg,#1a3a1a,#2a5a2a)!important;
+  border-color:rgba(64,200,112,.8)!important;
+  box-shadow:0 0 16px rgba(64,200,112,.4)!important;
+  animation:gcDonePulse .6s ease;
+}
+@keyframes gcDonePulse{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.15)}
+  100%{transform:scale(1)}
+}
+.cell.grad-cap .gc-progress{
+  width:80%;height:3px;background:rgba(255,255,255,.15);
+  border-radius:99px;margin-top:2px;overflow:hidden;
+}
+.cell.grad-cap .gc-progress-fill{
+  height:100%;background:#ffd700;border-radius:99px;
+  transition:width .3s ease;
+}
 .cell.glass-1,.cell.glass-2{position:relative;overflow:visible!important}
+/* Glass-2: Full glass — thick white frosted overlay */
 .cell.glass-2::after{
-  content:'';position:absolute;inset:-1px;border-radius:11px;
-  background:linear-gradient(135deg,rgba(180,230,255,.55),rgba(255,255,255,.3),rgba(180,230,255,.45));
-  border:2.5px solid rgba(100,180,255,.9);
-  box-shadow:inset 0 1px 4px rgba(255,255,255,.8),0 0 12px rgba(100,180,255,.4);
+  content:'';position:absolute;inset:-2px;border-radius:12px;
+  background:linear-gradient(135deg,
+    rgba(255,255,255,.82) 0%,
+    rgba(210,235,255,.75) 40%,
+    rgba(255,255,255,.88) 60%,
+    rgba(190,220,255,.7) 100%);
+  border:2.5px solid rgba(150,200,255,.95);
+  box-shadow:
+    inset 0 2px 6px rgba(255,255,255,.9),
+    inset 0 -2px 4px rgba(150,200,255,.4),
+    0 0 12px rgba(100,170,255,.5),
+    0 0 0 1px rgba(100,170,255,.3);
   pointer-events:none;z-index:3;
 }
+/* Glass-1: Cracked — still visible but with crack lines */
 .cell.glass-1::after{
-  content:'';position:absolute;inset:-1px;border-radius:11px;
-  background:linear-gradient(135deg,rgba(180,230,255,.3),rgba(255,255,255,.15),rgba(180,230,255,.25));
-  border:2px solid rgba(150,210,255,.6);
-  box-shadow:inset 0 1px 3px rgba(255,255,255,.5),0 0 8px rgba(100,180,255,.2);
+  content:'';position:absolute;inset:-2px;border-radius:12px;
+  background:linear-gradient(135deg,
+    rgba(255,255,255,.55) 0%,
+    rgba(210,235,255,.45) 40%,
+    rgba(255,255,255,.6) 60%,
+    rgba(190,220,255,.4) 100%);
+  border:2px solid rgba(150,200,255,.7);
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,.7),
+    0 0 8px rgba(100,170,255,.3);
   pointer-events:none;z-index:3;
-  /* Crack pattern */
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 4 L16 18 L24 21 L14 38' stroke='rgba(100,180,255,0.5)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"),
-    linear-gradient(135deg,rgba(180,230,255,.3),rgba(255,255,255,.15),rgba(180,230,255,.25));
+  /* SVG crack pattern */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 4 L18 16 L26 20 L14 40' stroke='rgba(100,160,220,0.7)' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3Cpath d='M26 20 L32 28' stroke='rgba(100,160,220,0.5)' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"),
+    linear-gradient(135deg,rgba(255,255,255,.55),rgba(210,235,255,.45),rgba(255,255,255,.6),rgba(190,220,255,.4));
   background-size:cover,cover;
 }
 @keyframes glassShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-@keyframes glassBreak{0%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.08)}100%{opacity:0;transform:scale(1.15)}}
+@keyframes glassBreak{
+  0%{opacity:1;transform:scale(1)}
+  40%{opacity:.7;transform:scale(1.1) rotate(2deg)}
+  100%{opacity:0;transform:scale(1.2) rotate(-1deg)}
+}
 .cell.glass-hit{animation:glassShake .25s ease}
-.cell.glass-breaking::after{animation:glassBreak .3s ease forwards}
+.cell.glass-breaking::after{animation:glassBreak .35s ease forwards}
 
 .cell{border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;border:2px solid transparent;transition:transform .1s;box-shadow:0 2px 5px rgba(0,0,0,.07);overflow:hidden}
 .cell:active{transform:scale(.9)}
@@ -1092,27 +1143,27 @@ function getRx(a,b){return RXMAP[[a,b].sort().join('|')]||null;}
 // ─── LEVELS (15 total) ───
 // obstacles: [col, row] format
 const LEVELS=[
-  // Lv 1-3: Tutorial — no specific targets, no obstacles
-  {id:1, name:'H₂O & NaCl',     moves:28, elems:['H','O','Na','Cl'],                       cols:6, rows:6, target:{reactions:5},          obstacles:[],glass:[]},
-  {id:2, name:'Karbon Masuk',    moves:28, elems:['H','O','C','N'],                          cols:6, rows:6, target:{reactions:6,score:900},  obstacles:[],glass:[]},
-  {id:3, name:'Lab Berbatu',     moves:28, elems:['H','O','Na','Cl','C'],                    cols:6, rows:7, target:{reactions:7},            obstacles:[[2,2],[3,4]],glass:[]},
-  // Lv 4-5: Brick obstacles + specific targets
-  {id:4, name:'Logam Alkali',    moves:30, elems:['Na','Cl','Ca','K'],                       cols:7, rows:6, target:{reactions:8,score:1400, specific:[{rx:'NaCl',count:3}]}, obstacles:[],glass:[]},
-  {id:5, name:'Reaksi Besi',     moves:28, elems:['Fe','O','S','C','N'],                     cols:7, rows:7, target:{reactions:9,            specific:[{rx:'Fe2O3',count:2}]}, obstacles:[[0,3],[6,3]],glass:[]},
-  // Lv 6-7: Introduce GLASS (no brick)
-  {id:6, name:'Kaca Lab',        moves:32, elems:['H','O','Na','Cl','C','N'],                cols:7, rows:7, target:{reactions:10,score:1800, specific:[{rx:'H2O',count:2},{rx:'NaCl',count:2}]}, obstacles:[], glass:[[1,1],[5,1],[1,5],[5,5]]},
-  {id:7, name:'Full Periodik',   moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe'],      cols:7, rows:7, target:{reactions:11,score:2200, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:2}]}, obstacles:[], glass:[[0,0],[6,0],[3,3],[0,6],[6,6]]},
-  // Lv 8-10: Glass + Brick merged
-  {id:8, name:'Chaos Lab',       moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:7,rows:7,target:{reactions:12,score:2500,  specific:[{rx:'CaCl2',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,0],[3,6],[0,3],[6,3]], glass:[[1,1],[5,1],[1,5],[5,5]]},
-  {id:9, name:'Grand Synthesis', moves:32, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:8,rows:8,target:{reactions:15,score:3500, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'CaCl2',count:2}]}, obstacles:[[0,0],[7,0],[0,7],[7,7]], glass:[[2,2],[5,2],[2,5],[5,5],[3,3],[4,4]]},
-  {id:10,name:'Asam Kuat',       moves:30, elems:['H','N','O','Cl','S'],                     cols:7, rows:8, target:{reactions:13,score:2800, specific:[{rx:'NH3',count:3},{rx:'H2S',count:3}]}, obstacles:[[1,3],[5,1],[3,6]], glass:[[0,0],[6,0],[0,7],[6,7]]},
-  // Lv 11-13: Harder, more glass
-  {id:11,name:'Metal Oksida',    moves:32, elems:['Fe','O','Ca','K','Na'],                   cols:8, rows:7, target:{reactions:14,score:3000, specific:[{rx:'Fe2O3',count:3},{rx:'CaO',count:3}]}, obstacles:[[0,4],[6,3],[3,6],[3,0]], glass:[[1,1],[6,1],[1,5],[6,5],[3,3]]},
-  {id:12,name:'Senyawa Baru',    moves:30, elems:['H','O','N','C','S','K'],                  cols:8, rows:8, target:{reactions:15,score:3200, specific:[{rx:'H2O',count:4},{rx:'NH3',count:3},{rx:'SO2',count:3}]}, obstacles:[[2,2],[5,5],[2,5],[5,2]], glass:[[0,0],[7,0],[0,7],[7,7],[3,3],[4,4]]},
-  {id:13,name:'Lab Penuh',       moves:32, elems:['Na','Cl','Ca','Fe','S','K'],              cols:8, rows:8, target:{reactions:14,score:3000, specific:[{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'FeS',count:2}]}, obstacles:[[0,0],[0,7],[7,0],[7,7]], glass:[[2,2],[5,2],[2,5],[5,5],[3,3],[4,4]]},
-  // Lv 14-15: Boss — many glass + specific targets
-  {id:14,name:'Reaksi Berantai', moves:35, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'],  cols:9, rows:8, target:{reactions:18,score:4000, specific:[{rx:'H2O',count:3},{rx:'CO2',count:3},{rx:'NaCl',count:3}]}, obstacles:[[3,3],[4,3],[3,4],[4,4]], glass:[[0,0],[8,0],[0,7],[8,7],[2,2],[6,2],[2,5],[6,5]]},
-  {id:15,name:'Ahli Kimia Sejati',moves:40,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:9,target:{reactions:20,score:5000, specific:[{rx:'H2O',count:5},{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'NH3',count:3},{rx:'CO2',count:3}]}, obstacles:[[4,0],[4,8],[0,4],[8,4]], glass:[[0,0],[8,0],[0,8],[8,8],[2,2],[6,2],[2,6],[6,6],[4,4],[3,3],[5,5],[3,5],[5,3]]},
+  // Lv 1-3: Tutorial — no obstacles
+  {id:1, name:'H₂O & NaCl',      moves:28, elems:['H','O','Na','Cl'],                          cols:6, rows:6, target:{reactions:5},                                                                                    obstacles:[],                              glass:[]},
+  {id:2, name:'Karbon Masuk',     moves:28, elems:['H','O','C','N'],                             cols:6, rows:6, target:{reactions:6,score:900},                                                                          obstacles:[],                              glass:[]},
+  {id:3, name:'Lab Berbatu',      moves:28, elems:['H','O','Na','Cl','C'],                       cols:6, rows:7, target:{reactions:7},                                                                                    obstacles:[[2,3],[3,3]],                   glass:[]},
+  // Lv 4-5: Brick + specific targets
+  {id:4, name:'Logam Alkali',     moves:30, elems:['Na','Cl','Ca','K'],                          cols:7, rows:6, target:{reactions:8,score:1400,specific:[{rx:'NaCl',count:3}]},                                         obstacles:[[3,2],[3,3]],                   glass:[]},
+  {id:5, name:'Reaksi Besi',      moves:28, elems:['Fe','O','S','C','N'],                        cols:7, rows:7, target:{reactions:9,specific:[{rx:'Fe2O3',count:2}]},                                                   obstacles:[[2,3],[4,3]],                   glass:[]},
+  // Lv 6-7: Glass only (introduce glass)
+  {id:6, name:'Kaca Lab',         moves:32, elems:['H','O','Na','Cl','C','N'],                   cols:7, rows:7, target:{reactions:10,score:1800,specific:[{rx:'H2O',count:2},{rx:'NaCl',count:2}]},                     obstacles:[],                              glass:[[1,3],[5,3],[3,1],[3,5]]},
+  {id:7, name:'Full Periodik',    moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe'],         cols:7, rows:7, target:{reactions:11,score:2200,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:2}]},                     obstacles:[],                              glass:[[2,2],[4,2],[2,4],[4,4],[3,3]]},
+  // Lv 8-10: Glass + Brick merged, centered
+  {id:8, name:'Chaos Lab',        moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:7, rows:7, target:{reactions:12,score:2500,specific:[{rx:'CaCl2',count:2},{rx:'CO2',count:2}]},                   obstacles:[[3,0],[3,6],[0,3],[6,3]],       glass:[[2,2],[4,2],[2,4],[4,4]]},
+  {id:9, name:'Grand Synthesis',  moves:32, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:8, rows:8, target:{reactions:15,score:3500,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'CaCl2',count:2}]},obstacles:[[3,3],[4,3],[3,4],[4,4]],       glass:[[1,1],[6,1],[1,6],[6,6]]},
+  {id:10,name:'Asam Kuat',        moves:30, elems:['H','N','O','Cl','S'],                        cols:7, rows:8, target:{reactions:13,score:2800,specific:[{rx:'NH3',count:3},{rx:'H2S',count:3}]},                     obstacles:[[3,3],[3,4]],                   glass:[[1,1],[5,1],[1,6],[5,6],[3,0],[3,7]]},
+  // Lv 11-13: More complex
+  {id:11,name:'Metal Oksida',     moves:32, elems:['Fe','O','Ca','K','Na'],                      cols:8, rows:7, target:{reactions:14,score:3000,specific:[{rx:'Fe2O3',count:3},{rx:'CaO',count:3}]},                   obstacles:[[3,3],[4,3]],                   glass:[[1,1],[6,1],[1,5],[6,5],[3,0],[4,6]]},
+  {id:12,name:'Senyawa Baru',     moves:30, elems:['H','O','N','C','S','K'],                     cols:8, rows:8, target:{reactions:15,score:3200,specific:[{rx:'H2O',count:4},{rx:'NH3',count:3},{rx:'SO2',count:3}]},  obstacles:[[3,3],[4,3],[3,4],[4,4]],       glass:[[1,1],[6,1],[1,6],[6,6],[0,3],[7,4]]},
+  {id:13,name:'Lab Penuh',        moves:32, elems:['Na','Cl','Ca','Fe','S','K'],                 cols:8, rows:8, target:{reactions:14,score:3000,specific:[{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'FeS',count:2}]},obstacles:[[0,3],[7,3],[3,0],[4,7]],       glass:[[2,2],[5,2],[2,5],[5,5]],              caps:[[3,3],[4,4]], capHits:4},
+  // Lv 14-15: Boss levels
+  {id:14,name:'Reaksi Berantai',  moves:35, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'],     cols:9, rows:8, target:{reactions:18,score:4000,specific:[{rx:'H2O',count:3},{rx:'CO2',count:3},{rx:'NaCl',count:3}]}, obstacles:[[4,3],[4,4]],                   glass:[[1,1],[7,1],[1,6],[7,6],[3,3],[5,3],[3,4],[5,4]], caps:[[4,0],[4,7]], capHits:5},
+  {id:15,name:'Ahli Kimia Sejati',moves:40, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:20,score:5000,specific:[{rx:'H2O',count:5},{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'NH3',count:3},{rx:'CO2',count:3}]}, obstacles:[[4,0],[4,8],[0,4],[8,4]], glass:[[2,2],[6,2],[2,6],[6,6],[1,4],[7,4],[4,1],[4,7]], caps:[[4,4],[3,3],[5,5],[3,5],[5,3]], capHits:6},
 ];
 
 const SAVE='chemcrush_v4';
@@ -1363,9 +1414,17 @@ const G={
   saveUsername(){
     const v=document.getElementById('un-input').value.trim().replace(/^@/,'');
     if(!v){document.getElementById('un-input').focus();return;}
-    this.username=v;this.save();
+    const isNewUser=v.toLowerCase()!=(this.username||'').toLowerCase();
+    this.username=v;
+    if(isNewUser){
+      // Clear all local progress for new username
+      this.stars={};this.scores={};this.cleared={};this.tutDone=false;
+      this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};
+      this.specificProgress={};
+    }
+    this.save();
     document.getElementById('un-wrap').classList.remove('on');
-    // Pull cloud progress — will refresh map if data found
+    // Pull cloud progress for this username
     this.syncFromCloud(v);
     this.toMap();
   },
@@ -1532,6 +1591,8 @@ const G={
     const lv=this.lv;
     const obsSet=new Set((lv.obstacles||[]).map(([c,r])=>r+','+c));
     const glassMap=new Map((lv.glass||[]).map(([c,r])=>[r+','+c,2]));
+    const capSet=new Set((lv.caps||[]).map(([c,r])=>r+','+c));
+    const CAP_HITS=lv.capHits||4; // reactions needed around each cap
     let attempts=0;
     do{
       this.board=[];
@@ -1539,10 +1600,13 @@ const G={
         this.board[r]=[];
         for(let c=0;c<lv.cols;c++){
           const key=r+','+c;
+          const isCap=capSet.has(key);
           this.board[r][c]={
-            elem:obsSet.has(key)?null:this.rndElem(),
+            elem:obsSet.has(key)||isCap?null:this.rndElem(),
             obstacle:obsSet.has(key),
             glass:glassMap.get(key)||0,
+            cap:isCap?CAP_HITS:0, // countdown hits needed
+            capDone:false,
           };
         }
       }
@@ -1607,6 +1671,19 @@ const G={
         div.style.width=sz+'px';div.style.height=sz+'px';
         if(cell.obstacle){
           div.classList.add('obstacle');div.innerHTML='<span style="font-size:20px">🧱</span>';
+        }else if(cell.cap>0||cell.capDone){
+          // Graduation cap obstacle
+          div.classList.add('grad-cap');
+          if(cell.capDone)div.classList.add('gc-done');
+          const maxHits=this.lv.capHits||4;
+          const hitsLeft=cell.cap;
+          const filled=maxHits-hitsLeft;
+          const pct=cell.capDone?100:Math.round(filled/maxHits*100);
+          div.innerHTML=`
+            <div class="gc-icon">${cell.capDone?'✅':'🎓'}</div>
+            <div class="gc-count">${cell.capDone?'Done!':hitsLeft+'×'}</div>
+            <div class="gc-progress"><div class="gc-progress-fill" style="width:${pct}%"></div></div>
+          `;
         }else if(cell.elem){
           div.dataset.elem=cell.elem;
           const el=ELEMENTS[cell.elem];
@@ -1678,8 +1755,9 @@ const G={
     if(this.specificProgress.hasOwnProperty(rx.id)){
       this.specificProgress[rx.id]++;
     }
-    // Hit adjacent glass cells
+    // Hit adjacent glass cells and grad caps
     this.hitAdjacentGlass(r1,c1,r2,c2);
+    this.hitAdjacentCaps(r1,c1,r2,c2);
     this.rxLog.unshift(rx);
     const logLimit=this.isDesktop()?50:8;
     if(this.rxLog.length>logLimit)this.rxLog.pop();
@@ -1802,7 +1880,47 @@ const G={
       }
     }
   },
-  showFact(rx){
+  hitAdjacentCaps(r1,c1,r2,c2){
+    const lv=this.lv,b=this.board;
+    const checked=new Set();
+    for(const[baseR,baseC]of[[r1,c1],[r2,c2]]){
+      for(const[dr,dc]of[[-1,0],[1,0],[0,-1],[0,1]]){
+        const nr=baseR+dr,nc=baseC+dc;
+        if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
+        const key=nr+','+nc;
+        if(checked.has(key))continue;
+        checked.add(key);
+        const cell=b[nr][nc];
+        if(cell.cap>0&&!cell.capDone){
+          cell.cap--;
+          if(cell.cap===0){
+            cell.capDone=true;
+            // Bonus points for collecting cap!
+            const bonus=300;
+            this.score+=bonus;
+            this.updateHUD();
+            this.floatPts(bonus,nr,nc);
+            this.davidSay('🎓 Topi wisuda terkumpul! Bonus +300 poin!','react');
+            this.davidExpr('wow');
+            SFX.win();
+          }
+          // Update visual
+          const el=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
+          if(el){
+            const maxHits=lv.capHits||4;
+            const pct=cell.capDone?100:Math.round((maxHits-cell.cap)/maxHits*100);
+            const fill=el.querySelector('.gc-progress-fill');
+            const count=el.querySelector('.gc-count');
+            const icon=el.querySelector('.gc-icon');
+            if(fill)fill.style.width=pct+'%';
+            if(count)count.textContent=cell.capDone?'Done!':cell.cap+'×';
+            if(icon)icon.textContent=cell.capDone?'✅':'🎓';
+            if(cell.capDone)el.classList.add('gc-done');
+          }
+        }
+      }
+    }
+  },
     if(this.isDesktop()){
       // Desktop: fact card in side panel
       const zone=document.getElementById('fact-zone-desktop');
@@ -1919,6 +2037,16 @@ const G={
           done?'rgba(64,200,112,.2)':'rgba(100,180,255,.15)',
           done?'rgba(64,200,112,.5)':'rgba(100,180,255,.4)');
       }
+      // Graduation cap target
+      if(this.lv.caps&&this.lv.caps.length>0){
+        const totalCaps=this.lv.caps.length;
+        const collected=this.board.flat().filter(c=>c.capDone).length;
+        const remaining=totalCaps-collected;
+        const done=remaining===0;
+        addBubble('🎓',remaining,done,
+          done?'rgba(64,200,112,.2)':'rgba(255,215,0,.12)',
+          done?'rgba(64,200,112,.5)':'rgba(255,215,0,.5)');
+      }
     };
     makeBubbles(mobileBar);
     makeBubbles(desktopGrid);
@@ -1928,10 +2056,12 @@ const G={
     const rxOk=!t.reactions||(this.reactions>=t.reactions);
     const scOk=!t.score||(this.score>=t.score);
     const spOk=!t.specific||t.specific.every(s=>(this.specificProgress[s.rx]||0)>=s.count);
-    // Check all glass broken if level has glass
+    // Check all glass broken + all caps collected
     const glassOk=!(this.lv.glass&&this.lv.glass.length>0)||
       this.board.every(row=>row.every(cell=>cell.glass===0));
-    if(rxOk&&scOk&&spOk&&glassOk){
+    const capsOk=!(this.lv.caps&&this.lv.caps.length>0)||
+      this.board.every(row=>row.every(cell=>!cell.cap||cell.capDone));
+    if(rxOk&&scOk&&spOk&&glassOk&&capsOk){
       try{this.win();}catch(e){console.error('win() error:',e);this.show('s-end');}
       return true;
     }
