@@ -336,7 +336,76 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   box-shadow:0 0 0 3px rgba(224,64,64,.3)!important;
   background:rgba(255,200,200,.6)!important;
 }
-/* Boost reward popup */
+/* ══ BOOST JUICE ══ */
+/* Boost button activation flash */
+@keyframes boostActivate{
+  0%{transform:scale(1)}
+  25%{transform:scale(1.22);box-shadow:0 0 0 6px rgba(255,215,0,.35),0 0 24px rgba(255,215,0,.4)}
+  60%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
+.btn-boost.boost-fired{animation:boostActivate .4s cubic-bezier(.34,1.4,.64,1)}
+
+/* Boost announce overlay — big icon floats up center screen */
+.boost-announce{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:9999;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  animation:boostAnnounce .7s cubic-bezier(.34,1.2,.64,1) forwards;
+}
+.boost-announce .ba-icon{font-size:64px;filter:drop-shadow(0 4px 20px rgba(255,215,0,.8))}
+.boost-announce .ba-label{
+  font-family:'Fredoka One',cursive;font-size:22px;color:#ffd700;
+  text-shadow:0 2px 12px rgba(0,0,0,.6);letter-spacing:.5px;
+}
+@keyframes boostAnnounce{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+  30%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+  60%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-60%) scale(.95)}
+}
+
+/* Hammer shake on target cell */
+@keyframes hammerSmash{
+  0%{transform:scale(1)}
+  15%{transform:scale(1.15) rotate(-8deg)}
+  30%{transform:scale(.85) rotate(6deg)}
+  50%{transform:scale(1.05) rotate(-3deg)}
+  70%{transform:scale(.95)}
+  100%{transform:scale(1)}
+}
+/* Hammer smash on target cell */
+@keyframes hammerSmash{
+  0%{transform:scale(1)}
+  15%{transform:scale(1.2) rotate(-10deg)}
+  35%{transform:scale(.8) rotate(8deg)}
+  55%{transform:scale(1.08) rotate(-4deg)}
+  75%{transform:scale(.96)}
+  100%{transform:scale(1)}
+}
+@keyframes screenShake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-4px)}
+  40%{transform:translateX(4px)}
+  60%{transform:translateX(-3px)}
+  80%{transform:translateX(2px)}
+}
+.board-shake{animation:screenShake .35s ease}
+
+/* Cap fly animation */
+@keyframes capFly{
+  0%{transform:scale(1) translateY(0) rotate(0deg);opacity:1}
+  40%{transform:scale(1.4) translateY(-30px) rotate(15deg);opacity:1}
+  100%{transform:scale(.3) translateY(-80px) rotate(40deg);opacity:0}
+}
+.cell.cap-flying{animation:capFly .6s cubic-bezier(.2,.8,.4,1) forwards!important;z-index:50}
+
+/* Energizer pulse on board */
+@keyframes energizerFlash{
+  0%,100%{background:rgba(80,200,255,.0)}
+  50%{background:rgba(80,200,255,.12)}
+}
+.board-energized{animation:energizerFlash .5s ease}
 .boost-reward-pop{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a2a10;
@@ -1895,7 +1964,19 @@ const G={
           cell.cap--;
           if(cell.cap===0){
             cell.capDone=true;
-            // Bonus points for collecting cap!
+            // Fly animation then convert to element
+            const capEl=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
+            if(capEl){
+              capEl.classList.add('cap-flying');
+              setTimeout(()=>{
+                // Convert cap cell to normal playable element
+                cell.cap=0;cell.capDone=false;
+                cell.elem=this.rndElem();
+                this._newCells=new Set([nr+','+nc]);
+                this.renderBoard();this.buildTargetBar();
+              },600);
+            }
+            // Bonus points
             const bonus=300;
             this.score+=bonus;
             this.updateHUD();
@@ -2062,7 +2143,11 @@ const G={
     const glassOk=!(this.lv.glass&&this.lv.glass.length>0)||
       this.board.every(row=>row.every(cell=>cell.glass===0));
     const capsOk=!(this.lv.caps&&this.lv.caps.length>0)||
-      this.board.every(row=>row.every(cell=>!cell.cap||cell.capDone));
+      this.lv.caps.every(([col,row])=>{
+        const cell=this.board[row]&&this.board[row][col];
+        // Cap is collected when cap===0 and cell has elem (converted to element)
+        return cell&&cell.cap===0&&(cell.elem||cell.capDone);
+      });
     if(rxOk&&scOk&&spOk&&glassOk&&capsOk){
       try{this.win();}catch(e){console.error('win() error:',e);this.show('s-end');}
       return true;
@@ -2228,6 +2313,7 @@ const G={
     }
     SFX.boost();
     if(type==='hint'){
+      this.showBoostAnnounce('💡','Hint');
       this.moves--;this.boostCharges.hint--;this.updateBoostButtons();this.updateHUD();
       const lv=this.lv,b=this.board;
       for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++){
@@ -2252,6 +2338,7 @@ const G={
       if(!this.checkEnd()){}
     }
     if(type==='shuffle'){
+      this.showBoostAnnounce('🔀','Shuffle');
       this.moves--;this.boostCharges.shuffle--;this.updateBoostButtons();this.updateHUD();
       const lv=this.lv,b=this.board,pool=[];
       for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)pool.push(b[r][c].elem);
@@ -2263,16 +2350,16 @@ const G={
       if(!this.checkEnd())this.checkDeadBoard();
     }
     if(type==='hammer'){
-      // Enter hammer mode — next tap on board destroys that cell
+      this.showBoostAnnounce('🔨','Hammer');
       this.hammerMode=true;this.energizerMode=false;
-      this.renderBoard(); // re-render with hammer highlight
+      this.renderBoard();
       this.davidSay('🔨 Tap elemen yang mau dihancurkan!','react');
       this.davidExpr('aha');
     }
     if(type==='energizer'){
-      // Enter energizer mode — next tap transforms cell to react with neighbor
+      this.showBoostAnnounce('⚗️','Energizer');
       this.energizerMode=true;this.hammerMode=false;
-      this.renderBoard(); // re-render with energizer highlight
+      this.renderBoard();
       this.davidSay('⚗️ Tap elemen yang mau di-energize — dia akan berubah jadi pasangan tetangganya!','react');
       this.davidExpr('think');
     }
@@ -2283,13 +2370,25 @@ const G={
     this.hammerMode=false;
     this.moves--;this.boostCharges.hammer--;
     this.updateBoostButtons();this.updateHUD();
-    this.board[r][c].elem=null;
-    this._newCells=new Set();
-    this.gravity();this.fillBoard();
-    this.renderBoard();this.updateHUD();this.buildTargetBar();
-    this.davidSay('💥 Hancur! Elemen dihapus dari board.','react');
-    this.davidExpr('aha');
-    if(!this.checkEnd())this.checkDeadBoard();
+    // Visual: smash the cell first, then remove
+    const el=document.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+    if(el){
+      el.style.animation='hammerSmash .35s cubic-bezier(.34,1.4,.64,1)';
+      el.style.background='rgba(255,100,80,.4)';
+    }
+    // Shake the board
+    const bd=document.getElementById('board');
+    if(bd){bd.classList.add('board-shake');setTimeout(()=>bd.classList.remove('board-shake'),380);}
+    SFX.noReact(); // thud sound
+    setTimeout(()=>{
+      this.board[r][c].elem=null;
+      this._newCells=new Set();
+      this.gravity();this.fillBoard();
+      this.renderBoard();this.updateHUD();this.buildTargetBar();
+      this.davidSay('💥 Hancur! Elemen dihapus dari board.','react');
+      this.davidExpr('aha');
+      if(!this.checkEnd())this.checkDeadBoard();
+    },360);
   },
 
   applyEnergizer(r,c){
@@ -2399,7 +2498,23 @@ const G={
   },
 
   // ── COMBO FLOAT TEXT ──
-  showBoostReward(label){
+  showBoostAnnounce(icon,label){
+    // Fire button animation
+    const btns=document.querySelectorAll('.btn-boost');
+    btns.forEach(b=>{
+      const bl=b.querySelector('.bl');
+      if(bl&&bl.textContent.toLowerCase().includes(label.toLowerCase().split(' ')[0])){
+        b.classList.add('boost-fired');
+        setTimeout(()=>b.classList.remove('boost-fired'),450);
+      }
+    });
+    // Big announce overlay
+    const el=document.createElement('div');
+    el.className='boost-announce';
+    el.innerHTML=`<div class="ba-icon">${icon}</div><div class="ba-label">${label}!</div>`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),750);
+  },
     const el=document.createElement('div');
     el.className='boost-reward-pop';
     el.innerHTML=`🎁 Combo bonus! ${label} +1`;
