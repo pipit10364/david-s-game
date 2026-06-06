@@ -448,6 +448,31 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @media(max-width:859px){
   .rx-history{max-height:160px}
 }
+/* ══ GLASS OBSTACLE ══ */
+.cell.glass-1,.cell.glass-2{position:relative;overflow:visible!important}
+.cell.glass-2::after{
+  content:'';position:absolute;inset:-1px;border-radius:11px;
+  background:linear-gradient(135deg,rgba(180,230,255,.55),rgba(255,255,255,.3),rgba(180,230,255,.45));
+  border:2.5px solid rgba(100,180,255,.9);
+  box-shadow:inset 0 1px 4px rgba(255,255,255,.8),0 0 12px rgba(100,180,255,.4);
+  pointer-events:none;z-index:3;
+}
+.cell.glass-1::after{
+  content:'';position:absolute;inset:-1px;border-radius:11px;
+  background:linear-gradient(135deg,rgba(180,230,255,.3),rgba(255,255,255,.15),rgba(180,230,255,.25));
+  border:2px solid rgba(150,210,255,.6);
+  box-shadow:inset 0 1px 3px rgba(255,255,255,.5),0 0 8px rgba(100,180,255,.2);
+  pointer-events:none;z-index:3;
+  /* Crack pattern */
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 4 L16 18 L24 21 L14 38' stroke='rgba(100,180,255,0.5)' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"),
+    linear-gradient(135deg,rgba(180,230,255,.3),rgba(255,255,255,.15),rgba(180,230,255,.25));
+  background-size:cover,cover;
+}
+@keyframes glassShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes glassBreak{0%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.08)}100%{opacity:0;transform:scale(1.15)}}
+.cell.glass-hit{animation:glassShake .25s ease}
+.cell.glass-breaking::after{animation:glassBreak .3s ease forwards}
+
 .cell{border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;border:2px solid transparent;transition:transform .1s;box-shadow:0 2px 5px rgba(0,0,0,.07);overflow:hidden}
 .cell:active{transform:scale(.9)}
 .cell.selected{transform:scale(1.1);z-index:2;outline:3px solid var(--gold);outline-offset:2px;box-shadow:0 4px 14px rgba(212,138,8,.3)}
@@ -1067,27 +1092,27 @@ function getRx(a,b){return RXMAP[[a,b].sort().join('|')]||null;}
 // ─── LEVELS (15 total) ───
 // obstacles: [col, row] format
 const LEVELS=[
-  // Lv 1-3: Tutorial — no specific targets
-  {id:1, name:'H₂O & NaCl',     moves:28, elems:['H','O','Na','Cl'],                       cols:6, rows:6, target:{reactions:5},          obstacles:[]},
-  {id:2, name:'Karbon Masuk',    moves:28, elems:['H','O','C','N'],                          cols:6, rows:6, target:{reactions:6,score:900},  obstacles:[]},
-  {id:3, name:'Lab Berbatu',     moves:28, elems:['H','O','Na','Cl','C'],                    cols:6, rows:7, target:{reactions:7},            obstacles:[[2,2],[3,4]]},
-  // Lv 4-5: Introduce specific targets (simple, 1 reaction)
-  {id:4, name:'Logam Alkali',    moves:30, elems:['Na','Cl','Ca','K'],                       cols:7, rows:6, target:{reactions:8,score:1400, specific:[{rx:'NaCl',count:3}]}, obstacles:[]},
-  {id:5, name:'Reaksi Besi',     moves:28, elems:['Fe','O','S','C','N'],                     cols:7, rows:7, target:{reactions:9,            specific:[{rx:'Fe2O3',count:2}]}, obstacles:[[0,3],[6,3]]},
-  // Lv 6-7: Two specific targets
-  {id:6, name:'Full Periodik',   moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe'],      cols:7, rows:7, target:{reactions:10,score:2000, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:2}]}, obstacles:[[2,2],[4,4],[2,4]]},
-  {id:7, name:'Chaos Lab',       moves:28, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:7,rows:7,target:{reactions:12,score:2500,  specific:[{rx:'CaCl2',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,0],[3,6],[0,3],[6,3]]},
-  // Lv 8-10: Harder specific targets
-  {id:8, name:'Grand Synthesis', moves:32, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:8,rows:8,target:{reactions:15,score:3500, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'CaCl2',count:2}]}, obstacles:[[0,0],[7,0],[0,7],[7,7],[3,3],[4,4]]},
-  {id:9, name:'Asam Kuat',       moves:30, elems:['H','N','O','Cl','S'],                     cols:7, rows:8, target:{reactions:13,score:2800, specific:[{rx:'NH3',count:3},{rx:'H2S',count:3}]}, obstacles:[[1,3],[5,1],[3,6]]},
-  {id:10,name:'Metal Oksida',    moves:32, elems:['Fe','O','Ca','K','Na'],                   cols:8, rows:7, target:{reactions:14,score:3000, specific:[{rx:'Fe2O3',count:3},{rx:'CaO',count:3}]}, obstacles:[[0,4],[6,3],[3,6],[3,0]]},
-  // Lv 11-13: Three specific targets
-  {id:11,name:'Senyawa Baru',    moves:30, elems:['H','O','N','C','S','K'],                  cols:8, rows:8, target:{reactions:15,score:3200, specific:[{rx:'H2O',count:4},{rx:'NH3',count:3},{rx:'SO2',count:3}]}, obstacles:[[2,2],[5,5],[2,5],[5,2]]},
-  {id:12,name:'Lab Penuh',       moves:32, elems:['Na','Cl','Ca','Fe','S','K'],              cols:8, rows:8, target:{reactions:14,score:3000, specific:[{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'FeS',count:2}]}, obstacles:[[0,0],[0,7],[7,0],[7,7],[3,3],[4,4]]},
-  {id:13,name:'Reaksi Berantai', moves:30, elems:['H','O','Na','Cl','C','N','Fe','S'],       cols:8, rows:8, target:{reactions:16,score:3500, specific:[{rx:'H2O',count:3},{rx:'CO2',count:3},{rx:'NaCl',count:3}]}, obstacles:[[3,3],[4,3],[3,4],[4,4]]},
-  // Lv 14-15: Boss — many specific targets
-  {id:14,name:'Kimia Kompleks',  moves:35, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:8,target:{reactions:18,score:4000, specific:[{rx:'H2O',count:4},{rx:'NaCl',count:3},{rx:'CaCl2',count:3},{rx:'CO2',count:3}]}, obstacles:[[2,2],[2,6],[6,2],[6,6],[4,4]]},
-  {id:15,name:'Ahli Kimia Sejati',moves:40,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:9,target:{reactions:20,score:5000, specific:[{rx:'H2O',count:5},{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'NH3',count:3},{rx:'CO2',count:3}]}, obstacles:[[0,0],[0,8],[8,0],[8,8],[4,0],[4,8],[0,4],[8,4],[3,3],[5,5],[3,5],[5,3]]},
+  // Lv 1-3: Tutorial — no specific targets, no obstacles
+  {id:1, name:'H₂O & NaCl',     moves:28, elems:['H','O','Na','Cl'],                       cols:6, rows:6, target:{reactions:5},          obstacles:[],glass:[]},
+  {id:2, name:'Karbon Masuk',    moves:28, elems:['H','O','C','N'],                          cols:6, rows:6, target:{reactions:6,score:900},  obstacles:[],glass:[]},
+  {id:3, name:'Lab Berbatu',     moves:28, elems:['H','O','Na','Cl','C'],                    cols:6, rows:7, target:{reactions:7},            obstacles:[[2,2],[3,4]],glass:[]},
+  // Lv 4-5: Brick obstacles + specific targets
+  {id:4, name:'Logam Alkali',    moves:30, elems:['Na','Cl','Ca','K'],                       cols:7, rows:6, target:{reactions:8,score:1400, specific:[{rx:'NaCl',count:3}]}, obstacles:[],glass:[]},
+  {id:5, name:'Reaksi Besi',     moves:28, elems:['Fe','O','S','C','N'],                     cols:7, rows:7, target:{reactions:9,            specific:[{rx:'Fe2O3',count:2}]}, obstacles:[[0,3],[6,3]],glass:[]},
+  // Lv 6-7: Introduce GLASS (no brick)
+  {id:6, name:'Kaca Lab',        moves:32, elems:['H','O','Na','Cl','C','N'],                cols:7, rows:7, target:{reactions:10,score:1800, specific:[{rx:'H2O',count:2},{rx:'NaCl',count:2}]}, obstacles:[], glass:[[1,1],[5,1],[1,5],[5,5]]},
+  {id:7, name:'Full Periodik',   moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe'],      cols:7, rows:7, target:{reactions:11,score:2200, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:2}]}, obstacles:[], glass:[[0,0],[6,0],[3,3],[0,6],[6,6]]},
+  // Lv 8-10: Glass + Brick merged
+  {id:8, name:'Chaos Lab',       moves:30, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:7,rows:7,target:{reactions:12,score:2500,  specific:[{rx:'CaCl2',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,0],[3,6],[0,3],[6,3]], glass:[[1,1],[5,1],[1,5],[5,5]]},
+  {id:9, name:'Grand Synthesis', moves:32, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:8,rows:8,target:{reactions:15,score:3500, specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'CaCl2',count:2}]}, obstacles:[[0,0],[7,0],[0,7],[7,7]], glass:[[2,2],[5,2],[2,5],[5,5],[3,3],[4,4]]},
+  {id:10,name:'Asam Kuat',       moves:30, elems:['H','N','O','Cl','S'],                     cols:7, rows:8, target:{reactions:13,score:2800, specific:[{rx:'NH3',count:3},{rx:'H2S',count:3}]}, obstacles:[[1,3],[5,1],[3,6]], glass:[[0,0],[6,0],[0,7],[6,7]]},
+  // Lv 11-13: Harder, more glass
+  {id:11,name:'Metal Oksida',    moves:32, elems:['Fe','O','Ca','K','Na'],                   cols:8, rows:7, target:{reactions:14,score:3000, specific:[{rx:'Fe2O3',count:3},{rx:'CaO',count:3}]}, obstacles:[[0,4],[6,3],[3,6],[3,0]], glass:[[1,1],[6,1],[1,5],[6,5],[3,3]]},
+  {id:12,name:'Senyawa Baru',    moves:30, elems:['H','O','N','C','S','K'],                  cols:8, rows:8, target:{reactions:15,score:3200, specific:[{rx:'H2O',count:4},{rx:'NH3',count:3},{rx:'SO2',count:3}]}, obstacles:[[2,2],[5,5],[2,5],[5,2]], glass:[[0,0],[7,0],[0,7],[7,7],[3,3],[4,4]]},
+  {id:13,name:'Lab Penuh',       moves:32, elems:['Na','Cl','Ca','Fe','S','K'],              cols:8, rows:8, target:{reactions:14,score:3000, specific:[{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'FeS',count:2}]}, obstacles:[[0,0],[0,7],[7,0],[7,7]], glass:[[2,2],[5,2],[2,5],[5,5],[3,3],[4,4]]},
+  // Lv 14-15: Boss — many glass + specific targets
+  {id:14,name:'Reaksi Berantai', moves:35, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'],  cols:9, rows:8, target:{reactions:18,score:4000, specific:[{rx:'H2O',count:3},{rx:'CO2',count:3},{rx:'NaCl',count:3}]}, obstacles:[[3,3],[4,3],[3,4],[4,4]], glass:[[0,0],[8,0],[0,7],[8,7],[2,2],[6,2],[2,5],[6,5]]},
+  {id:15,name:'Ahli Kimia Sejati',moves:40,elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'],cols:9,rows:9,target:{reactions:20,score:5000, specific:[{rx:'H2O',count:5},{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'NH3',count:3},{rx:'CO2',count:3}]}, obstacles:[[4,0],[4,8],[0,4],[8,4]], glass:[[0,0],[8,0],[0,8],[8,8],[2,2],[6,2],[2,6],[6,6],[4,4],[3,3],[5,5],[3,5],[5,3]]},
 ];
 
 const SAVE='chemcrush_v4';
@@ -1505,17 +1530,23 @@ const G={
   // ── BOARD ──
   initBoard(){
     const lv=this.lv;
-    const obsSet=new Set(lv.obstacles.map(([c,r])=>r+','+c));
+    const obsSet=new Set((lv.obstacles||[]).map(([c,r])=>r+','+c));
+    const glassMap=new Map((lv.glass||[]).map(([c,r])=>[r+','+c,2]));
     let attempts=0;
     do{
       this.board=[];
       for(let r=0;r<lv.rows;r++){
         this.board[r]=[];
-        for(let c=0;c<lv.cols;c++)
-          this.board[r][c]={elem:obsSet.has(r+','+c)?null:this.rndElem(),obstacle:obsSet.has(r+','+c)};
+        for(let c=0;c<lv.cols;c++){
+          const key=r+','+c;
+          this.board[r][c]={
+            elem:obsSet.has(key)?null:this.rndElem(),
+            obstacle:obsSet.has(key),
+            glass:glassMap.get(key)||0,
+          };
+        }
       }
       attempts++;
-      // Safety: after 20 failed attempts, force-inject a valid pair
       if(attempts>=20){this.forceValidPair();break;}
     }while(!this.hasValidMoves());
   },
@@ -1584,6 +1615,8 @@ const G={
           if(this._newCells&&this._newCells.has(r+','+c))div.classList.add('tile-new');
           if(this.hammerMode)div.classList.add('hammer-mode');
           if(this.energizerMode)div.classList.add('energizer-mode');
+          // Glass overlay
+          if(cell.glass>0)div.classList.add('glass-'+cell.glass);
           div.onclick=()=>this.tap(r,c);
         }else{
           div.classList.add('inert-cell');
@@ -1645,6 +1678,8 @@ const G={
     if(this.specificProgress.hasOwnProperty(rx.id)){
       this.specificProgress[rx.id]++;
     }
+    // Hit adjacent glass cells
+    this.hitAdjacentGlass(r1,c1,r2,c2);
     this.rxLog.unshift(rx);
     const logLimit=this.isDesktop()?50:8;
     if(this.rxLog.length>logLimit)this.rxLog.pop();
@@ -1740,6 +1775,33 @@ const G={
     setTimeout(()=>el.remove(),950);
   },
 
+  hitAdjacentGlass(r1,c1,r2,c2){
+    const lv=this.lv,b=this.board;
+    const checked=new Set();
+    for(const[baseR,baseC]of[[r1,c1],[r2,c2]]){
+      for(const[dr,dc]of[[-1,0],[1,0],[0,-1],[0,1]]){
+        const nr=baseR+dr,nc=baseC+dc;
+        if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
+        const key=nr+','+nc;
+        if(checked.has(key))continue;
+        checked.add(key);
+        const cell=b[nr][nc];
+        if(cell.glass>0){
+          cell.glass--;
+          const el=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
+          if(el){
+            if(cell.glass===0){
+              el.classList.add('glass-breaking');
+              setTimeout(()=>el.classList.remove('glass-breaking','glass-1','glass-2'),350);
+            }else{
+              el.classList.remove('glass-2');el.classList.add('glass-1','glass-hit');
+              setTimeout(()=>el.classList.remove('glass-hit'),280);
+            }
+          }
+        }
+      }
+    }
+  },
   showFact(rx){
     if(this.isDesktop()){
       // Desktop: fact card in side panel
@@ -1817,41 +1879,45 @@ const G={
     const t=this.lv.target;
     const mobileBar=document.getElementById('target-bar');
     const desktopGrid=document.getElementById('dt-target-grid');
-    // Build target bubbles
     const makeBubbles=(container)=>{
       if(!container)return;
       container.innerHTML='';
+      const addBubble=(product,remaining,done,color,border)=>{
+        const pill=document.createElement('div');
+        pill.className='target-bubble'+(done?' target-done':'');
+        pill.innerHTML=`
+          <div class="tb-elem" style="background:${color};border-color:${border}">
+            <div class="tb-product">${product}</div>
+          </div>
+          <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
+        `;
+        container.appendChild(pill);
+      };
       if(t.specific&&t.specific.length>0){
         t.specific.forEach(s=>{
           const cur=this.specificProgress[s.rx]||0;
           const remaining=Math.max(0,s.count-cur);
           const done=remaining===0;
           const rx=REACTIONS.find(r=>r.id===s.rx);
-          const pill=document.createElement('div');
-          pill.className='target-bubble'+(done?' target-done':'');
-          const color=done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)';
-          const border=done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)';
-          pill.innerHTML=`
-            <div class="tb-elem" style="background:${color};border-color:${border}">
-              <div class="tb-product">${rx?rx.product:s.rx}</div>
-            </div>
-            <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
-          `;
-          container.appendChild(pill);
+          addBubble(rx?rx.product:s.rx,remaining,done,
+            done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)',
+            done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)');
         });
-      }else{
-        // No specific — show total reaction count
-        const done=!t.reactions||(this.reactions>=t.reactions);
-        const remaining=Math.max(0,(t.reactions||0)-this.reactions);
-        const pill=document.createElement('div');
-        pill.className='target-bubble'+(done?' target-done':'');
-        pill.innerHTML=`
-          <div class="tb-elem" style="background:rgba(160,96,240,.15);border-color:rgba(160,96,240,.35)">
-            <div class="tb-product" style="font-size:9px">⚗️</div>
-          </div>
-          <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
-        `;
-        container.appendChild(pill);
+      }else if(t.reactions){
+        const done=this.reactions>=(t.reactions||0);
+        addBubble('⚗️',Math.max(0,(t.reactions||0)-this.reactions),done,
+          'rgba(160,96,240,.15)','rgba(160,96,240,.35)');
+      }
+      // Glass target
+      if(this.lv.glass&&this.lv.glass.length>0){
+        const totalGlass=this.lv.glass.length;
+        const broken=this.board.flat().filter(c=>c.glass===0&&
+          this.lv.glass.some(([col,row])=>this.board[row]&&this.board[row][col]===c)).length;
+        const remaining=totalGlass-broken;
+        const done=remaining===0;
+        addBubble('🔲',remaining,done,
+          done?'rgba(64,200,112,.2)':'rgba(100,180,255,.15)',
+          done?'rgba(64,200,112,.5)':'rgba(100,180,255,.4)');
       }
     };
     makeBubbles(mobileBar);
@@ -1862,7 +1928,10 @@ const G={
     const rxOk=!t.reactions||(this.reactions>=t.reactions);
     const scOk=!t.score||(this.score>=t.score);
     const spOk=!t.specific||t.specific.every(s=>(this.specificProgress[s.rx]||0)>=s.count);
-    if(rxOk&&scOk&&spOk){
+    // Check all glass broken if level has glass
+    const glassOk=!(this.lv.glass&&this.lv.glass.length>0)||
+      this.board.every(row=>row.every(cell=>cell.glass===0));
+    if(rxOk&&scOk&&spOk&&glassOk){
       try{this.win();}catch(e){console.error('win() error:',e);this.show('s-end');}
       return true;
     }
