@@ -584,7 +584,10 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     linear-gradient(135deg,rgba(255,255,255,.55),rgba(210,235,255,.45),rgba(255,255,255,.6),rgba(190,220,255,.4));
   background-size:cover,cover;
 }
-@keyframes glassShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes shuffleGather{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}}
+@keyframes shuffleSpread{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.cell.shuffle-gather{animation:shuffleGather .3s ease-in forwards}
+.cell.shuffle-spread{animation:shuffleSpread .3s ease-out forwards}
 @keyframes glassBreak{
   0%{opacity:1;transform:scale(1)}
   40%{opacity:.7;transform:scale(1.1) rotate(2deg)}
@@ -596,10 +599,11 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .cell{border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;border:2px solid transparent;transition:transform .1s;box-shadow:0 2px 5px rgba(0,0,0,.07);overflow:hidden}
 .cell:active{transform:scale(.9)}
 .cell.selected{transform:scale(1.1);z-index:2;outline:3px solid var(--gold);outline-offset:2px;box-shadow:0 4px 14px rgba(212,138,8,.3)}
-.cell.hint-glow{animation:hintpls .85s ease infinite}
-.cell.obstacle{cursor:default;background:#ece4d8;border-color:#c8b898;box-shadow:none}
-.cell.inert-cell{background:var(--sky2);border-color:var(--border);box-shadow:none;cursor:default}
-@keyframes hintpls{0%,100%{box-shadow:0 0 0 0 rgba(212,138,8,.5)}50%{box-shadow:0 0 0 6px rgba(212,138,8,0)}}
+.cell.hint-glow{animation:hintpls .9s ease-in-out infinite;z-index:10;border-color:rgba(255,220,50,.95)!important}
+@keyframes hintpls{
+  0%,100%{box-shadow:0 0 0 3px rgba(255,220,50,.9),0 0 14px rgba(255,220,50,.6);transform:scale(1)}
+  50%{box-shadow:0 0 0 7px rgba(255,220,50,.3),0 0 26px rgba(255,220,50,.5);transform:scale(1.08)}
+}
 .cell[data-elem="H"]{background:#ddeeff;border-color:#88bbee}
 .cell[data-elem="H"] .cs{color:#1a5898}.cell[data-elem="H"] .cn{color:#4488cc}
 .cell[data-elem="O"]{background:#fde8e8;border-color:#f09090}
@@ -1227,12 +1231,12 @@ const LEVELS=[
   {id:9, name:'Grand Synthesis',  moves:32, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:8, rows:8, target:{reactions:15,score:3500,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'CaCl2',count:2}]},obstacles:[[3,3],[4,3],[3,4],[4,4]],       glass:[[1,1],[6,1],[1,6],[6,6]]},
   {id:10,name:'Asam Kuat',        moves:30, elems:['H','N','O','Cl','S'],                        cols:7, rows:8, target:{reactions:13,score:2800,specific:[{rx:'NH3',count:3},{rx:'H2S',count:3}]},                     obstacles:[[3,3],[3,4]],                   glass:[[1,1],[5,1],[1,6],[5,6],[3,0],[3,7]]},
   // Lv 11-13: More complex
-  {id:11,name:'Metal Oksida',     moves:32, elems:['Fe','O','Ca','K','Na'],                      cols:8, rows:7, target:{reactions:14,score:3000,specific:[{rx:'Fe2O3',count:3},{rx:'CaO',count:3}]},                   obstacles:[[3,3],[4,3]],                   glass:[[1,1],[6,1],[1,5],[6,5],[3,0],[4,6]]},
-  {id:12,name:'Senyawa Baru',     moves:30, elems:['H','O','N','C','S','K'],                     cols:8, rows:8, target:{reactions:15,score:3200,specific:[{rx:'H2O',count:4},{rx:'NH3',count:3},{rx:'SO2',count:3}]},  obstacles:[[3,3],[4,3],[3,4],[4,4]],       glass:[[1,1],[6,1],[1,6],[6,6],[0,3],[7,4]]},
-  {id:13,name:'Lab Penuh',        moves:32, elems:['Na','Cl','Ca','Fe','S','K'],                 cols:8, rows:8, target:{reactions:14,score:3000,specific:[{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'FeS',count:2}]},obstacles:[[0,3],[7,3],[3,0],[4,7]],       glass:[[2,2],[5,2],[2,5],[5,5]],              caps:[[3,3],[4,4]], capHits:4},
+  {id:11,name:'Metal Oksida',     moves:36, elems:['Fe','O','Ca','K','Na'],                      cols:8, rows:7, target:{reactions:12,score:2600,specific:[{rx:'Fe2O3',count:2},{rx:'CaO',count:2}]},                   obstacles:[[3,3],[4,3]],                   glass:[[1,1],[6,1],[1,5],[6,5]]},
+  {id:12,name:'Senyawa Baru',     moves:34, elems:['H','O','N','C','S','K'],                     cols:8, rows:8, target:{reactions:13,score:2800,specific:[{rx:'H2O',count:3},{rx:'NH3',count:2},{rx:'SO2',count:2}]},  obstacles:[[3,3],[4,3],[3,4],[4,4]],       glass:[[1,1],[6,1],[1,6],[6,6]]},
+  {id:13,name:'Lab Penuh',        moves:36, elems:['Na','Cl','Ca','Fe','S','K'],                 cols:8, rows:8, target:{reactions:12,score:2600,specific:[{rx:'NaCl',count:3},{rx:'CaCl2',count:2},{rx:'FeS',count:2}]},obstacles:[[0,3],[7,3]],       glass:[[2,2],[5,2],[2,5],[5,5]],              caps:[[3,3],[4,4]], capHits:3},
   // Lv 14-15: Boss levels
-  {id:14,name:'Reaksi Berantai',  moves:35, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'],     cols:9, rows:8, target:{reactions:18,score:4000,specific:[{rx:'H2O',count:3},{rx:'CO2',count:3},{rx:'NaCl',count:3}]}, obstacles:[[4,3],[4,4]],                   glass:[[1,1],[7,1],[1,6],[7,6],[3,3],[5,3],[3,4],[5,4]], caps:[[4,0],[4,7]], capHits:5},
-  {id:15,name:'Ahli Kimia Sejati',moves:40, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:20,score:5000,specific:[{rx:'H2O',count:5},{rx:'NaCl',count:4},{rx:'CaCl2',count:3},{rx:'NH3',count:3},{rx:'CO2',count:3}]}, obstacles:[[4,0],[4,8],[0,4],[8,4]], glass:[[2,2],[6,2],[2,6],[6,6],[1,4],[7,4],[4,1],[4,7]], caps:[[4,4],[3,3],[5,5],[3,5],[5,3]], capHits:6},
+  {id:14,name:'Reaksi Berantai',  moves:40, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'],     cols:9, rows:8, target:{reactions:15,score:3500,specific:[{rx:'H2O',count:3},{rx:'CO2',count:2},{rx:'NaCl',count:2}]}, obstacles:[[4,3],[4,4]],                   glass:[[1,1],[7,1],[1,6],[7,6],[3,3],[5,4]], caps:[[4,0],[4,7]], capHits:4},
+  {id:15,name:'Ahli Kimia Sejati',moves:45, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:18,score:4500,specific:[{rx:'H2O',count:4},{rx:'NaCl',count:3},{rx:'CaCl2',count:3},{rx:'NH3',count:2},{rx:'CO2',count:2}]}, obstacles:[[4,0],[4,8],[0,4],[8,4]], glass:[[2,2],[6,2],[2,6],[6,6],[1,4],[7,4]], caps:[[4,4],[3,3],[5,5],[3,5],[5,3]], capHits:4},
 ];
 
 const SAVE='chemcrush_v4';
@@ -1563,12 +1567,13 @@ const G={
     this.lv=lv;this.score=0;this.moves=lv.moves;this.reactions=0;
     this.sel=null;this.busy=false;this.rxLog=[];
     this.streak=0;this.rxBaseScore=0;this.comboBonus=0;this.movesBonus=0;
-    // Carry over boosts from previous level, only reset if first play
-    if(!this._boostCarry){
+    // Always use saved boostCharges — only reset if completely new (no saves at all)
+    const hasSave=Object.keys(this.stars).length>0||Object.keys(this.cleared).length>0;
+    if(!this._boostCarry&&!hasSave){
       this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};
     }
     this._boostCarry=false;
-    this.hammerMode=false;this.energizerMode=false;
+    this.hammerMode=false;this.energizerMode=false;this._hintCells=null;
     this.specificProgress={};
     if(lv.target.specific){lv.target.specific.forEach(s=>{this.specificProgress[s.rx]=0;});}
     this.initBoard();this.renderBoard();this.updateHUD();this.buildTargetBar();
@@ -1775,6 +1780,14 @@ const G={
 
   tap(r,c){
     if(this.busy)return;
+    // Clear any active hint glow on tap
+    if(this._hintCells){
+      this._hintCells.forEach(([hr,hc])=>{
+        const el=document.querySelector(`[data-r="${hr}"][data-c="${hc}"]`);
+        if(el)el.classList.remove('hint-glow');
+      });
+      this._hintCells=null;
+    }
     const cell=this.board[r][c];
     // Handle hammer mode
     if(this.hammerMode){
@@ -2323,9 +2336,12 @@ const G={
           if(nr<0||nr>=lv.rows||nc<0||nc>=lv.cols)continue;
           if(!b[nr][nc].elem||b[nr][nc].obstacle)continue;
           if(getRx(b[r][c].elem,b[nr][nc].elem)){
-            [document.querySelector(`[data-r="${r}"][data-c="${c}"]`),
-             document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`)]
-            .forEach(el=>{if(el){el.classList.add('hint-glow');setTimeout(()=>el.classList.remove('hint-glow'),1300);}});
+            // Store hint pair so tap() can clear them
+            this._hintCells=[[r,c],[nr,nc]];
+            const el1=document.querySelector(`[data-r="${r}"][data-c="${c}"]`);
+            const el2=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
+            if(el1)el1.classList.add('hint-glow');
+            if(el2)el2.classList.add('hint-glow');
             this.davidSay('Itu dia! Coba swap dua yang aku highlight 👆','react');
             this.davidExpr('think');
             if(!this.checkEnd()){}
@@ -2340,14 +2356,34 @@ const G={
     if(type==='shuffle'){
       this.showBoostAnnounce('🔀','Shuffle');
       this.moves--;this.boostCharges.shuffle--;this.updateBoostButtons();this.updateHUD();
-      const lv=this.lv,b=this.board,pool=[];
-      for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)pool.push(b[r][c].elem);
-      pool.sort(()=>Math.random()-.5);let i=0;
-      for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&b[r][c].elem)b[r][c].elem=pool[i++];
-      this.streak=0;this.renderBoard();
-      this.davidSay('Board diacak! Cari pasangan yang bisa bereaksi 🔍','');
-      this.davidExpr('idle');
-      if(!this.checkEnd())this.checkDeadBoard();
+      const lv=this.lv,b=this.board;
+      // Phase 1: gather all cells toward center
+      const bd=document.getElementById('board');
+      const bdRect=bd.getBoundingClientRect();
+      const cx=bdRect.width/2,cy=bdRect.height/2;
+      const cells=bd.querySelectorAll('.cell[data-elem]');
+      cells.forEach(el=>{
+        const rect=el.getBoundingClientRect();
+        const tx=cx-(rect.left-bdRect.left+rect.width/2);
+        const ty=cy-(rect.top-bdRect.top+rect.height/2);
+        el.style.setProperty('--tx',tx+'px');
+        el.style.setProperty('--ty',ty+'px');
+        el.classList.add('shuffle-gather');
+      });
+      // Phase 2: after gather, shuffle data and spread
+      setTimeout(()=>{
+        const pool=[];
+        for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&!b[r][c].cap&&b[r][c].elem)pool.push(b[r][c].elem);
+        pool.sort(()=>Math.random()-.5);let i=0;
+        for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(!b[r][c].obstacle&&!b[r][c].cap&&b[r][c].elem)b[r][c].elem=pool[i++];
+        this.streak=0;
+        this._newCells=new Set();
+        for(let r=0;r<lv.rows;r++)for(let c=0;c<lv.cols;c++)if(b[r][c].elem)this._newCells.add(r+','+c);
+        this.renderBoard();
+        this.davidSay('Board diacak! Cari pasangan yang bisa bereaksi 🔍','');
+        this.davidExpr('idle');
+        if(!this.checkEnd())this.checkDeadBoard();
+      },320);
     }
     if(type==='hammer'){
       this.showBoostAnnounce('🔨','Hammer');
