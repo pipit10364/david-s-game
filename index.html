@@ -125,6 +125,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .hud-block{display:flex;flex-direction:column;align-items:center;gap:0}
 .hud-mid{flex:1;display:flex;justify-content:space-evenly;align-items:center}
 .hud-val{font-family:'Fredoka One',cursive;font-size:22px;color:var(--ink);line-height:1}
+.hud-rx-val{font-size:15px;margin-top:4px}
 .hud-lbl{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
 .hud-lv{font-size:10px;color:var(--ink2);font-weight:800;text-align:center;max-width:150px;line-height:1.2}
 .target-bar{display:flex;gap:6px;padding:5px 10px;width:100%;overflow-x:auto;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;align-items:center}
@@ -140,17 +141,25 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .tb-count{font-family:'Fredoka One',cursive;font-size:16px;color:#fff;font-weight:700;line-height:1;transition:all .3s ease}
 .tb-done{color:#40c870!important}
 .target-done .tb-elem{background:rgba(64,200,112,.25)!important;border-color:rgba(64,200,112,.6)!important}
-  /* Mobile inline targets in HUD */
-  .hud-targets-inline{display:flex;flex-direction:column;gap:3px;align-items:flex-start;min-width:52px}
-  .hud-target-pill{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:2px 7px 2px 5px}
-  .hud-target-icon{font-size:11px;line-height:1}
-  .hud-target-num{font-family:'Fredoka One',cursive;font-size:13px;color:#fff;line-height:1}
-  .hud-target-pill.ht-done{background:rgba(64,200,112,.2);border-color:rgba(64,200,112,.5)}
-  .hud-target-pill.ht-done .hud-target-num{color:#40c870}
-  /* Hide desktop target bar on mobile */
-  .target-bar-desktop-only{display:none}
+  /* Mobile inline targets in HUD — compact badge style */
+  .hud-targets-inline{display:flex;flex-direction:column;gap:2px;align-items:flex-start;min-width:56px}
+  .hud-target-pill{display:flex;align-items:center;gap:3px}
+  .hud-target-icon{
+    font-family:'Fredoka One',cursive;font-size:10px;color:#fff;line-height:1;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+    border-radius:6px;padding:2px 5px;min-width:28px;text-align:center;
+  }
+  .hud-target-num{
+    font-family:'Fredoka One',cursive;font-size:14px;color:#fff;line-height:1;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;padding:1px 6px;min-width:22px;text-align:center;
+  }
+  .hud-target-pill.ht-done .hud-target-icon{background:rgba(64,200,112,.2);border-color:rgba(64,200,112,.5);color:#40c870}
+  .hud-target-pill.ht-done .hud-target-num{background:rgba(64,200,112,.15);border-color:rgba(64,200,112,.4);color:#40c870}
+  /* Hide desktop target bar — targets shown in left column dt-target-grid instead */
+  .target-bar-desktop-only{display:none!important}
+  /* Hide mobile inline targets on desktop */
   @media(min-width:860px){
-    .target-bar-desktop-only{display:flex}
     .hud-targets-inline{display:none}
   }
 .prog-wrap{width:100%;height:8px;background:rgba(255,255,255,.1);flex-shrink:0}
@@ -943,7 +952,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="hud">
     <button class="hud-icon-btn hud-back" onclick="G.toMap()" title="Kembali ke Map">←</button>
     <div class="hud-mid">
-      <div class="hud-block"><div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div></div>
+      <div class="hud-block"><div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div><div class="hud-val hud-rx-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
       <div class="hud-block hud-center-block">
         <img class="hud-david-mini" id="hud-david-mini" src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="" onerror="this.style.display='none'">
         <div class="hud-lv" id="h-lv">Level 1</div>
