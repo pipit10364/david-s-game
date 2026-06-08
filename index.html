@@ -123,11 +123,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .hud-back{background:var(--panel2);border-color:var(--border);color:var(--ink2)}
 .hud-guide{background:#fff8e0;border-color:#e8c860;color:#8a6200}
 .hud-block{display:flex;flex-direction:column;align-items:center;gap:0}
-.hud-mid{flex:1;display:flex;justify-content:space-evenly;align-items:center}
+.hud-mid{flex:1;display:flex;justify-content:space-between;align-items:center;gap:4px}
+.hud-center-block{flex:1;text-align:center}
+.hud-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .hud-val{font-family:'Fredoka One',cursive;font-size:22px;color:var(--ink);line-height:1}
-/* Reaksi block hidden on mobile (shown in target area instead), visible on desktop */
-.hud-rx-block{display:none}
-@media(min-width:860px){.hud-rx-block{display:flex}}
+/* Reaksi block: visible on both mobile and desktop */
+.hud-rx-block{display:flex;flex-direction:column;align-items:center}
 .hud-lbl{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
 .hud-lv{font-size:10px;color:var(--ink2);font-weight:800;text-align:center;max-width:150px;line-height:1.2}
 .target-bar{display:flex;gap:6px;padding:5px 10px;width:100%;overflow-x:auto;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;align-items:center}
@@ -144,18 +145,19 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .tb-done{color:#40c870!important}
 .target-done .tb-elem{background:rgba(64,200,112,.25)!important;border-color:rgba(64,200,112,.6)!important}
   /* Mobile inline targets in HUD — label + countdown number */
+  /* HUD has white/light background, so use dark ink colors */
   .hud-targets-inline{display:flex;flex-direction:column;gap:3px;align-items:flex-start;min-width:60px}
   .hud-target-pill{display:flex;align-items:center;gap:4px}
   .hud-target-icon{
-    font-family:'Fredoka One',cursive;font-size:11px;color:rgba(200,232,248,.9);line-height:1;
-    background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);
-    border-radius:7px;padding:3px 6px;min-width:32px;text-align:center;flex-shrink:0;
+    font-family:'Fredoka One',cursive;font-size:10px;color:var(--ink2);line-height:1;
+    background:var(--sky);border:1.5px solid var(--border);
+    border-radius:7px;padding:2px 5px;min-width:28px;text-align:center;flex-shrink:0;
   }
   .hud-target-num{
-    font-family:'Fredoka One',cursive;font-size:16px;color:#fff;line-height:1;font-weight:900;
+    font-family:'Fredoka One',cursive;font-size:16px;color:var(--ink);line-height:1;font-weight:900;
   }
-  .hud-target-pill.ht-done .hud-target-icon{background:rgba(64,200,112,.2);border-color:rgba(64,200,112,.6);color:#40c870}
-  .hud-target-pill.ht-done .hud-target-num{color:#40c870}
+  .hud-target-pill.ht-done .hud-target-icon{background:#e8f8ee;border-color:#60c880;color:#206040}
+  .hud-target-pill.ht-done .hud-target-num{color:#206040}
   /* Hide desktop target bar — targets shown in left column dt-target-grid instead */
   .target-bar-desktop-only{display:none!important}
   /* Hide mobile inline targets on desktop */
@@ -953,15 +955,17 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <button class="hud-icon-btn hud-back" onclick="G.toMap()" title="Kembali ke Map">←</button>
     <div class="hud-mid">
       <div class="hud-block"><div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div></div>
-      <div class="hud-block hud-rx-block"><div class="hud-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
       <div class="hud-block hud-center-block">
         <img class="hud-david-mini" id="hud-david-mini" src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="" onerror="this.style.display='none'">
         <div class="hud-lv" id="h-lv">Level 1</div>
         <div class="hud-val" id="h-score">0</div>
         <div class="hud-lbl">Skor</div>
       </div>
-      <!-- Mobile inline targets — shown in HUD -->
-      <div class="hud-targets-inline" id="hud-targets-inline"></div>
+      <!-- Right side: Reaksi (desktop) + targets (mobile+desktop) -->
+      <div class="hud-right">
+        <div class="hud-block hud-rx-block"><div class="hud-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
+        <div class="hud-targets-inline" id="hud-targets-inline"></div>
+      </div>
     </div>
     <button class="hud-icon-btn hud-guide" onclick="G.openGuide()" title="Panduan Reaksi">📖</button>
   </div>
