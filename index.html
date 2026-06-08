@@ -1248,7 +1248,7 @@ const LEVELS=[
   {id:15,name:'Ahli Kimia Sejati',moves:45, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:18,score:4500,specific:[{rx:'H2O',count:4},{rx:'NaCl',count:3},{rx:'CaCl2',count:3},{rx:'NH3',count:2},{rx:'CO2',count:2}]}, obstacles:[[4,0],[4,8],[0,4],[8,4]], glass:[[2,2],[6,2],[2,6],[6,6],[1,4],[7,4]], caps:[[4,4],[3,3],[5,5],[3,5],[5,3]], capHits:4},
 ];
 
-const SAVE='chemcrush_v4';
+const SAVE='chemcrush_v5';
 
 // ─── FIREBASE (Firestore) ───
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -1489,9 +1489,14 @@ const G={
   startIntro(){
     if(!this.username){document.getElementById('un-wrap').classList.add('on');}
     else{
-      // Already logged in — sync progress from cloud silently
-      this.syncFromCloud(this.username);
-      this.toMap();
+      this.show('s-map');
+      this.buildMap();
+      const nameEl=document.getElementById('map-uname');
+      if(nameEl)nameEl.textContent='@'+this.username+' ⏳';
+      this.syncFromCloud(this.username).then(()=>{
+        if(nameEl)nameEl.textContent='@'+this.username;
+        this.buildMap();
+      });
     }
   },
   saveUsername(){
@@ -1500,16 +1505,22 @@ const G={
     const isSameUser=v===(this.username||'').toLowerCase().replace(/[^a-z0-9._]/g,'');
     this.username=v;
     if(!isSameUser){
-      // Different user — clear local state first, then pull from cloud
       this.stars={};this.scores={};this.cleared={};this.tutDone=false;
       this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};
       this.specificProgress={};
     }
     this.save();
     document.getElementById('un-wrap').classList.remove('on');
-    // Always pull from cloud — will restore progress if username exists there
-    this.syncFromCloud(v);
-    this.toMap();
+    // Show loading state on map while syncing
+    this.show('s-map');
+    this.buildMap();
+    const nameEl=document.getElementById('map-uname');
+    if(nameEl)nameEl.textContent='@'+v+' ⏳';
+    // Pull from cloud, then refresh map
+    this.syncFromCloud(v).then(()=>{
+      if(nameEl)nameEl.textContent='@'+v;
+      this.buildMap();
+    });
   },
   skipUsername(){
     this.username=null;
@@ -1545,7 +1556,7 @@ const G={
     LEVELS.forEach(lv=>{
       const cleared=!!this.cleared[lv.id];
       const done=(this.stars[lv.id]||0)>0;
-      const unlocked=lv.id<=maxU;
+      const unlocked=lv.id<=maxU||lv.id===1; // level 1 always unlocked
       const cur=lv.id===maxU&&!done;
       const cls=cleared?'done':cur?'current':unlocked?'unlocked':'';
       const starCount=this.stars[lv.id]||0;
