@@ -1464,10 +1464,10 @@ const G={
       const remote=await fbLoadProgress(username);
       console.log('syncFromCloud: remote data=',remote);
       if(!remote){console.log('syncFromCloud: no data found for',username);return;}
-      // Always merge local + remote (remote wins on conflict)
-      this.stars={...this.stars,...(remote.stars||{})};
-      this.scores={...this.scores,...(remote.scores||{})};
-      this.cleared={...this.cleared,...(remote.cleared||{})};
+      // Remote fully replaces local (not merge) so stale/empty local state doesn't survive
+      this.stars=remote.stars||this.stars;
+      this.scores=remote.scores||this.scores;
+      this.cleared=remote.cleared||this.cleared;
       this.tutDone=remote.tutDone||this.tutDone;
       if(remote.boostCharges)this.boostCharges={...this.boostCharges,...remote.boostCharges};
       // Save merged back to localStorage
@@ -1502,7 +1502,8 @@ const G={
     const isSameUser=v===(this.username||'').toLowerCase().replace(/[^a-z0-9._]/g,'');
     this.username=v;
     if(!isSameUser){
-      this.stars={};this.scores={};this.cleared={};this.tutDone=false;
+      // Don't wipe stars/scores/cleared here — syncFromCloud will overwrite from Firestore.
+      // Only reset boost charges and specificProgress for the new user.
       this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};
       this.specificProgress={};
     }
