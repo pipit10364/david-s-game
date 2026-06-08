@@ -140,11 +140,18 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .tb-count{font-family:'Fredoka One',cursive;font-size:16px;color:#fff;font-weight:700;line-height:1;transition:all .3s ease}
 .tb-done{color:#40c870!important}
 .target-done .tb-elem{background:rgba(64,200,112,.25)!important;border-color:rgba(64,200,112,.6)!important}
-  /* Target bar — mobile only */
-  #target-bar-wrap{display:block}
+  /* Mobile inline targets in HUD */
+  .hud-targets-inline{display:flex;flex-direction:column;gap:3px;align-items:flex-start;min-width:52px}
+  .hud-target-pill{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:2px 7px 2px 5px}
+  .hud-target-icon{font-size:11px;line-height:1}
+  .hud-target-num{font-family:'Fredoka One',cursive;font-size:13px;color:#fff;line-height:1}
+  .hud-target-pill.ht-done{background:rgba(64,200,112,.2);border-color:rgba(64,200,112,.5)}
+  .hud-target-pill.ht-done .hud-target-num{color:#40c870}
+  /* Hide desktop target bar on mobile */
+  .target-bar-desktop-only{display:none}
   @media(min-width:860px){
-    #target-bar-wrap{display:none}
-    .target-bar{display:none}
+    .target-bar-desktop-only{display:flex}
+    .hud-targets-inline{display:none}
   }
 .prog-wrap{width:100%;height:8px;background:rgba(255,255,255,.1);flex-shrink:0}
 .prog-fill{height:100%;background:linear-gradient(90deg,#40c870,#80e840);transition:width .4s ease;border-radius:0 4px 4px 0}
@@ -937,18 +944,20 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <button class="hud-icon-btn hud-back" onclick="G.toMap()" title="Kembali ke Map">←</button>
     <div class="hud-mid">
       <div class="hud-block"><div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div></div>
-      <div class="hud-block">
+      <div class="hud-block hud-center-block">
         <img class="hud-david-mini" id="hud-david-mini" src="https://raw.githubusercontent.com/pipit10364/David/main/David%20mempersilakan.png" alt="" onerror="this.style.display='none'">
         <div class="hud-lv" id="h-lv">Level 1</div>
         <div class="hud-val" id="h-score">0</div>
         <div class="hud-lbl">Skor</div>
       </div>
-      <div class="hud-block"><div class="hud-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
+      <!-- Mobile inline targets — shown in HUD -->
+      <div class="hud-targets-inline" id="hud-targets-inline"></div>
     </div>
     <button class="hud-icon-btn hud-guide" onclick="G.openGuide()" title="Panduan Reaksi">📖</button>
   </div>
-  <div class="target-bar" id="target-bar"></div>
   <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <!-- Desktop-only target bar (hidden on mobile) -->
+  <div class="target-bar target-bar-desktop-only" id="target-bar"></div>
 
   <div class="game-body">
     <div class="board-area" id="board-area">
@@ -1432,9 +1441,10 @@ const G={
   energizerMode:false, // waiting for user to tap cell to energize
 
   save(){
-    const data={stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared,boostCharges:this.boostCharges};
+    const uname=this.username?this.username.toLowerCase().replace(/[^a-z0-9._]/g,''):null;
+    const data={stars:this.stars,scores:this.scores,username:uname||this.username,tutDone:this.tutDone,cleared:this.cleared,boostCharges:this.boostCharges};
     try{localStorage.setItem(SAVE,JSON.stringify(data));}catch(e){}
-    if(this.username)fbSaveProgress(this.username,{stars:this.stars,scores:this.scores,cleared:this.cleared,tutDone:this.tutDone,boostCharges:this.boostCharges});
+    if(uname)fbSaveProgress(uname,{stars:this.stars,scores:this.scores,cleared:this.cleared,tutDone:this.tutDone,boostCharges:this.boostCharges});
   },
   load(){
     // 1. Load from localStorage first (instant, offline-safe)
@@ -1485,19 +1495,19 @@ const G={
     }
   },
   saveUsername(){
-    const v=document.getElementById('un-input').value.trim().replace(/^@/,'');
+    const v=document.getElementById('un-input').value.trim().replace(/^@/,'').toLowerCase().replace(/[^a-z0-9._]/g,'');
     if(!v){document.getElementById('un-input').focus();return;}
-    const isNewUser=v.toLowerCase()!=(this.username||'').toLowerCase();
+    const isSameUser=v===(this.username||'').toLowerCase().replace(/[^a-z0-9._]/g,'');
     this.username=v;
-    if(isNewUser){
-      // Clear all local progress for new username
+    if(!isSameUser){
+      // Different user — clear local state first, then pull from cloud
       this.stars={};this.scores={};this.cleared={};this.tutDone=false;
       this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};
       this.specificProgress={};
     }
     this.save();
     document.getElementById('un-wrap').classList.remove('on');
-    // Pull cloud progress for this username
+    // Always pull from cloud — will restore progress if username exists there
     this.syncFromCloud(v);
     this.toMap();
   },
@@ -1977,19 +1987,16 @@ const G={
           cell.cap--;
           if(cell.cap===0){
             cell.capDone=true;
-            // Fly animation then convert to element
             const capEl=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
             if(capEl){
               capEl.classList.add('cap-flying');
               setTimeout(()=>{
-                // Convert cap cell to normal playable element
                 cell.cap=0;cell.capDone=false;
                 cell.elem=this.rndElem();
                 this._newCells=new Set([nr+','+nc]);
                 this.renderBoard();this.buildTargetBar();
               },600);
             }
-            // Bonus points
             const bonus=300;
             this.score+=bonus;
             this.updateHUD();
@@ -1997,6 +2004,9 @@ const G={
             this.davidSay('🎓 Topi wisuda terkumpul! Bonus +300 poin!','react');
             this.davidExpr('wow');
             SFX.win();
+            this.buildTargetBar(); // update cap counter immediately
+          }else{
+            this.buildTargetBar(); // update progress bar in target
           }
           // Update visual
           const el=document.querySelector(`[data-r="${nr}"][data-c="${nc}"]`);
@@ -2091,61 +2101,77 @@ const G={
   },
   buildTargetBar(){
     const t=this.lv.target;
-    const mobileBar=document.getElementById('target-bar');
     const desktopGrid=document.getElementById('dt-target-grid');
-    const makeBubbles=(container)=>{
+    const desktopBar=document.getElementById('target-bar');
+    const mobileInline=document.getElementById('hud-targets-inline');
+
+    // Helper: make a desktop bubble
+    const addBubble=(container,product,remaining,done,color,border)=>{
       if(!container)return;
-      container.innerHTML='';
-      const addBubble=(product,remaining,done,color,border)=>{
-        const pill=document.createElement('div');
-        pill.className='target-bubble'+(done?' target-done':'');
-        pill.innerHTML=`
-          <div class="tb-elem" style="background:${color};border-color:${border}">
-            <div class="tb-product">${product}</div>
-          </div>
-          <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
-        `;
-        container.appendChild(pill);
-      };
-      if(t.specific&&t.specific.length>0){
-        t.specific.forEach(s=>{
-          const cur=this.specificProgress[s.rx]||0;
-          const remaining=Math.max(0,s.count-cur);
-          const done=remaining===0;
-          const rx=REACTIONS.find(r=>r.id===s.rx);
-          addBubble(rx?rx.product:s.rx,remaining,done,
-            done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)',
-            done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)');
-        });
-      }else if(t.reactions){
-        const done=this.reactions>=(t.reactions||0);
-        addBubble('⚗️',Math.max(0,(t.reactions||0)-this.reactions),done,
-          'rgba(160,96,240,.15)','rgba(160,96,240,.35)');
-      }
-      // Glass target
-      if(this.lv.glass&&this.lv.glass.length>0){
-        const totalGlass=this.lv.glass.length;
-        const broken=this.board.flat().filter(c=>c.glass===0&&
-          this.lv.glass.some(([col,row])=>this.board[row]&&this.board[row][col]===c)).length;
-        const remaining=totalGlass-broken;
-        const done=remaining===0;
-        addBubble('🔲',remaining,done,
-          done?'rgba(64,200,112,.2)':'rgba(100,180,255,.15)',
-          done?'rgba(64,200,112,.5)':'rgba(100,180,255,.4)');
-      }
-      // Graduation cap target
-      if(this.lv.caps&&this.lv.caps.length>0){
-        const totalCaps=this.lv.caps.length;
-        const collected=this.board.flat().filter(c=>c.capDone).length;
-        const remaining=totalCaps-collected;
-        const done=remaining===0;
-        addBubble('🎓',remaining,done,
-          done?'rgba(64,200,112,.2)':'rgba(255,215,0,.12)',
-          done?'rgba(64,200,112,.5)':'rgba(255,215,0,.5)');
-      }
+      const pill=document.createElement('div');
+      pill.className='target-bubble'+(done?' target-done':'');
+      pill.innerHTML=`
+        <div class="tb-elem" style="background:${color};border-color:${border}">
+          <div class="tb-product">${product}</div>
+        </div>
+        <div class="tb-count ${done?'tb-done':''}">${done?'✓':remaining}</div>
+      `;
+      container.appendChild(pill);
     };
-    makeBubbles(mobileBar);
-    makeBubbles(desktopGrid);
+
+    // Helper: make a mobile inline pill (icon + number side by side)
+    const addInline=(container,icon,remaining,done)=>{
+      if(!container)return;
+      const pill=document.createElement('div');
+      pill.className='hud-target-pill'+(done?' ht-done':'');
+      pill.innerHTML=`<span class="hud-target-icon">${icon}</span><span class="hud-target-num">${done?'✓':remaining}</span>`;
+      container.appendChild(pill);
+    };
+
+    // Clear all containers
+    [desktopGrid,desktopBar,mobileInline].forEach(c=>{if(c)c.innerHTML='';});
+
+    // Build targets
+    if(t.specific&&t.specific.length>0){
+      t.specific.forEach(s=>{
+        const cur=this.specificProgress[s.rx]||0;
+        const remaining=Math.max(0,s.count-cur);
+        const done=remaining===0;
+        const rx=REACTIONS.find(r=>r.id===s.rx);
+        const label=rx?rx.product:s.rx;
+        addBubble(desktopGrid,label,remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)',done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)');
+        addBubble(desktopBar,label,remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)',done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)');
+        addInline(mobileInline,label,remaining,done);
+      });
+    }else if(t.reactions){
+      const done=this.reactions>=(t.reactions||0);
+      const remaining=Math.max(0,(t.reactions||0)-this.reactions);
+      addBubble(desktopGrid,'⚗️',remaining,done,'rgba(160,96,240,.15)','rgba(160,96,240,.35)');
+      addInline(mobileInline,'⚗️',remaining,done);
+    }
+
+    // Glass target
+    if(this.lv.glass&&this.lv.glass.length>0){
+      const totalGlass=this.lv.glass.length;
+      const remaining=this.board.flat().filter(c=>c.glass>0).length;
+      const done=remaining===0;
+      addBubble(desktopGrid,'🔲',remaining,done,done?'rgba(64,200,112,.2)':'rgba(100,180,255,.15)',done?'rgba(64,200,112,.5)':'rgba(100,180,255,.4)');
+      addBubble(desktopBar,'🔲',remaining,done,done?'rgba(64,200,112,.2)':'rgba(100,180,255,.15)',done?'rgba(64,200,112,.5)':'rgba(100,180,255,.4)');
+      addInline(mobileInline,'🔲',remaining,done);
+    }
+
+    // Graduation cap target
+    if(this.lv.caps&&this.lv.caps.length>0){
+      const totalCaps=this.lv.caps.length;
+      const remaining=this.lv.caps.filter(([col,row])=>{
+        const cell=this.board[row]&&this.board[row][col];
+        return cell&&cell.cap>0&&!cell.capDone;
+      }).length;
+      const done=remaining===0;
+      addBubble(desktopGrid,'🎓',remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,215,0,.12)',done?'rgba(64,200,112,.5)':'rgba(255,215,0,.5)');
+      addBubble(desktopBar,'🎓',remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,215,0,.12)',done?'rgba(64,200,112,.5)':'rgba(255,215,0,.5)');
+      addInline(mobileInline,'🎓',remaining,done);
+    }
   },
   checkEnd(){
     const t=this.lv.target;
