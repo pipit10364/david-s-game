@@ -1464,10 +1464,17 @@ const G={
       const remote=await fbLoadProgress(username);
       console.log('syncFromCloud: remote data=',remote);
       if(!remote){console.log('syncFromCloud: no data found for',username);return;}
-      // Remote fully replaces local (not merge) so stale/empty local state doesn't survive
-      this.stars=remote.stars||this.stars;
-      this.scores=remote.scores||this.scores;
-      this.cleared=remote.cleared||this.cleared;
+      // Remote fully replaces local. Normalize all keys to strings for consistency.
+      const norm=obj=>Object.fromEntries(Object.entries(obj||{}).map(([k,v])=>[String(k),v]));
+      if(remote.stars&&Object.keys(remote.stars).length>0)this.stars=norm(remote.stars);
+      if(remote.scores&&Object.keys(remote.scores).length>0)this.scores=norm(remote.scores);
+      // cleared may be missing for older saves — fall back to deriving from stars
+      if(remote.cleared&&Object.keys(remote.cleared).length>0){
+        this.cleared=norm(remote.cleared);
+      }else{
+        // If no cleared data, treat every level with stars as cleared so map unlocks correctly
+        this.cleared=Object.fromEntries(Object.keys(this.stars).map(k=>[String(k),true]));
+      }
       this.tutDone=remote.tutDone||this.tutDone;
       if(remote.boostCharges)this.boostCharges={...this.boostCharges,...remote.boostCharges};
       // Save merged back to localStorage
@@ -1549,18 +1556,19 @@ const G={
 
   buildMap(){
     const g=document.getElementById('map-grid');g.innerHTML='';
-    const doneIds=Object.keys(this.stars).map(Number).filter(k=>!isNaN(k)&&(this.stars[k]||this.stars[String(k)]||0)>0);
-    const clearedIds=Object.keys(this.cleared).map(Number).filter(k=>!isNaN(k)&&(this.cleared[k]||this.cleared[String(k)]));
+    // Normalize to string keys, then derive numeric IDs for unlocking logic
+    const doneIds=Object.keys(this.stars).map(Number).filter(k=>!isNaN(k)&&(this.stars[String(k)]||0)>0);
+    const clearedIds=Object.keys(this.cleared).map(Number).filter(k=>!isNaN(k)&&this.cleared[String(k)]);
     const allDoneIds=[...new Set([...doneIds,...clearedIds])];
     const maxU=allDoneIds.length>0?Math.max(...allDoneIds)+1:1;
     LEVELS.forEach(lv=>{
       const sid=String(lv.id);
-      const cleared=!!(this.cleared[lv.id]||this.cleared[sid]);
-      const done=(this.stars[lv.id]||this.stars[sid]||0)>0;
+      const cleared=!!(this.cleared[sid]);
+      const done=(this.stars[sid]||0)>0;
       const unlocked=lv.id<=maxU||lv.id===1; // level 1 always unlocked
       const cur=lv.id===maxU&&!done;
       const cls=cleared?'done':cur?'current':unlocked?'unlocked':'';
-      const starCount=this.stars[lv.id]||this.stars[sid]||0;
+      const starCount=this.stars[sid]||0;
       const st=done?'★'.repeat(starCount)+'☆'.repeat(3-starCount):'';
       const nd=document.createElement('div');nd.className='lvl-node';
       const bb=document.createElement('div');
