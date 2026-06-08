@@ -1460,8 +1460,10 @@ const G={
   async syncFromCloud(username){
     if(!username||!FB_ON)return;
     try{
+      console.log('syncFromCloud: fetching for username=',username);
       const remote=await fbLoadProgress(username);
-      if(!remote)return;
+      console.log('syncFromCloud: remote data=',remote);
+      if(!remote){console.log('syncFromCloud: no data found for',username);return;}
       // Always merge local + remote (remote wins on conflict)
       this.stars={...this.stars,...(remote.stars||{})};
       this.scores={...this.scores,...(remote.scores||{})};
@@ -1472,8 +1474,8 @@ const G={
       try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared,boostCharges:this.boostCharges}));}catch(e){}
       // Refresh map if currently showing
       if(document.getElementById('s-map').classList.contains('on'))this.buildMap();
-      console.log('Progress synced from cloud ✓');
-    }catch(e){console.warn('syncFromCloud error:',e.message);}
+      console.log('Progress synced from cloud ✓ cleared=',Object.keys(this.cleared));
+    }catch(e){console.warn('syncFromCloud error:',e);}
   },
 
   show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');},
