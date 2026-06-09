@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Chem Crush ⚗️ — by David</title>
+<title>Chem Crush ⚗️ — for David</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
@@ -32,7 +32,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 .intro-emoji{font-size:70px;filter:drop-shadow(0 0 32px rgba(100,200,255,.5))}
 .intro-title{font-family:'Fredoka One',cursive;font-size:50px;color:#fff;letter-spacing:-1px;text-shadow:0 2px 28px rgba(100,200,255,.35)}
-.intro-sub{font-size:11px;color:#7aaabf;font-weight:800;letter-spacing:3px;text-transform:uppercase}
+.intro-sub{font-size:11px;color:#7aaabf;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:2px}
+.intro-madeby{font-size:9px;color:#7aaabf;opacity:.4;letter-spacing:1px;margin-bottom:14px;text-align:center}
+.intro-madeby span{font-weight:700;opacity:.7}
 .intro-card{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:20px;padding:18px 20px;width:100%;max-width:360px;backdrop-filter:blur(12px)}
 .intro-card-head{font-size:10px;font-weight:900;color:#7aaabf;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px}
 .intro-rule{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;color:#cce8f5;font-size:12px;font-weight:700;line-height:1.55}
@@ -161,16 +163,16 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     align-items:start;
   }
   .hud-target-pill{
-    display:flex;flex-direction:column;align-items:center;gap:1px;
+    display:flex;flex-direction:row;align-items:center;gap:3px;
     background:var(--sky);border:1.5px solid var(--border);
-    border-radius:8px;padding:3px 5px;min-width:30px;
+    border-radius:8px;padding:2px 6px;min-width:36px;
   }
   .hud-target-icon{
-    font-family:'Fredoka One',cursive;font-size:9px;color:var(--ink2);
-    line-height:1;text-align:center;
+    font-family:'Fredoka One',cursive;font-size:10px;color:var(--ink2);
+    line-height:1;text-align:center;flex-shrink:0;
   }
   .hud-target-num{
-    font-family:'Fredoka One',cursive;font-size:13px;color:var(--ink);
+    font-family:'Fredoka One',cursive;font-size:11px;color:var(--ink);
     line-height:1;font-weight:900;
   }
   .hud-target-pill.ht-done{background:#e8f8ee;border-color:#60c880}
@@ -443,19 +445,26 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 }
 .board-energized{animation:energizerFlash .5s ease}
 .boost-reward-pop{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  position:absolute;top:30%;left:50%;transform:translate(-50%,-50%) scale(1);
   background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a2a10;
-  font-family:'Fredoka One',cursive;font-size:16px;
-  padding:10px 20px;border-radius:50px;
-  animation:boostRewardAnim 2.2s ease forwards;
-  pointer-events:none;z-index:100;white-space:nowrap;
-  box-shadow:0 4px 20px rgba(255,215,0,.5);
+  font-family:'Fredoka One',cursive;font-size:28px;
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;gap:2px;
+  animation:boostRewardAnim 1.8s ease forwards;
+  pointer-events:none;z-index:100;
+  box-shadow:0 4px 20px rgba(255,215,0,.6);
 }
+.brp-plus{font-size:11px;font-weight:900;color:#1a2a10;margin-top:8px}
 @keyframes boostRewardAnim{
-  0%{opacity:0;transform:translate(-50%,-60%) scale(.8)}
-  15%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}
+  35%{transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  55%{opacity:0;transform:translate(-50%,-50%) scale(1)}
+  60%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  65%{opacity:0;transform:translate(-50%,-50%) scale(1)}
   70%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-40%) scale(.95)}
+  100%{opacity:0;transform:translate(-50%,-60%) scale(.9)}
 }
 @keyframes hammerPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,80,80,.6)}50%{box-shadow:0 0 0 4px rgba(255,80,80,.3)}}
 @keyframes energizerPulse{0%,100%{box-shadow:0 0 0 2px rgba(80,200,255,.6)}50%{box-shadow:0 0 0 4px rgba(80,200,255,.3)}}
@@ -897,7 +906,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="intro-logo">
     <div class="intro-emoji">⚗️</div>
     <div class="intro-title">Chem Crush</div>
-    <div class="intro-sub">by David 🧪</div>
+    <div class="intro-sub">for David 🧪</div>
+    <div class="intro-madeby">made by <span>@joe_pietz</span></div>
   </div>
 
   <div class="intro-card">
@@ -2642,10 +2652,16 @@ const G={
     setTimeout(()=>el.remove(),750);
   },
   showBoostReward(label){
+    // Map label to emoji icon
+    const iconMap={'Hint':'💡','Shuffle':'🔀','Hammer':'🔨','Energizer':'⚗️'};
+    const icon=iconMap[label]||'🎁';
     const el=document.createElement('div');
-    el.innerHTML=`🎁 Combo bonus! ${label} +1`;
-    document.getElementById('board-area').appendChild(el);
-    setTimeout(()=>el.remove(),2200);
+    el.className='boost-reward-pop';
+    el.innerHTML=`${icon}<span class="brp-plus">+1</span>`;
+    // Position above board, centered
+    const ba=document.getElementById('board-area');
+    ba.appendChild(el);
+    setTimeout(()=>el.remove(),1800);
   },
   showCombo(streak,mult,r,c){
     const ba=document.getElementById('board-area');
