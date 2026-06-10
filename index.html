@@ -63,7 +63,14 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .un-input::placeholder{color:var(--muted);font-weight:700}
 .btn-un{background:linear-gradient(135deg,#2a5a78,#3a8ab8);color:#fff;border:none;border-radius:50px;padding:14px 0;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;transition:transform .12s}
 .btn-un:active{transform:scale(.96)}
+.btn-un:disabled{opacity:.55;cursor:wait;transform:none}
+.btn-un-secondary{background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:11px 0;font-size:12px;color:var(--ink2);cursor:pointer;font-weight:900;font-family:'Nunito',sans-serif}
 .btn-un-skip{background:transparent;border:none;font-size:11px;color:var(--muted);cursor:pointer;font-weight:700}
+.un-error{display:none;background:#fff0f0;border:1.5px solid #f0b0b0;color:#a03030;border-radius:12px;padding:9px 11px;font-size:11px;font-weight:800;line-height:1.45;text-align:left}
+.un-error.on{display:block}
+.un-recovery{display:none;background:#fff8e0;border:1.5px solid #efd070;color:#8a5a08;border-radius:12px;padding:10px 12px;font-size:11px;font-weight:800;line-height:1.5;text-align:left;user-select:text}
+.un-recovery.on{display:block}
+.un-recovery code{display:block;font-family:monospace;font-size:15px;letter-spacing:1.5px;margin-top:4px;color:#1a3a50;user-select:text}
 
 /* ══ MAP ══ */
 #s-map{padding:20px 16px 32px;gap:14px;background:linear-gradient(160deg,#d0ecf8,#e8f6fc)}
@@ -935,17 +942,28 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <button class="intro-lb-btn" onclick="G.showLB('intro')">🏆 Lihat Leaderboard</button>
 </div>
 
-<!-- ══ USERNAME MODAL ══ -->
+<!-- ══ USERNAME / PIN MODAL ══ -->
 <div class="un-bg" id="un-wrap">
   <div class="un-box">
     <div class="un-ico">👤</div>
-    <div class="un-title">Username Instagram</div>
-    <div class="un-desc">Masukkan username Instagram untuk masuk leaderboard. Nama ini akan tampil di papan skor global.<br><br><small style="opacity:.6">💡 Pakai username yang sama di semua device untuk skor yang sinkron.</small></div>
+    <div class="un-title" id="un-title">Login Akun</div>
+    <div class="un-desc" id="un-desc">Masukkan username dan PIN 4 angka untuk membuka progres akun ini.<br><br><small style="opacity:.6">💡 Akun lama tanpa PIN akan diminta membuat PIN dulu.</small></div>
+    <div class="un-error" id="un-error"></div>
+    <div class="un-recovery" id="un-recovery"></div>
     <div class="un-field">
       <span class="un-at">@</span>
       <input class="un-input" id="un-input" type="text" placeholder="username_ig" maxlength="30" autocorrect="off" autocapitalize="none" spellcheck="false">
     </div>
-    <button class="btn-un" onclick="G.saveUsername()">Lanjut ✓</button>
+    <div class="un-field" id="pin-field">
+      <span class="un-at">🔒</span>
+      <input class="un-input" id="pin-input" type="password" placeholder="PIN 4 angka" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+    </div>
+    <div class="un-field" id="pin-confirm-field" style="display:none">
+      <span class="un-at">✓</span>
+      <input class="un-input" id="pin-confirm-input" type="password" placeholder="Ulangi PIN" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+    </div>
+    <button class="btn-un" id="un-primary-btn" onclick="G.submitAccountMode()">Login ✓</button>
+    <button class="btn-un-secondary" id="un-secondary-btn" onclick="G.setAccountMode('create')">Buat Akun Baru</button>
     <button class="btn-un-skip" onclick="G.skipUsername()">Lewati (main tanpa leaderboard)</button>
   </div>
 </div>
@@ -1395,6 +1413,71 @@ async function fbLoadProgress(username){
   }catch(e){console.warn('fbLoadProgress:',e.message);return null;}
 }
 
+
+
+// ── PIN-PROTECTED ACCOUNT METADATA ──
+function randomHex(bytes=16){
+  const arr=new Uint8Array(bytes);
+  crypto.getRandomValues(arr);
+  return Array.from(arr,b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function bytesToHex(buffer){
+  return Array.from(new Uint8Array(buffer),b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function hashSecret(username,secret,salt,purpose='pin'){
+  const uname=normalizeUsername(username);
+  const data=new TextEncoder().encode(`chemcrush:v1:${purpose}:${uname}:${salt}:${secret}`);
+  const digest=await crypto.subtle.digest('SHA-256',data);
+  return bytesToHex(digest);
+}
+
+async function hashPin(username,pin,salt){
+  return hashSecret(username,pin,salt,'pin');
+}
+
+async function hashRecoveryCode(username,code,salt){
+  return hashSecret(username,code,salt,'recovery');
+}
+
+function isValidPin(pin){return /^\d{4}$/.test(pin||'');}
+function makeRecoveryCode(){return (randomHex(4).toUpperCase().match(/.{1,4}/g)||[]).join('-');}
+
+async function fbLoadAccount(username){
+  const key=normalizeUsername(username);
+  if(!key||!_db)return null;
+  try{
+    const snap=await Promise.race([
+      getDoc(doc(_db,'accounts',key)),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    return snap.exists()?snap.data():null;
+  }catch(e){console.warn('fbLoadAccount:',e.message);throw e;}
+}
+
+async function fbCreateAccount(username,pinHash,pinSalt,recoveryCodeHash=null,recoveryCodeSalt=null){
+  const key=normalizeUsername(username);
+  if(!key||!_db)return {ok:false,reason:'offline'};
+  try{
+    const ref=doc(_db,'accounts',key);
+    const snap=await Promise.race([
+      getDoc(ref),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))
+    ]);
+    if(snap.exists())return {ok:false,reason:'exists'};
+    const now=Date.now();
+    const data={username:key,pinHash,pinSalt,createdAt:now,updatedAt:now};
+    if(recoveryCodeHash&&recoveryCodeSalt){
+      data.recoveryCodeHash=recoveryCodeHash;
+      data.recoveryCodeSalt=recoveryCodeSalt;
+      data.recoveryCodeCreatedAt=now;
+    }
+    await setDoc(ref,data);
+    return {ok:true,data};
+  }catch(e){console.warn('fbCreateAccount:',e.message);return {ok:false,reason:e.message||'error'};}
+}
+
 // ─── CONFETTI ───
 const Confetti={
   canvas:null,ctx:null,parts:[],on:false,raf:null,
@@ -1494,6 +1577,7 @@ const G={
   stars:{},scores:{},cleared:{},isWin:false,rxLog:[],idleTimer:null,
   username:null,lbFrom:'intro',
   currentAccountId:GUEST_ACCOUNT,accountSwitchToken:0,
+  accountMode:'login',pinUnlocked:false,pendingLegacyUsername:null,lastRecoveryCode:null,
   streak:0,
   boostCharges:{hint:3,shuffle:2,hammer:2,energizer:1},
   rxBaseScore:0,comboBonus:0,movesBonus:0,
@@ -1681,11 +1765,169 @@ const G={
   isDesktop(){return window.innerWidth>=860;},
   factZone(){return this.isDesktop()?document.getElementById('fact-zone-desktop'):document.getElementById('fact-zone-mobile');},
 
+  // ── ACCOUNT PIN MODAL ──
+  showAccountError(msg){
+    const el=document.getElementById('un-error');
+    if(!el)return;
+    el.textContent=msg||'';
+    el.classList.toggle('on',!!msg);
+  },
+  showRecoveryCode(code){
+    const el=document.getElementById('un-recovery');
+    if(!el)return;
+    if(!code){el.classList.remove('on');el.innerHTML='';return;}
+    el.innerHTML='Simpan kode pemulihan ini. Kode hanya ditampilkan sekali:<code>'+code+'</code>';
+    el.classList.add('on');
+  },
+  getAccountFormValues(){
+    const username=normalizeUsername(document.getElementById('un-input')?.value||'');
+    const pin=(document.getElementById('pin-input')?.value||'').replace(/\D/g,'').slice(0,4);
+    const confirm=(document.getElementById('pin-confirm-input')?.value||'').replace(/\D/g,'').slice(0,4);
+    const pinEl=document.getElementById('pin-input');if(pinEl)pinEl.value=pin;
+    const confirmEl=document.getElementById('pin-confirm-input');if(confirmEl)confirmEl.value=confirm;
+    return {username,pin,confirm};
+  },
+  setAccountBusy(on){
+    ['un-primary-btn','un-secondary-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!on;});
+    ['un-input','pin-input','pin-confirm-input'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!on;});
+  },
+  setAccountMode(mode='login'){
+    this.accountMode=mode;
+    this.showAccountError('');
+    this.showRecoveryCode('');
+    const title=document.getElementById('un-title');
+    const desc=document.getElementById('un-desc');
+    const confirmField=document.getElementById('pin-confirm-field');
+    const primary=document.getElementById('un-primary-btn');
+    const secondary=document.getElementById('un-secondary-btn');
+    if(confirmField)confirmField.style.display=(mode==='create'||mode==='legacy')?'flex':'none';
+    if(mode==='create'){
+      if(title)title.textContent='Buat Akun Baru';
+      if(desc)desc.innerHTML='Pilih username dan PIN 4 angka. PIN akan disimpan sebagai hash, bukan teks biasa.';
+      if(primary)primary.textContent='Buat Akun ✓';
+      if(secondary){secondary.textContent='Sudah punya akun? Login';secondary.onclick=()=>this.setAccountMode('login');}
+    }else if(mode==='legacy'){
+      if(title)title.textContent='Amankan Akun Lama';
+      if(desc)desc.innerHTML='Akun lama ditemukan tanpa PIN. Buat PIN 4 angka untuk melindungi akun ini mulai sekarang.';
+      if(primary)primary.textContent='Buat PIN & Login ✓';
+      if(secondary){secondary.textContent='Kembali ke Login';secondary.onclick=()=>this.setAccountMode('login');}
+    }else{
+      this.accountMode='login';
+      if(title)title.textContent='Login Akun';
+      if(desc)desc.innerHTML='Masukkan username dan PIN 4 angka untuk membuka progres akun ini.<br><br><small style="opacity:.6">💡 Akun lama tanpa PIN akan diminta membuat PIN dulu.</small>';
+      if(primary)primary.textContent='Login ✓';
+      if(secondary){secondary.textContent='Buat Akun Baru';secondary.onclick=()=>this.setAccountMode('create');}
+    }
+  },
+  submitAccountMode(){
+    if(this.accountMode==='create')return this.createAccountWithPin();
+    if(this.accountMode==='legacy')return this.createLegacyPin();
+    return this.loginWithPin();
+  },
+  validateAccountForm({username,pin,confirm},needsConfirm=false){
+    if(!username)return 'Masukkan username yang valid.';
+    if(!isValidPin(pin))return 'PIN harus 4 angka.';
+    if(needsConfirm&&pin!==confirm)return 'Konfirmasi PIN tidak sama.';
+    return '';
+  },
+  async isLegacyUsername(username){
+    const accountId=accountIdForUsername(username);
+    if(this.loadLocalProfile(accountId))return true;
+    if(!FB_ON)return false;
+    try{return !!(await fbLoadProgress(username));}
+    catch(e){console.warn('isLegacyUsername:',e.message);return false;}
+  },
+  async createPinAccountAndEnter(username,pin){
+    const pinSalt=randomHex(16);
+    const pinHash=await hashPin(username,pin,pinSalt);
+    const recoveryCode=makeRecoveryCode();
+    const recoveryCodeSalt=randomHex(16);
+    const recoveryCodeHash=await hashRecoveryCode(username,recoveryCode,recoveryCodeSalt);
+    const result=await fbCreateAccount(username,pinHash,pinSalt,recoveryCodeHash,recoveryCodeSalt);
+    if(!result.ok){
+      if(result.reason==='exists')this.showAccountError('Username sudah terdaftar. Silakan login.');
+      else this.showAccountError('Gagal membuat akun. Coba lagi.');
+      return false;
+    }
+    this.lastRecoveryCode=recoveryCode;
+    this.showRecoveryCode(recoveryCode);
+    alert('Simpan kode pemulihan Chem Crush kamu: '+recoveryCode+'\nKode ini hanya ditampilkan sekali.');
+    this.pinUnlocked=true;
+    const input=document.getElementById('un-input');if(input)input.value=username;
+    this.saveUsername();
+    return true;
+  },
+  async loginWithPin(){
+    const vals=this.getAccountFormValues();
+    const err=this.validateAccountForm(vals,false);if(err){this.showAccountError(err);return;}
+    if(!FB_ON){this.showAccountError('Login PIN membutuhkan koneksi Firebase.');return;}
+    this.setAccountBusy(true);
+    try{
+      const account=await fbLoadAccount(vals.username);
+      if(!account){
+        if(await this.isLegacyUsername(vals.username)){
+          this.pendingLegacyUsername=vals.username;
+          this.setAccountMode('legacy');
+          const input=document.getElementById('un-input');if(input)input.value=vals.username;
+          this.showAccountError('Akun lama ditemukan. Buat PIN untuk melanjutkan.');
+        }else{
+          this.showAccountError('Username tidak ditemukan. Buat akun baru dulu.');
+        }
+        return;
+      }
+      if(!account.pinHash||!account.pinSalt){
+        this.pendingLegacyUsername=vals.username;
+        this.setAccountMode('legacy');
+        this.showAccountError('Akun ini belum punya PIN. Buat PIN untuk melanjutkan.');
+        return;
+      }
+      const enteredHash=await hashPin(vals.username,vals.pin,account.pinSalt);
+      if(enteredHash!==account.pinHash){this.showAccountError('PIN salah.');return;}
+      this.pinUnlocked=true;
+      this.saveUsername();
+    }catch(e){console.warn('loginWithPin:',e);this.showAccountError('Gagal menghubungi server. Coba lagi.');}
+    finally{this.setAccountBusy(false);}
+  },
+  async createAccountWithPin(){
+    const vals=this.getAccountFormValues();
+    const err=this.validateAccountForm(vals,true);if(err){this.showAccountError(err);return;}
+    if(!FB_ON){this.showAccountError('Pembuatan akun membutuhkan koneksi Firebase.');return;}
+    this.setAccountBusy(true);
+    try{
+      const existing=await fbLoadAccount(vals.username);
+      if(existing){this.showAccountError('Username sudah terdaftar. Silakan login.');return;}
+      if(await this.isLegacyUsername(vals.username)){
+        this.pendingLegacyUsername=vals.username;
+        this.setAccountMode('legacy');
+        const input=document.getElementById('un-input');if(input)input.value=vals.username;
+        this.showAccountError('Username ini sudah punya progres lama. Buat PIN untuk mengamankannya.');
+        return;
+      }
+      await this.createPinAccountAndEnter(vals.username,vals.pin);
+    }catch(e){console.warn('createAccountWithPin:',e);this.showAccountError('Gagal membuat akun. Coba lagi.');}
+    finally{this.setAccountBusy(false);}
+  },
+  async createLegacyPin(){
+    const vals=this.getAccountFormValues();
+    const username=this.pendingLegacyUsername||vals.username;
+    vals.username=username;
+    const err=this.validateAccountForm(vals,true);if(err){this.showAccountError(err);return;}
+    if(!FB_ON){this.showAccountError('Pembuatan PIN membutuhkan koneksi Firebase.');return;}
+    this.setAccountBusy(true);
+    try{
+      const existing=await fbLoadAccount(username);
+      if(existing){this.setAccountMode('login');this.showAccountError('PIN sudah dibuat. Silakan login.');return;}
+      if(!(await this.isLegacyUsername(username))){this.setAccountMode('create');this.showAccountError('Akun lama tidak ditemukan. Buat akun baru.');return;}
+      await this.createPinAccountAndEnter(username,vals.pin);
+    }catch(e){console.warn('createLegacyPin:',e);this.showAccountError('Gagal menyimpan PIN. Coba lagi.');}
+    finally{this.setAccountBusy(false);}
+  },
+
   // ── INTRO / USERNAME ──
   startIntro(){
-    if(!this.username){
-      this.debugAccount('intro:needs-username',{accountId:this.currentAccountId});
-      document.getElementById('un-wrap').classList.add('on');
+    if(!this.username||!this.pinUnlocked){
+      this.debugAccount('intro:needs-login',{accountId:this.currentAccountId,hasUsername:!!this.username,pinUnlocked:this.pinUnlocked});
+      this.showUsernameModal();
     }
     else{
       const token=this.accountSwitchToken;
@@ -1710,6 +1952,12 @@ const G={
     const input=document.getElementById('un-input');
     const v=normalizeUsername(input.value);
     if(!v){input.focus();return;}
+    if(!this.pinUnlocked){
+      this.setAccountMode('login');
+      this.showAccountError('Masukkan PIN untuk membuka akun ini.');
+      document.getElementById('un-wrap').classList.add('on');
+      return;
+    }
     const nextAccountId=accountIdForUsername(v);
     const prevAccountId=this.currentAccountId||accountIdForUsername(this.username);
     this.debugAccount('switch:requested',{from:prevAccountId,to:nextAccountId,username:v});
@@ -1773,6 +2021,8 @@ const G={
     guestProfile.username=null;
     this.saveLocalOnly(GUEST_ACCOUNT,guestProfile);
     this.applyProfile(guestProfile);
+    this.pinUnlocked=true;
+    this.pendingLegacyUsername=null;
     document.getElementById('un-wrap').classList.remove('on');
     this.toMap();
     this.debugAccount('guest:active',{accountId:GUEST_ACCOUNT,token});
@@ -1795,8 +2045,15 @@ const G={
   },
 
   showUsernameModal(){
+    this.pinUnlocked=false;
+    this.pendingLegacyUsername=null;
+    this.setAccountMode('login');
     const inp=document.getElementById('un-input');
+    const pin=document.getElementById('pin-input');
+    const confirm=document.getElementById('pin-confirm-input');
     if(inp)inp.value=(this.username&&this.currentAccountId!==GUEST_ACCOUNT)?this.username:'';
+    if(pin)pin.value='';
+    if(confirm)confirm.value='';
     this.debugAccount('username-modal:shown',{accountId:this.currentAccountId});
     document.getElementById('un-wrap').classList.add('on');
   },
@@ -3017,8 +3274,11 @@ window.SFX=SFX;
 buildGuide();
 Confetti.init();
 
-// Enter key on username input
-document.getElementById('un-input').addEventListener('keydown',e=>{if(e.key==='Enter')G.saveUsername();});
+// Enter key on account modal inputs
+['un-input','pin-input','pin-confirm-input'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter')G.submitAccountMode();});
+});
 
 // Re-render board on resize (desktop window resize)
 let _resizeTimer;
