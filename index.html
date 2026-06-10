@@ -1295,7 +1295,21 @@ const LEVELS=[
   {id:15,name:'Ahli Kimia Sejati',moves:45, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:18,score:4500,specific:[{rx:'H2O',count:4},{rx:'NaCl',count:3},{rx:'CaCl2',count:3},{rx:'NH3',count:2},{rx:'CO2',count:2}]}, obstacles:[[4,0],[4,8],[0,4],[8,4]], glass:[[2,2],[6,2],[2,6],[6,6],[1,4],[7,4]], caps:[[4,4],[3,3],[5,5],[3,5],[5,3]], capHits:4},
 ];
 
-const SAVE='chemcrush_v5';
+const SAVE='chemcrush_v5'; // legacy localStorage key, kept for one-time migration
+const SAVE_PREFIX='chemcrush_v6_profile:';
+const ACTIVE_ACCOUNT='chemcrush_v6_active_account';
+const MIGRATED_SAVE='chemcrush_v6_migrated_from_v5';
+const GUEST_ACCOUNT='guest';
+const DEFAULT_BOOST_CHARGES={hint:3,shuffle:2,hammer:2,energizer:1};
+
+function normalizeUsername(value){
+  return (value||'').trim().replace(/^@/,'').toLowerCase().replace(/[^a-z0-9._]/g,'');
+}
+
+function accountIdForUsername(username){
+  const normalized=normalizeUsername(username);
+  return normalized?'user:'+normalized:GUEST_ACCOUNT;
+}
 
 // ─── FIREBASE (Firestore) ───
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -1479,6 +1493,7 @@ const G={
   lv:null,board:[],sel:null,score:0,moves:0,reactions:0,busy:false,
   stars:{},scores:{},cleared:{},isWin:false,rxLog:[],idleTimer:null,
   username:null,lbFrom:'intro',
+  currentAccountId:GUEST_ACCOUNT,accountSwitchToken:0,
   streak:0,
   boostCharges:{hint:3,shuffle:2,hammer:2,energizer:1},
   rxBaseScore:0,comboBonus:0,movesBonus:0,
@@ -1487,49 +1502,171 @@ const G={
   hammerMode:false,   // waiting for user to tap cell to destroy
   energizerMode:false, // waiting for user to tap cell to energize
 
+  debugAccount(event,data={}){
+    console.log('[ChemCrush Account] '+event,{
+      currentAccountId:this.currentAccountId,
+      username:this.username,
+      switchToken:this.accountSwitchToken,
+      ...data
+    });
+  },
+  profileKey(accountId){
+    return SAVE_PREFIX+(accountId||GUEST_ACCOUNT);
+  },
+  blankProfile(username=null){
+    const uname=normalizeUsername(username);
+    return {
+      schemaVersion:6,
+      stars:{},scores:{},username:uname||null,tutDone:false,cleared:{},
+      boostCharges:{...DEFAULT_BOOST_CHARGES}
+    };
+  },
+  snapshotProfile(){
+    const uname=normalizeUsername(this.username);
+    return {
+      schemaVersion:6,
+      stars:{...(this.stars||{})},
+      scores:{...(this.scores||{})},
+      username:uname||null,
+      tutDone:!!this.tutDone,
+      cleared:{...(this.cleared||{})},
+      boostCharges:{...DEFAULT_BOOST_CHARGES,...(this.boostCharges||{})}
+    };
+  },
+  applyProfile(profile){
+    const p=profile||this.blankProfile(null);
+    const norm=obj=>Object.fromEntries(Object.entries(obj||{}).map(([k,v])=>[String(k),v]));
+    const uname=normalizeUsername(p.username);
+    this.stars=norm(p.stars);
+    this.scores=norm(p.scores);
+    this.username=uname||null;
+    this.tutDone=!!p.tutDone;
+    this.cleared=norm(p.cleared);
+    this.boostCharges={...DEFAULT_BOOST_CHARGES,...(p.boostCharges||{})};
+  },
+  loadLocalProfile(accountId){
+    if(!accountId)return null;
+    try{
+      const raw=localStorage.getItem(this.profileKey(accountId));
+      if(!raw)return null;
+      const d=JSON.parse(raw)||{};
+      const profile={
+        schemaVersion:d.schemaVersion||6,
+        stars:d.stars||{},scores:d.scores||{},username:d.username||null,
+        tutDone:!!d.tutDone,cleared:d.cleared||{},
+        boostCharges:{...DEFAULT_BOOST_CHARGES,...(d.boostCharges||{})}
+      };
+      // Guest profiles must never keep a username; named profiles infer username from the key if missing.
+      if(accountId===GUEST_ACCOUNT)profile.username=null;
+      else if(!profile.username&&accountId.startsWith('user:'))profile.username=accountId.slice(5);
+      return profile;
+    }catch(e){console.warn('loadLocalProfile:',e.message);return null;}
+  },
+  saveLocalOnly(accountId=this.currentAccountId){
+    const targetAccountId=accountId||GUEST_ACCOUNT;
+    const profile=this.snapshotProfile();
+    if(targetAccountId===GUEST_ACCOUNT)profile.username=null;
+    else if(targetAccountId.startsWith('user:'))profile.username=targetAccountId.slice(5);
+    try{
+      localStorage.setItem(this.profileKey(targetAccountId),JSON.stringify(profile));
+      localStorage.setItem(ACTIVE_ACCOUNT,targetAccountId);
+      this.debugAccount('save:local-only',{accountId:targetAccountId,levels:Object.keys(profile.cleared||{}).length});
+    }catch(e){console.warn('saveLocalOnly:',e.message);}
+  },
+  profileFromRemote(remote,username){
+    const uname=normalizeUsername(username);
+    const norm=obj=>Object.fromEntries(Object.entries(obj||{}).map(([k,v])=>[String(k),v]));
+    const stars=norm(remote&&remote.stars);
+    const scores=norm(remote&&remote.scores);
+    const cleared=(remote&&remote.cleared)?norm(remote.cleared):Object.fromEntries(Object.keys(stars).map(k=>[String(k),true]));
+    return {
+      schemaVersion:6,
+      stars,scores,cleared,
+      username:uname||null,
+      tutDone:!!(remote&&remote.tutDone),
+      boostCharges:{...DEFAULT_BOOST_CHARGES,...((remote&&remote.boostCharges)||{})}
+    };
+  },
+  tryMigrateLegacySave(){
+    try{
+      if(localStorage.getItem(MIGRATED_SAVE))return false;
+      const raw=localStorage.getItem(SAVE);
+      if(!raw)return false;
+      const d=JSON.parse(raw)||{};
+      const uname=normalizeUsername(d.username);
+      const accountId=accountIdForUsername(uname);
+      const profile={
+        schemaVersion:6,
+        stars:d.stars||{},scores:d.scores||{},username:accountId===GUEST_ACCOUNT?null:uname,
+        tutDone:!!d.tutDone,cleared:d.cleared||{},
+        boostCharges:{...DEFAULT_BOOST_CHARGES,...(d.boostCharges||{})}
+      };
+      localStorage.setItem(this.profileKey(accountId),JSON.stringify(profile));
+      localStorage.setItem(ACTIVE_ACCOUNT,accountId);
+      localStorage.setItem(MIGRATED_SAVE,'true');
+      this.currentAccountId=accountId;
+      this.applyProfile(profile);
+      this.debugAccount('load:migrated-legacy',{accountId});
+      return true;
+    }catch(e){console.warn('tryMigrateLegacySave:',e.message);return false;}
+  },
   save(){
-    const uname=this.username?this.username.toLowerCase().replace(/[^a-z0-9._]/g,''):null;
-    const data={stars:this.stars,scores:this.scores,username:uname||this.username,tutDone:this.tutDone,cleared:this.cleared,boostCharges:this.boostCharges};
-    try{localStorage.setItem(SAVE,JSON.stringify(data));}catch(e){}
-    if(uname)fbSaveProgress(uname,{stars:this.stars,scores:this.scores,cleared:this.cleared,tutDone:this.tutDone,boostCharges:this.boostCharges});
+    const accountId=this.currentAccountId||accountIdForUsername(this.username);
+    const profile=this.snapshotProfile();
+    this.debugAccount('save:start',{accountId,username:profile.username});
+    this.saveLocalOnly(accountId);
+    if(accountId!==GUEST_ACCOUNT&&profile.username){
+      fbSaveProgress(profile.username,{stars:profile.stars,scores:profile.scores,cleared:profile.cleared,tutDone:profile.tutDone,boostCharges:profile.boostCharges});
+    }
+    this.debugAccount('save:end',{accountId,username:profile.username});
   },
   load(){
-    // 1. Load from localStorage first (instant, offline-safe)
     try{
-      const d=JSON.parse(localStorage.getItem(SAVE)||'{}');
-      this.stars=d.stars||{};this.scores=d.scores||{};
-      this.username=d.username||null;this.tutDone=d.tutDone||false;
-      this.cleared=d.cleared||{};
-      this.boostCharges=d.boostCharges||{hint:3,shuffle:2,hammer:2,energizer:1};
-    }catch(e){this.stars={};this.scores={};this.username=null;this.tutDone=false;this.cleared={};this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};}
-  },
-  // Pull progress from Firestore and merge — called after username is set
-  async syncFromCloud(username){
-    if(!username||!FB_ON)return;
-    try{
-      console.log('syncFromCloud: fetching for username=',username);
-      const remote=await fbLoadProgress(username);
-      console.log('syncFromCloud: remote data=',remote);
-      if(!remote){console.log('syncFromCloud: no data found for',username);return;}
-      // Remote fully replaces local. Normalize all keys to strings for consistency.
-      const norm=obj=>Object.fromEntries(Object.entries(obj||{}).map(([k,v])=>[String(k),v]));
-      if(remote.stars&&Object.keys(remote.stars).length>0)this.stars=norm(remote.stars);
-      if(remote.scores&&Object.keys(remote.scores).length>0)this.scores=norm(remote.scores);
-      // cleared may be missing for older saves — fall back to deriving from stars
-      if(remote.cleared&&Object.keys(remote.cleared).length>0){
-        this.cleared=norm(remote.cleared);
-      }else{
-        // If no cleared data, treat every level with stars as cleared so map unlocks correctly
-        this.cleared=Object.fromEntries(Object.keys(this.stars).map(k=>[String(k),true]));
+      const activeAccount=localStorage.getItem(ACTIVE_ACCOUNT);
+      if(activeAccount){
+        const profile=this.loadLocalProfile(activeAccount);
+        if(profile){
+          this.currentAccountId=activeAccount;
+          this.applyProfile(profile);
+          this.debugAccount('load:active-profile',{accountId:activeAccount});
+          return;
+        }
       }
-      this.tutDone=remote.tutDone||this.tutDone;
-      if(remote.boostCharges)this.boostCharges={...this.boostCharges,...remote.boostCharges};
-      // Save merged back to localStorage
-      try{localStorage.setItem(SAVE,JSON.stringify({stars:this.stars,scores:this.scores,username:this.username,tutDone:this.tutDone,cleared:this.cleared,boostCharges:this.boostCharges}));}catch(e){}
-      // Refresh map if currently showing
+      if(this.tryMigrateLegacySave())return;
+      this.currentAccountId=GUEST_ACCOUNT;
+      this.applyProfile(this.blankProfile(null));
+      this.saveLocalOnly(GUEST_ACCOUNT);
+      this.debugAccount('load:new-guest',{accountId:GUEST_ACCOUNT});
+    }catch(e){
+      console.warn('load:',e.message);
+      this.currentAccountId=GUEST_ACCOUNT;
+      this.applyProfile(this.blankProfile(null));
+    }
+  },
+  // Pull progress from Firestore and apply only if this account is still active
+  async syncFromCloud(username,token=this.accountSwitchToken){
+    const uname=normalizeUsername(username);
+    const accountId=accountIdForUsername(uname);
+    if(!uname||!FB_ON)return;
+    try{
+      this.debugAccount('cloud:load:start',{accountId,username:uname,token});
+      const remote=await fbLoadProgress(uname);
+      if(token!==this.accountSwitchToken||this.currentAccountId!==accountId){
+        this.debugAccount('cloud:load:stale-ignored',{requestedAccountId:accountId,currentAccountId:this.currentAccountId,token,currentToken:this.accountSwitchToken});
+        return;
+      }
+      if(!remote){
+        this.debugAccount('cloud:load:not-found-blank-kept',{accountId});
+        this.saveLocalOnly(accountId);
+        return;
+      }
+      const profile=this.profileFromRemote(remote,uname);
+      this.applyProfile(profile);
+      this.currentAccountId=accountId;
+      this.saveLocalOnly(accountId);
       if(document.getElementById('s-map').classList.contains('on'))this.buildMap();
-      console.log('Progress synced from cloud ✓ cleared=',Object.keys(this.cleared));
-    }catch(e){console.warn('syncFromCloud error:',e);}
+      this.debugAccount('cloud:load:applied',{accountId,cleared:Object.keys(this.cleared||{})});
+    }catch(e){console.warn('syncFromCloud error:',e);this.debugAccount('cloud:load:error',{accountId,message:e.message});}
   },
 
   show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');},
@@ -1538,46 +1675,98 @@ const G={
 
   // ── INTRO / USERNAME ──
   startIntro(){
-    if(!this.username){document.getElementById('un-wrap').classList.add('on');}
+    if(!this.username){
+      this.debugAccount('intro:needs-username',{accountId:this.currentAccountId});
+      document.getElementById('un-wrap').classList.add('on');
+    }
     else{
+      const token=this.accountSwitchToken;
+      const accountId=accountIdForUsername(this.username);
+      this.currentAccountId=accountId;
+      this.debugAccount('intro:start-named',{accountId,token});
       this.show('s-map');
       this.buildMap();
       const nameEl=document.getElementById('map-uname');
       if(nameEl)nameEl.textContent='@'+this.username+' ⏳';
-      this.syncFromCloud(this.username).then(()=>{
+      this.syncFromCloud(this.username,token).then(()=>{
+        if(token!==this.accountSwitchToken||this.currentAccountId!==accountId){
+          this.debugAccount('intro:stale-completion-ignored',{accountId,token});
+          return;
+        }
         if(nameEl)nameEl.textContent='@'+this.username;
         this.buildMap();
       });
     }
   },
   saveUsername(){
-    const v=document.getElementById('un-input').value.trim().replace(/^@/,'').toLowerCase().replace(/[^a-z0-9._]/g,'');
-    if(!v){document.getElementById('un-input').focus();return;}
-    const isSameUser=v===(this.username||'').toLowerCase().replace(/[^a-z0-9._]/g,'');
-    this.username=v;
-    if(!isSameUser){
-      // Don't wipe stars/scores/cleared here — syncFromCloud will overwrite from Firestore.
-      // Only reset boost charges and specificProgress for the new user.
-      this.boostCharges={hint:3,shuffle:2,hammer:2,energizer:1};
-      this.specificProgress={};
+    const input=document.getElementById('un-input');
+    const v=normalizeUsername(input.value);
+    if(!v){input.focus();return;}
+    const nextAccountId=accountIdForUsername(v);
+    const prevAccountId=this.currentAccountId||accountIdForUsername(this.username);
+    this.debugAccount('switch:requested',{from:prevAccountId,to:nextAccountId,username:v});
+
+    if(nextAccountId===prevAccountId){
+      this.username=v;
+      this.currentAccountId=nextAccountId;
+      this.saveLocalOnly(nextAccountId);
+      document.getElementById('un-wrap').classList.remove('on');
+      this.show('s-map');
+      this.buildMap();
+      const nameEl=document.getElementById('map-uname');
+      if(nameEl)nameEl.textContent='@'+v+' ⏳';
+      const token=this.accountSwitchToken;
+      this.debugAccount('switch:same-account',{accountId:nextAccountId,token});
+      this.syncFromCloud(v,token).then(()=>{
+        if(token!==this.accountSwitchToken||this.currentAccountId!==nextAccountId){
+          this.debugAccount('switch:same-account-stale-ignored',{accountId:nextAccountId,token});
+          return;
+        }
+        if(nameEl)nameEl.textContent='@'+this.username;
+        this.buildMap();
+      });
+      return;
     }
-    this.save();
+
+    // Preserve the old profile under its old account ID before changing identity.
+    this.saveLocalOnly(prevAccountId);
+
+    const token=++this.accountSwitchToken;
+    this.currentAccountId=nextAccountId;
+    const localProfile=this.loadLocalProfile(nextAccountId)||this.blankProfile(v);
+    localProfile.username=v;
+    this.applyProfile(localProfile);
+    this.saveLocalOnly(nextAccountId);
+    this.debugAccount(localProfile&&Object.keys(localProfile.stars||{}).length?'switch:local-loaded':'switch:blank-created',{accountId:nextAccountId,token});
+
     document.getElementById('un-wrap').classList.remove('on');
-    // Show loading state on map while syncing
     this.show('s-map');
     this.buildMap();
     const nameEl=document.getElementById('map-uname');
     if(nameEl)nameEl.textContent='@'+v+' ⏳';
-    // Pull from cloud, then refresh map
-    this.syncFromCloud(v).then(()=>{
-      if(nameEl)nameEl.textContent='@'+v;
+    this.syncFromCloud(v,token).then(()=>{
+      if(token!==this.accountSwitchToken||this.currentAccountId!==nextAccountId){
+        this.debugAccount('switch:stale-completion-ignored',{accountId:nextAccountId,token});
+        return;
+      }
+      if(nameEl)nameEl.textContent='@'+this.username;
       this.buildMap();
+      this.debugAccount('switch:complete',{accountId:nextAccountId});
     });
   },
   skipUsername(){
-    this.username=null;
+    const prevAccountId=this.currentAccountId||accountIdForUsername(this.username);
+    this.debugAccount('guest:requested',{from:prevAccountId});
+    this.saveLocalOnly(prevAccountId);
+    const token=++this.accountSwitchToken;
+    this.currentAccountId=GUEST_ACCOUNT;
+    const guestProfile=this.loadLocalProfile(GUEST_ACCOUNT)||this.blankProfile(null);
+    guestProfile.username=null;
+    this.applyProfile(guestProfile);
+    this.saveLocalOnly(GUEST_ACCOUNT);
     document.getElementById('un-wrap').classList.remove('on');
     this.toMap();
+    this.debugAccount('guest:active',{accountId:GUEST_ACCOUNT,token});
   },
 
   // ── MAP ──
@@ -1586,18 +1775,20 @@ const G={
     this.show('s-map');clearTimeout(this.idleTimer);this.buildMap();
     const nameEl=document.getElementById('map-uname');
     const btnEl=document.getElementById('map-login-btn');
-    if(this.username){
+    if(this.username&&this.currentAccountId!==GUEST_ACCOUNT){
       if(nameEl)nameEl.textContent='@'+this.username;
       if(btnEl)btnEl.textContent='Ganti';
     }else{
       if(nameEl)nameEl.textContent='Belum login';
       if(btnEl)btnEl.textContent='Login';
     }
+    this.debugAccount('map:shown',{accountId:this.currentAccountId});
   },
 
   showUsernameModal(){
     const inp=document.getElementById('un-input');
-    if(inp&&this.username)inp.value=this.username;
+    if(inp)inp.value=(this.username&&this.currentAccountId!==GUEST_ACCOUNT)?this.username:'';
+    this.debugAccount('username-modal:shown',{accountId:this.currentAccountId});
     document.getElementById('un-wrap').classList.add('on');
   },
 
