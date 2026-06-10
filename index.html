@@ -50,27 +50,41 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .intro-lb-btn:hover{background:rgba(100,180,230,.1)}
 
 /* ══ USERNAME MODAL ══ */
-.un-bg{position:fixed;inset:0;background:rgba(14,34,51,.88);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)}
+.un-bg{position:fixed;inset:0;background:rgba(14,34,51,.88);z-index:300;display:none;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(10px);overflow-y:auto}
 .un-bg.on{display:flex}
-.un-box{background:var(--panel);border-radius:24px;padding:28px 24px;width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;text-align:center;animation:modalIn .3s ease}
-.un-ico{font-size:46px}
-.un-title{font-family:'Fredoka One',cursive;font-size:23px;color:var(--ink)}
-.un-desc{font-size:12px;color:var(--ink2);line-height:1.65}
-.un-field{display:flex;align-items:center;background:var(--sky);border:2px solid var(--border);border-radius:12px;padding:0 14px;gap:6px;transition:border-color .2s}
-.un-field:focus-within{border-color:var(--ink2)}
-.un-at{font-size:16px;font-weight:900;color:var(--ink2)}
-.un-input{flex:1;border:none;background:transparent;padding:12px 0;font-size:15px;font-weight:800;color:var(--ink);font-family:'Nunito',sans-serif;outline:none}
+.un-box{background:var(--panel);border-radius:24px;padding:24px 20px;width:100%;max-width:360px;max-height:calc(100vh - 28px);max-height:calc(100dvh - 28px);overflow-y:auto;display:flex;flex-direction:column;gap:16px;text-align:center;animation:modalIn .3s ease;box-shadow:0 16px 60px rgba(0,0,0,.18)}
+.un-ico{font-size:42px;line-height:1}
+.un-title{font-family:'Fredoka One',cursive;font-size:24px;color:var(--ink);line-height:1.15}
+.un-desc{font-size:12px;color:var(--ink2);line-height:1.6;margin-top:-4px}
+.un-form{display:flex;flex-direction:column;gap:13px;text-align:left}
+.un-field-group{display:flex;flex-direction:column;gap:6px}
+.un-label{font-size:11px;font-weight:900;color:var(--ink2);letter-spacing:.5px;text-transform:uppercase}
+.un-field{display:flex;align-items:center;background:var(--sky);border:2px solid var(--border);border-radius:14px;padding:0 8px 0 14px;gap:6px;transition:border-color .2s,box-shadow .2s;min-height:48px}
+.un-field:focus-within{border-color:var(--ink2);box-shadow:0 0 0 3px rgba(58,106,136,.12)}
+.un-at{font-size:16px;font-weight:900;color:var(--ink2);flex-shrink:0}
+.un-input{flex:1;min-width:0;border:none;background:transparent;padding:13px 0;font-size:16px;font-weight:800;color:var(--ink);font-family:'Nunito',sans-serif;outline:none}
 .un-input::placeholder{color:var(--muted);font-weight:700}
-.btn-un{background:linear-gradient(135deg,#2a5a78,#3a8ab8);color:#fff;border:none;border-radius:50px;padding:14px 0;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;transition:transform .12s}
+.un-eye{width:44px;height:44px;border:none;border-radius:12px;background:transparent;color:var(--ink2);font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s,transform .12s}
+.un-eye:hover,.un-eye:focus-visible{background:rgba(58,106,136,.12);outline:none}
+.un-eye:active{transform:scale(.92)}
+.un-field-error{display:none;color:#a03030;font-size:11px;font-weight:900;line-height:1.35;padding:0 2px}
+.un-field-error.on{display:block}
+.un-actions{display:flex;flex-direction:column;gap:10px}
+.btn-un{background:linear-gradient(135deg,#2a5a78,#3a8ab8);color:#fff;border:none;border-radius:50px;padding:15px 0;min-height:50px;font-family:'Fredoka One',cursive;font-size:17px;cursor:pointer;transition:transform .12s}
 .btn-un:active{transform:scale(.96)}
 .btn-un:disabled{opacity:.55;cursor:wait;transform:none}
-.btn-un-secondary{background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:11px 0;font-size:12px;color:var(--ink2);cursor:pointer;font-weight:900;font-family:'Nunito',sans-serif}
-.btn-un-skip{background:transparent;border:none;font-size:11px;color:var(--muted);cursor:pointer;font-weight:700}
+.un-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:2px 0}
+.btn-un-secondary{background:transparent;border:1.5px solid var(--border);border-radius:50px;padding:13px 0;min-height:46px;font-size:12px;color:var(--ink2);cursor:pointer;font-weight:900;font-family:'Nunito',sans-serif}
+.btn-un-skip{background:transparent;border:none;min-height:44px;font-size:12px;color:var(--muted);cursor:pointer;font-weight:800}
 .un-error{display:none;background:#fff0f0;border:1.5px solid #f0b0b0;color:#a03030;border-radius:12px;padding:9px 11px;font-size:11px;font-weight:800;line-height:1.45;text-align:left}
 .un-error.on{display:block}
-.un-recovery{display:none;background:#fff8e0;border:1.5px solid #efd070;color:#8a5a08;border-radius:12px;padding:10px 12px;font-size:11px;font-weight:800;line-height:1.5;text-align:left;user-select:text}
-.un-recovery.on{display:block}
-.un-recovery code{display:block;font-family:monospace;font-size:15px;letter-spacing:1.5px;margin-top:4px;color:#1a3a50;user-select:text}
+.un-recovery{display:none;background:linear-gradient(180deg,#fffaf0,#fff3c4);border:1.5px solid #efd070;color:#8a5a08;border-radius:18px;padding:16px 14px;font-size:12px;font-weight:800;line-height:1.55;text-align:center;user-select:text;box-shadow:0 8px 22px rgba(212,138,8,.12)}
+.un-recovery.on{display:flex;flex-direction:column;gap:12px}
+.un-recovery-title{font-family:'Fredoka One',cursive;font-size:18px;color:#8a5a08;line-height:1.2}
+.un-recovery-text{text-align:left;color:#6f4a06}
+.un-recovery code{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:18px;letter-spacing:2px;color:#1a3a50;user-select:text;background:#fff;border:2px dashed #e0b848;border-radius:14px;padding:13px 10px;text-align:center;overflow-wrap:anywhere;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+.un-copy-feedback{min-height:16px;font-size:11px;font-weight:900;color:var(--green)}
+@media(max-width:360px){.un-box{padding:20px 16px;border-radius:20px}.un-title{font-size:22px}.un-recovery code{font-size:16px;letter-spacing:1.5px}.un-input{font-size:15px}}
 
 /* ══ MAP ══ */
 #s-map{padding:20px 16px 32px;gap:14px;background:linear-gradient(160deg,#d0ecf8,#e8f6fc)}
@@ -943,28 +957,51 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 </div>
 
 <!-- ══ USERNAME / PIN MODAL ══ -->
-<div class="un-bg" id="un-wrap">
+<div class="un-bg" id="un-wrap" role="dialog" aria-modal="true" aria-labelledby="un-title" aria-describedby="un-desc">
   <div class="un-box">
-    <div class="un-ico">👤</div>
+    <div class="un-ico" aria-hidden="true">👤</div>
     <div class="un-title" id="un-title">Login Akun</div>
     <div class="un-desc" id="un-desc">Masukkan username dan PIN 4 angka untuk membuka progres akun ini.<br><br><small style="opacity:.6">💡 Akun lama tanpa PIN akan diminta membuat PIN dulu.</small></div>
-    <div class="un-error" id="un-error"></div>
-    <div class="un-recovery" id="un-recovery"></div>
-    <div class="un-field">
-      <span class="un-at">@</span>
-      <input class="un-input" id="un-input" type="text" placeholder="username_ig" maxlength="30" autocorrect="off" autocapitalize="none" spellcheck="false">
+    <div class="un-error" id="un-error" role="alert"></div>
+    <div class="un-recovery" id="un-recovery" aria-live="polite"></div>
+
+    <div class="un-form" id="un-form">
+      <div class="un-field-group">
+        <label class="un-label" for="un-input">Username</label>
+        <div class="un-field">
+          <span class="un-at" aria-hidden="true">@</span>
+          <input class="un-input" id="un-input" type="text" placeholder="username_ig" maxlength="30" autocorrect="off" autocapitalize="none" spellcheck="false" autocomplete="username" aria-describedby="un-input-error">
+        </div>
+        <div class="un-field-error" id="un-input-error" role="alert"></div>
+      </div>
+
+      <div class="un-field-group">
+        <label class="un-label" for="pin-input">PIN</label>
+        <div class="un-field" id="pin-field">
+          <span class="un-at" aria-hidden="true">🔒</span>
+          <input class="un-input" id="pin-input" type="password" placeholder="PIN 4 angka" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" aria-describedby="pin-input-error">
+          <button class="un-eye" type="button" data-toggle-password="pin-input" aria-label="Tampilkan PIN" aria-pressed="false">👁️</button>
+        </div>
+        <div class="un-field-error" id="pin-input-error" role="alert"></div>
+      </div>
+
+      <div class="un-field-group" id="pin-confirm-field" style="display:none">
+        <label class="un-label" for="pin-confirm-input">Confirm PIN</label>
+        <div class="un-field">
+          <span class="un-at" aria-hidden="true">✓</span>
+          <input class="un-input" id="pin-confirm-input" type="password" placeholder="Ulangi PIN" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" aria-describedby="pin-confirm-input-error">
+          <button class="un-eye" type="button" data-toggle-password="pin-confirm-input" aria-label="Tampilkan konfirmasi PIN" aria-pressed="false">👁️</button>
+        </div>
+        <div class="un-field-error" id="pin-confirm-input-error" role="alert"></div>
+      </div>
     </div>
-    <div class="un-field" id="pin-field">
-      <span class="un-at">🔒</span>
-      <input class="un-input" id="pin-input" type="password" placeholder="PIN 4 angka" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+
+    <div class="un-actions">
+      <button class="btn-un" type="button" id="un-primary-btn" onclick="G.submitAccountMode()">Login ✓</button>
+      <div class="un-divider" aria-hidden="true"></div>
+      <button class="btn-un-secondary" type="button" id="un-secondary-btn" onclick="G.setAccountMode('create')">Buat Akun Baru</button>
+      <button class="btn-un-skip" type="button" onclick="G.skipUsername()">Continue as Guest</button>
     </div>
-    <div class="un-field" id="pin-confirm-field" style="display:none">
-      <span class="un-at">✓</span>
-      <input class="un-input" id="pin-confirm-input" type="password" placeholder="Ulangi PIN" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
-    </div>
-    <button class="btn-un" id="un-primary-btn" onclick="G.submitAccountMode()">Login ✓</button>
-    <button class="btn-un-secondary" id="un-secondary-btn" onclick="G.setAccountMode('create')">Buat Akun Baru</button>
-    <button class="btn-un-skip" onclick="G.skipUsername()">Lewati (main tanpa leaderboard)</button>
   </div>
 </div>
 
@@ -1577,7 +1614,7 @@ const G={
   stars:{},scores:{},cleared:{},isWin:false,rxLog:[],idleTimer:null,
   username:null,lbFrom:'intro',
   currentAccountId:GUEST_ACCOUNT,accountSwitchToken:0,
-  accountMode:'login',pinUnlocked:false,pendingLegacyUsername:null,lastRecoveryCode:null,
+  accountMode:'login',pinUnlocked:false,pendingLegacyUsername:null,lastRecoveryCode:null,awaitingRecoveryContinue:false,pendingRecoveryUsername:null,
   streak:0,
   boostCharges:{hint:3,shuffle:2,hammer:2,energizer:1},
   rxBaseScore:0,comboBonus:0,movesBonus:0,
@@ -1772,12 +1809,64 @@ const G={
     el.textContent=msg||'';
     el.classList.toggle('on',!!msg);
   },
+  clearAccountFieldErrors(){
+    ['un-input-error','pin-input-error','pin-confirm-input-error'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){el.textContent='';el.classList.remove('on');}
+    });
+  },
+  showAccountFieldError(id,msg){
+    const el=document.getElementById(id+'-error');
+    if(!el)return;
+    el.textContent=msg||'';
+    el.classList.toggle('on',!!msg);
+  },
+  escapeHtml(text){
+    return String(text||'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  },
   showRecoveryCode(code){
     const el=document.getElementById('un-recovery');
     if(!el)return;
-    if(!code){el.classList.remove('on');el.innerHTML='';return;}
-    el.innerHTML='Simpan kode pemulihan ini. Kode hanya ditampilkan sekali:<code>'+code+'</code>';
+    if(!code){
+      el.classList.remove('on');
+      el.innerHTML='';
+      this.awaitingRecoveryContinue=false;
+      const form=document.getElementById('un-form');if(form)form.style.display='flex';
+      const secondary=document.getElementById('un-secondary-btn');if(secondary)secondary.style.display='block';
+      const skip=document.querySelector('.btn-un-skip');if(skip)skip.style.display='block';
+      const divider=document.querySelector('.un-divider');if(divider)divider.style.display='block';
+      return;
+    }
+    this.awaitingRecoveryContinue=true;
+    const safeCode=this.escapeHtml(code);
+    el.innerHTML='<div class="un-recovery-title">Recovery Code</div>'+
+      '<div class="un-recovery-text">Save this recovery code.<br>It can be used later if you forget your PIN.</div>'+
+      '<code id="recovery-code-text">'+safeCode+'</code>'+
+      '<button class="btn-un-secondary" type="button" onclick="G.copyRecoveryCode()">Copy Recovery Code</button>'+
+      '<div class="un-copy-feedback" id="un-copy-feedback" aria-live="polite"></div>';
     el.classList.add('on');
+    const form=document.getElementById('un-form');if(form)form.style.display='none';
+    const secondary=document.getElementById('un-secondary-btn');if(secondary)secondary.style.display='none';
+    const skip=document.querySelector('.btn-un-skip');if(skip)skip.style.display='none';
+    const divider=document.querySelector('.un-divider');if(divider)divider.style.display='none';
+    const primary=document.getElementById('un-primary-btn');if(primary)primary.textContent='Continue';
+  },
+  async copyRecoveryCode(){
+    const code=this.lastRecoveryCode||document.getElementById('recovery-code-text')?.textContent||'';
+    if(!code)return;
+    const feedback=document.getElementById('un-copy-feedback');
+    try{
+      await navigator.clipboard.writeText(code);
+      if(feedback)feedback.textContent='Recovery code copied.';
+    }catch(e){
+      if(feedback)feedback.textContent='Select and copy the code above.';
+    }
+  },
+  continueAfterRecovery(){
+    this.awaitingRecoveryContinue=false;
+    const input=document.getElementById('un-input');
+    if(input&&this.pendingRecoveryUsername)input.value=this.pendingRecoveryUsername;
+    this.saveUsername();
   },
   getAccountFormValues(){
     const username=normalizeUsername(document.getElementById('un-input')?.value||'');
@@ -1793,41 +1882,63 @@ const G={
   },
   setAccountMode(mode='login'){
     this.accountMode=mode;
+    this.awaitingRecoveryContinue=false;
     this.showAccountError('');
+    this.clearAccountFieldErrors();
     this.showRecoveryCode('');
     const title=document.getElementById('un-title');
     const desc=document.getElementById('un-desc');
     const confirmField=document.getElementById('pin-confirm-field');
     const primary=document.getElementById('un-primary-btn');
     const secondary=document.getElementById('un-secondary-btn');
+    const form=document.getElementById('un-form');if(form)form.style.display='flex';
+    const skip=document.querySelector('.btn-un-skip');if(skip)skip.style.display='block';
+    const divider=document.querySelector('.un-divider');if(divider)divider.style.display='block';
     if(confirmField)confirmField.style.display=(mode==='create'||mode==='legacy')?'flex':'none';
     if(mode==='create'){
       if(title)title.textContent='Buat Akun Baru';
       if(desc)desc.innerHTML='Pilih username dan PIN 4 angka. PIN akan disimpan sebagai hash, bukan teks biasa.';
       if(primary)primary.textContent='Buat Akun ✓';
-      if(secondary){secondary.textContent='Sudah punya akun? Login';secondary.onclick=()=>this.setAccountMode('login');}
+      if(secondary){secondary.style.display='block';secondary.textContent='Sudah punya akun? Login';secondary.onclick=()=>this.setAccountMode('login');}
     }else if(mode==='legacy'){
       if(title)title.textContent='Amankan Akun Lama';
       if(desc)desc.innerHTML='Akun lama ditemukan tanpa PIN. Buat PIN 4 angka untuk melindungi akun ini mulai sekarang.';
       if(primary)primary.textContent='Buat PIN & Login ✓';
-      if(secondary){secondary.textContent='Kembali ke Login';secondary.onclick=()=>this.setAccountMode('login');}
+      if(secondary){secondary.style.display='block';secondary.textContent='Kembali ke Login';secondary.onclick=()=>this.setAccountMode('login');}
     }else{
       this.accountMode='login';
       if(title)title.textContent='Login Akun';
       if(desc)desc.innerHTML='Masukkan username dan PIN 4 angka untuk membuka progres akun ini.<br><br><small style="opacity:.6">💡 Akun lama tanpa PIN akan diminta membuat PIN dulu.</small>';
       if(primary)primary.textContent='Login ✓';
-      if(secondary){secondary.textContent='Buat Akun Baru';secondary.onclick=()=>this.setAccountMode('create');}
+      if(secondary){secondary.style.display='block';secondary.textContent='Buat Akun Baru';secondary.onclick=()=>this.setAccountMode('create');}
     }
   },
   submitAccountMode(){
+    if(this.awaitingRecoveryContinue)return this.continueAfterRecovery();
     if(this.accountMode==='create')return this.createAccountWithPin();
     if(this.accountMode==='legacy')return this.createLegacyPin();
     return this.loginWithPin();
   },
   validateAccountForm({username,pin,confirm},needsConfirm=false){
-    if(!username)return 'Masukkan username yang valid.';
-    if(!isValidPin(pin))return 'PIN harus 4 angka.';
-    if(needsConfirm&&pin!==confirm)return 'Konfirmasi PIN tidak sama.';
+    this.clearAccountFieldErrors();
+    if(!username){
+      const msg='Masukkan username yang valid.';
+      this.showAccountFieldError('un-input',msg);
+      document.getElementById('un-input')?.focus();
+      return msg;
+    }
+    if(!isValidPin(pin)){
+      const msg='PIN harus 4 angka.';
+      this.showAccountFieldError('pin-input',msg);
+      document.getElementById('pin-input')?.focus();
+      return msg;
+    }
+    if(needsConfirm&&pin!==confirm){
+      const msg='Konfirmasi PIN tidak sama.';
+      this.showAccountFieldError('pin-confirm-input',msg);
+      document.getElementById('pin-confirm-input')?.focus();
+      return msg;
+    }
     return '';
   },
   async isLegacyUsername(username){
@@ -1850,16 +1961,15 @@ const G={
       return false;
     }
     this.lastRecoveryCode=recoveryCode;
-    this.showRecoveryCode(recoveryCode);
-    alert('Simpan kode pemulihan Chem Crush kamu: '+recoveryCode+'\nKode ini hanya ditampilkan sekali.');
+    this.pendingRecoveryUsername=username;
     this.pinUnlocked=true;
     const input=document.getElementById('un-input');if(input)input.value=username;
-    this.saveUsername();
+    this.showRecoveryCode(recoveryCode);
     return true;
   },
   async loginWithPin(){
     const vals=this.getAccountFormValues();
-    const err=this.validateAccountForm(vals,false);if(err){this.showAccountError(err);return;}
+    const err=this.validateAccountForm(vals,false);if(err){this.showAccountError('');return;}
     if(!FB_ON){this.showAccountError('Login PIN membutuhkan koneksi Firebase.');return;}
     this.setAccountBusy(true);
     try{
@@ -1890,7 +2000,7 @@ const G={
   },
   async createAccountWithPin(){
     const vals=this.getAccountFormValues();
-    const err=this.validateAccountForm(vals,true);if(err){this.showAccountError(err);return;}
+    const err=this.validateAccountForm(vals,true);if(err){this.showAccountError('');return;}
     if(!FB_ON){this.showAccountError('Pembuatan akun membutuhkan koneksi Firebase.');return;}
     this.setAccountBusy(true);
     try{
@@ -1911,7 +2021,7 @@ const G={
     const vals=this.getAccountFormValues();
     const username=this.pendingLegacyUsername||vals.username;
     vals.username=username;
-    const err=this.validateAccountForm(vals,true);if(err){this.showAccountError(err);return;}
+    const err=this.validateAccountForm(vals,true);if(err){this.showAccountError('');return;}
     if(!FB_ON){this.showAccountError('Pembuatan PIN membutuhkan koneksi Firebase.');return;}
     this.setAccountBusy(true);
     try{
@@ -3274,10 +3384,26 @@ window.SFX=SFX;
 buildGuide();
 Confetti.init();
 
-// Enter key on account modal inputs
+// Account modal keyboard, PIN visibility, and inline-error helpers
 ['un-input','pin-input','pin-confirm-input'].forEach(id=>{
   const el=document.getElementById(id);
-  if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter')G.submitAccountMode();});
+  if(el){
+    el.addEventListener('keydown',e=>{if(e.key==='Enter')G.submitAccountMode();});
+    el.addEventListener('input',()=>G.showAccountFieldError(id,''));
+  }
+});
+
+document.querySelectorAll('[data-toggle-password]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const input=document.getElementById(btn.dataset.togglePassword);
+    if(!input)return;
+    const showing=input.type==='text';
+    input.type=showing?'password':'text';
+    btn.setAttribute('aria-pressed',String(!showing));
+    btn.setAttribute('aria-label',showing?'Tampilkan PIN':'Sembunyikan PIN');
+    btn.textContent=showing?'👁️':'🙈';
+    input.focus();
+  });
 });
 
 // Re-render board on resize (desktop window resize)
