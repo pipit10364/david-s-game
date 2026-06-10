@@ -1562,15 +1562,23 @@ const G={
       return profile;
     }catch(e){console.warn('loadLocalProfile:',e.message);return null;}
   },
-  saveLocalOnly(accountId=this.currentAccountId){
+  saveLocalOnly(accountId=this.currentAccountId,profileOverride=null){
     const targetAccountId=accountId||GUEST_ACCOUNT;
-    const profile=this.snapshotProfile();
+    const profile=profileOverride?{
+      schemaVersion:profileOverride.schemaVersion||6,
+      stars:{...(profileOverride.stars||{})},
+      scores:{...(profileOverride.scores||{})},
+      username:normalizeUsername(profileOverride.username)||null,
+      tutDone:!!profileOverride.tutDone,
+      cleared:{...(profileOverride.cleared||{})},
+      boostCharges:{...DEFAULT_BOOST_CHARGES,...(profileOverride.boostCharges||{})}
+    }:this.snapshotProfile();
     if(targetAccountId===GUEST_ACCOUNT)profile.username=null;
     else if(targetAccountId.startsWith('user:'))profile.username=targetAccountId.slice(5);
     try{
       localStorage.setItem(this.profileKey(targetAccountId),JSON.stringify(profile));
       localStorage.setItem(ACTIVE_ACCOUNT,targetAccountId);
-      this.debugAccount('save:local-only',{accountId:targetAccountId,levels:Object.keys(profile.cleared||{}).length});
+      this.debugAccount('save:local-only',{accountId:targetAccountId,levels:Object.keys(profile.cleared||{}).length,explicit:!!profileOverride});
     }catch(e){console.warn('saveLocalOnly:',e.message);}
   },
   profileFromRemote(remote,username){
@@ -1661,9 +1669,9 @@ const G={
         return;
       }
       const profile=this.profileFromRemote(remote,uname);
-      this.applyProfile(profile);
       this.currentAccountId=accountId;
-      this.saveLocalOnly(accountId);
+      this.saveLocalOnly(accountId,profile);
+      this.applyProfile(profile);
       if(document.getElementById('s-map').classList.contains('on'))this.buildMap();
       this.debugAccount('cloud:load:applied',{accountId,cleared:Object.keys(this.cleared||{})});
     }catch(e){console.warn('syncFromCloud error:',e);this.debugAccount('cloud:load:error',{accountId,message:e.message});}
@@ -1733,11 +1741,12 @@ const G={
 
     const token=++this.accountSwitchToken;
     this.currentAccountId=nextAccountId;
-    const localProfile=this.loadLocalProfile(nextAccountId)||this.blankProfile(v);
-    localProfile.username=v;
-    this.applyProfile(localProfile);
-    this.saveLocalOnly(nextAccountId);
-    this.debugAccount(localProfile&&Object.keys(localProfile.stars||{}).length?'switch:local-loaded':'switch:blank-created',{accountId:nextAccountId,token});
+    const existingProfile=this.loadLocalProfile(nextAccountId);
+    const nextProfile=existingProfile||this.blankProfile(v);
+    nextProfile.username=v;
+    this.saveLocalOnly(nextAccountId,nextProfile);
+    this.applyProfile(nextProfile);
+    this.debugAccount(existingProfile?'switch:local-loaded':'switch:blank-created',{accountId:nextAccountId,token});
 
     document.getElementById('un-wrap').classList.remove('on');
     this.show('s-map');
@@ -1762,8 +1771,8 @@ const G={
     this.currentAccountId=GUEST_ACCOUNT;
     const guestProfile=this.loadLocalProfile(GUEST_ACCOUNT)||this.blankProfile(null);
     guestProfile.username=null;
+    this.saveLocalOnly(GUEST_ACCOUNT,guestProfile);
     this.applyProfile(guestProfile);
-    this.saveLocalOnly(GUEST_ACCOUNT);
     document.getElementById('un-wrap').classList.remove('on');
     this.toMap();
     this.debugAccount('guest:active',{accountId:GUEST_ACCOUNT,token});
