@@ -26,6 +26,15 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   background:linear-gradient(160deg,#0e2233 0%,#1a3a50 45%,#0e2233 100%);
   justify-content:center;gap:20px;padding:32px 20px 40px;position:relative;overflow:hidden;
 }
+@media(min-width:860px){
+  #s-intro{flex-direction:row;align-items:center;justify-content:center;gap:60px;padding:0 80px;overflow:hidden}
+  .intro-logo{animation:none}
+  .intro-title{font-size:60px}
+  .intro-emoji{font-size:90px}
+  .intro-card{max-width:420px}
+  .intro-right{display:flex;flex-direction:column;align-items:center;gap:16px}
+  #s-intro .intro-pills,.btn-start,.intro-lb-btn{order:unset}
+}
 .bub{position:absolute;border-radius:50%;background:rgba(168,216,239,0.07);animation:riseBub linear infinite}
 @keyframes riseBub{from{transform:translateY(110vh)}to{transform:translateY(-200px)}}
 .intro-logo{display:flex;flex-direction:column;align-items:center;gap:6px;animation:popIn .55s cubic-bezier(.34,1.56,.64,1)}
@@ -87,7 +96,17 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @media(max-width:360px){.un-box{padding:20px 16px;border-radius:20px}.un-title{font-size:22px}.un-recovery code{font-size:16px;letter-spacing:1.5px}.un-input{font-size:15px}}
 
 /* ══ MAP ══ */
-#s-map{padding:20px 16px 32px;gap:14px;background:linear-gradient(160deg,#d0ecf8,#e8f6fc)}
+#s-map{padding:0;gap:0;background:linear-gradient(160deg,#d0ecf8,#e8f6fc)}
+.map-left-col{display:flex;flex-direction:column;gap:14px;padding:20px 16px;align-items:center}
+.map-right-col{padding:0 16px 32px;display:flex;flex-direction:column;align-items:center}
+/* Type legend */
+.map-type-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mtl-item{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;color:var(--ink2)}
+.mtl-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.mtl-dot.normal{background:#60aad0}
+.mtl-dot.hard{background:#e08040}
+.mtl-dot.vhard{background:#c040a0}
+.mtl-dot.bonus{background:#40b860}
 .map-header{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 .map-title{font-family:'Fredoka One',cursive;font-size:32px;color:var(--ink)}
 .map-byline{font-size:12px;color:var(--ink2);line-height:1.6;max-width:340px}
@@ -96,12 +115,37 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .map-user strong{color:var(--ink)}
 .map-login-btn{background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:800;color:var(--ink2);cursor:pointer;transition:background .15s}
 .map-login-btn:hover{background:var(--sky2)}
-@media(min-width:700px){
-  #s-map{padding:32px 40px 48px}
-  .map-title{font-size:40px}
-  .legend-wrap,.lvl-grid{max-width:560px}
+@media(min-width:700px) and (max-width:859px){
+  #s-map{padding:28px 32px 40px}
+  .map-title{font-size:38px}
+  .legend-wrap,.lvl-grid{max-width:520px}
   .lvl-grid{grid-template-columns:repeat(5,1fr)}
-  .lvl-bubble{width:76px;height:76px;font-size:18px}
+  .lvl-bubble{width:72px;height:72px;font-size:17px}
+}
+@media(min-width:860px){
+  #s-map{
+    flex-direction:row;align-items:stretch;
+    padding:0;gap:0;overflow:hidden;
+    height:100vh;height:100dvh;
+  }
+  .map-left-col{
+    flex:0 0 280px;display:flex;flex-direction:column;
+    padding:32px 24px;gap:16px;overflow-y:auto;
+    border-right:1.5px solid var(--border);
+    background:rgba(255,255,255,.6);backdrop-filter:blur(8px);
+  }
+  .map-right-col{
+    flex:1;display:flex;flex-direction:column;
+    padding:24px 28px;gap:12px;overflow-y:auto;
+  }
+  .map-title{font-size:32px}
+  .map-byline{font-size:11px}
+  .legend-wrap{max-width:none;width:100%}
+  .lvl-grid{max-width:none;grid-template-columns:repeat(8,1fr);gap:10px;width:100%}
+  .lvl-bubble{width:68px;height:68px;font-size:15px}
+  .map-lb-btn{align-self:flex-start}
+  .map-chapter-label{font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--muted);grid-column:1/-1;padding:8px 0 2px;border-top:1px solid var(--border);margin-top:4px}
+  .map-chapter-label:first-child{border-top:none;margin-top:0;padding-top:0}
 }
 .legend-wrap{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:10px 14px;width:100%;max-width:380px}
 .leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink2);font-weight:800}
@@ -916,6 +960,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="bub" style="width:55px;height:55px;left:18%;animation-duration:10s;animation-delay:.5s"></div>
   <div class="bub" style="width:35px;height:35px;left:55%;animation-duration:6s;animation-delay:3s"></div>
 
+  <!-- Left: Logo -->
   <div class="intro-logo">
     <div class="intro-emoji">⚗️</div>
     <div class="intro-title">Chem Crush</div>
@@ -923,29 +968,30 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <div class="intro-madeby">made by <span>@joe_pietz</span></div>
   </div>
 
-  <div class="intro-card">
-    <div class="intro-card-head">🎮 Cara Main</div>
-    <div class="intro-rule">
-      <div class="rn">1</div>
-      <div>Pilih dua elemen yang bisa <strong style="color:#cce8f5">bereaksi</strong> — bukan yang warnanya sama!</div>
+  <!-- Right: Card + Actions -->
+  <div class="intro-right">
+    <div class="intro-card">
+      <div class="intro-card-head">🎮 Cara Main</div>
+      <div class="intro-rule">
+        <div class="rn">1</div>
+        <div>Pilih dua elemen yang bisa <strong style="color:#cce8f5">bereaksi</strong> — bukan yang warnanya sama!</div>
+      </div>
+      <div class="intro-rule">
+        <div class="rn">2</div>
+        <div>Swap elemen yang bersebelahan. Kalau bereaksi, poin masuk dan elemen baru muncul!</div>
+      </div>
+      <div class="intro-rule">
+        <div class="rn">3</div>
+        <div>Capai target sebelum <strong style="color:#cce8f5">moves habis</strong>. Pakai Hint & Panduan Reaksi kalau perlu!</div>
+      </div>
     </div>
-    <div class="intro-rule">
-      <div class="rn">2</div>
-      <div>Swap elemen yang bersebelahan. Kalau bereaksi, poin masuk dan elemen baru muncul!</div>
+    <div class="intro-pills">
+      <div class="intro-pill">⚗️ <span data-reaction-count>14</span> Reaksi Nyata</div>
+      <div class="intro-pill">🗺️ <span data-level-count>50</span> Level</div>
     </div>
-    <div class="intro-rule">
-      <div class="rn">3</div>
-      <div>Capai target sebelum <strong style="color:#cce8f5">moves habis</strong>. Pakai Hint & Panduan Reaksi kalau perlu!</div>
-    </div>
+    <button class="btn-start" onclick="G.startIntro()">Mulai Main ⚡</button>
+    <button class="intro-lb-btn" onclick="G.showLB('intro')">🏆 Lihat Leaderboard</button>
   </div>
-
-  <div class="intro-pills">
-    <div class="intro-pill">⚗️ <span data-reaction-count>14</span> Reaksi Nyata</div>
-    <div class="intro-pill">🗺️ <span data-level-count>50</span> Level</div>
-  </div>
-
-  <button class="btn-start" onclick="G.startIntro()">Mulai Main ⚡</button>
-  <button class="intro-lb-btn" onclick="G.showLB('intro')">🏆 Lihat Leaderboard</button>
 </div>
 
 <!-- ══ USERNAME / PIN MODAL ══ -->
@@ -999,29 +1045,42 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 <!-- ══ MAP ══ -->
 <div id="s-map" class="screen">
-  <div class="map-header">
-    <div class="map-title">⚗️ Chem Crush</div>
-    <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong><br>— bukan yang warnanya sama!</div>
-    <div class="map-badge"><span data-reaction-count>14</span> reaksi kimia nyata · <span data-level-count>50</span> level</div>
-    <div class="map-user" id="map-user">
-      <span id="map-user-label">👤 <span id="map-uname">Belum login</span></span>
-      <button class="map-login-btn" id="map-login-btn" onclick="G.showUsernameModal()">Ganti</button>
+  <!-- Left col (desktop) / top (mobile) -->
+  <div class="map-left-col">
+    <div class="map-header">
+      <div class="map-title">⚗️ Chem Crush</div>
+      <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong> — bukan yang warnanya sama!</div>
+      <div class="map-badge"><span data-reaction-count>14</span> reaksi kimia nyata · <span data-level-count>50</span> level</div>
+      <div class="map-user" id="map-user">
+        <span id="map-user-label">👤 <span id="map-uname">Belum login</span></span>
+        <button class="map-login-btn" id="map-login-btn" onclick="G.showUsernameModal()">Ganti</button>
+      </div>
     </div>
+    <div class="legend-wrap">
+      <div class="leg-item"><div class="leg-dot" style="background:#88bbee"></div>H Hidrogen</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f09090"></div>O Oksigen</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#aaaaaa"></div>C Karbon</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#70cc70"></div>Cl Klorin</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e8c840"></div>Na Natrium</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#aa88ee"></div>N Nitrogen</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f0a850"></div>Ca Kalsium</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#d08050"></div>Fe Besi</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#d8c020"></div>S Sulfur</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#9090e0"></div>K Kalium</div>
+    </div>
+    <!-- Type legend -->
+    <div class="map-type-legend">
+      <div class="mtl-item"><span class="mtl-dot normal"></span>Normal</div>
+      <div class="mtl-item"><span class="mtl-dot hard"></span>Hard</div>
+      <div class="mtl-item"><span class="mtl-dot vhard"></span>Very Hard</div>
+      <div class="mtl-item"><span class="mtl-dot bonus"></span>Bonus</div>
+    </div>
+    <button class="map-lb-btn" onclick="G.showLB('map')">🏆 Leaderboard</button>
   </div>
-  <div class="legend-wrap">
-    <div class="leg-item"><div class="leg-dot" style="background:#88bbee"></div>H Hidrogen</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#f09090"></div>O Oksigen</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#aaaaaa"></div>C Karbon</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#70cc70"></div>Cl Klorin</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#e8c840"></div>Na Natrium</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#aa88ee"></div>N Nitrogen</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#f0a850"></div>Ca Kalsium</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#d08050"></div>Fe Besi</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#d8c020"></div>S Sulfur</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#9090e0"></div>K Kalium</div>
+  <!-- Right col (desktop) / below (mobile): level grid -->
+  <div class="map-right-col">
+    <div class="lvl-grid" id="map-grid"></div>
   </div>
-  <div class="lvl-grid" id="map-grid"></div>
-  <button class="map-lb-btn" onclick="G.showLB('map')">🏆 Leaderboard</button>
 </div>
 
 <!-- ══ GAME ══ -->
@@ -2229,35 +2288,49 @@ const G={
 
   buildMap(){
     const g=document.getElementById('map-grid');g.innerHTML='';
-    // Normalize to string keys, then derive numeric IDs for unlocking logic
     const doneIds=Object.keys(this.stars).map(Number).filter(k=>!isNaN(k)&&(this.stars[String(k)]||0)>0);
     const clearedIds=Object.keys(this.cleared).map(Number).filter(k=>!isNaN(k)&&this.cleared[String(k)]);
     const allDoneIds=[...new Set([...doneIds,...clearedIds])];
     const maxU=allDoneIds.length>0?Math.max(...allDoneIds)+1:1;
+    const typeColor={'Normal':'#60aad0','Hard':'#e08040','Very Hard':'#c040a0','Bonus':'#40b860'};
+    const typeLabel={'Normal':'','Hard':'H','Very Hard':'VH','Bonus':'★'};
+    let lastChapter='';
+    const isDesktop=window.innerWidth>=860;
     LEVELS.forEach(lv=>{
+      // Chapter label (desktop only, as grid column separator)
+      if(isDesktop && lv.chapter!==lastChapter){
+        lastChapter=lv.chapter;
+        const cl=document.createElement('div');
+        cl.className='map-chapter-label';
+        cl.textContent=lv.chapter;
+        g.appendChild(cl);
+      }
       const sid=String(lv.id);
       const cleared=!!(this.cleared[sid]);
       const done=(this.stars[sid]||0)>0;
-      const unlocked=lv.id<=maxU||lv.id===1; // level 1 always unlocked
+      const unlocked=lv.id<=maxU||lv.id===1;
       const cur=lv.id===maxU&&!done;
       const cls=cleared?'done':cur?'current':unlocked?'unlocked':'';
       const starCount=this.stars[sid]||0;
-      const st=done?'★'.repeat(starCount)+'☆'.repeat(3-starCount):'';
+      const tColor=typeColor[lv.type]||'#888';
+      const tBadge=typeLabel[lv.type]||'';
       const nd=document.createElement('div');nd.className='lvl-node';
       const bb=document.createElement('div');
       bb.className='lvl-bubble'+(cls?' '+cls:'')+(cleared?' lvl-cleared':'');
+      // Type dot indicator (small colored dot top-right, only on unlocked/done)
+      const typeDot=unlocked&&lv.type!=='Normal'?`<span style="position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:${tColor};opacity:.85;display:block"></span>`:'';
+      bb.style.position='relative';
       if(!unlocked){
         bb.innerHTML='<span style="font-size:22px">🔒</span>';
       }else if(cleared){
-        // Once-in-lifetime: show stars on bubble, not clickable
-        bb.innerHTML='<span style="font-size:13px;font-family:Fredoka One,cursive">'+lv.id+'</span><span style="font-size:11px;color:#ffd700;letter-spacing:1px">'+'★'.repeat(starCount)+'</span>';
+        bb.innerHTML=typeDot+'<span style="font-size:13px;font-family:Fredoka One,cursive">'+lv.id+'</span><span style="font-size:11px;color:#ffd700;letter-spacing:1px">'+'★'.repeat(starCount)+'</span>';
         bb.title='Level ini sudah selesai';
       }else{
-        bb.innerHTML='<span>'+lv.id+'</span><span style="font-size:9px;opacity:.7">'+lv.elems.slice(0,2).join('·')+'</span>';
+        bb.innerHTML=typeDot+'<span>'+lv.id+'</span><span style="font-size:9px;opacity:.7">'+lv.elems.slice(0,2).join('·')+'</span>';
         bb.onclick=()=>G.play(lv.id);
       }
       const sd=document.createElement('div');sd.className='lvl-stars';
-      sd.textContent=cleared?'':st; // stars shown on bubble for cleared
+      sd.textContent=cleared?'':'';
       const nm=document.createElement('div');nm.className='lv-name';nm.textContent=lv.name;
       nd.appendChild(bb);nd.appendChild(sd);nd.appendChild(nm);
       g.appendChild(nd);
