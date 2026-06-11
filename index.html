@@ -139,17 +139,17 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     padding:32px 20px;gap:16px;overflow-y:auto;
     border-right:1.5px solid var(--border);
     background:rgba(255,255,255,.6);backdrop-filter:blur(8px);
-    justify-content:flex-start;
+    justify-content:center;
   }
-  /* New logo: emoji big left aligned with title, title+byline stacked right */
+  /* Logo: emoji left, "Chem\nCrush" stacked right, byline below the pair */
   .map-header{
-    display:flex;flex-direction:row;align-items:center;
-    gap:10px;text-align:left;
+    display:flex;flex-direction:column;align-items:flex-start;gap:8px;
   }
-  .map-title{font-size:22px;line-height:1.15}
-  .map-title-emoji{font-size:46px;line-height:1;flex-shrink:0;align-self:center}
+  .map-logo-row{display:flex;flex-direction:row;align-items:center;gap:10px}
+  .map-title{font-size:28px;line-height:1.05;white-space:pre-line}
+  .map-title-emoji{font-size:52px;line-height:1;flex-shrink:0}
   .map-title-block{text-align:left}
-  .map-byline{font-size:10px;text-align:left;max-width:none;margin-top:2px}
+  .map-byline{font-size:10.5px;text-align:left;max-width:none;margin-top:0;color:var(--ink2);line-height:1.5}
   .legend-wrap{max-width:none;width:100%}
   .map-chapter-block{display:contents}
   .map-chapter-label{display:none}
@@ -996,7 +996,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <div class="intro-emoji">⚗️</div>
     <div class="intro-title">Chem Crush</div>
     <div class="intro-sub">for David 🧪</div>
-    <div class="intro-madeby">made by <span>@joe_pietz</span></div>
+    <div class="intro-madeby" style="width:100%;text-align:center;display:block">made by <span>@joe_pietz</span></div>
   </div>
 
   <!-- Right: Card + Actions -->
@@ -1049,7 +1049,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
         <div class="un-field" id="pin-field">
           <span class="un-at" aria-hidden="true">🔒</span>
           <input class="un-input" id="pin-input" type="password" placeholder="PIN 4 angka" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" aria-describedby="pin-input-error">
-          <button class="un-eye" type="button" data-toggle-password="pin-input" aria-label="Tampilkan PIN" aria-pressed="false">👁️</button>
+          <button class="un-eye" type="button" data-toggle-password="pin-input" aria-label="Tampilkan PIN" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
         <div class="un-field-error" id="pin-input-error" role="alert"></div>
       </div>
@@ -1059,7 +1059,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
         <div class="un-field">
           <span class="un-at" aria-hidden="true">✓</span>
           <input class="un-input" id="pin-confirm-input" type="password" placeholder="Ulangi PIN" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" aria-describedby="pin-confirm-input-error">
-          <button class="un-eye" type="button" data-toggle-password="pin-confirm-input" aria-label="Tampilkan konfirmasi PIN" aria-pressed="false">👁️</button>
+          <button class="un-eye" type="button" data-toggle-password="pin-confirm-input" aria-label="Tampilkan konfirmasi PIN" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
         <div class="un-field-error" id="pin-confirm-input-error" role="alert"></div>
       </div>
@@ -1079,11 +1079,13 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <!-- Left col (desktop) / top (mobile) -->
   <div class="map-left-col">
     <div class="map-header">
-      <div class="map-title-emoji">⚗️</div>
-      <div class="map-title-block">
-        <div class="map-title">Chem Crush</div>
-        <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong> — bukan yang warnanya sama!</div>
+      <div class="map-logo-row">
+        <div class="map-title-emoji">⚗️</div>
+        <div class="map-title-block">
+          <div class="map-title">Chem&#10;Crush</div>
+        </div>
       </div>
+      <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong> — bukan yang warnanya sama!</div>
     </div>
     <div class="map-badge"><span data-reaction-count>14</span> reaksi kimia nyata · <span data-level-count>50</span> level</div>
     <div class="map-user" id="map-user">
@@ -3564,7 +3566,9 @@ document.querySelectorAll('[data-toggle-password]').forEach(btn=>{
     input.type=showing?'password':'text';
     btn.setAttribute('aria-pressed',String(!showing));
     btn.setAttribute('aria-label',showing?'Tampilkan PIN':'Sembunyikan PIN');
-    btn.textContent=showing?'👁️':'🙈';
+    const svgEye=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const svgEyeOff=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+    btn.innerHTML=showing?svgEye:svgEyeOff;
     input.focus();
   });
 });
