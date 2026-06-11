@@ -247,136 +247,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .fact-zone{position:fixed;bottom:68px;left:8px;right:8px;z-index:50;pointer-events:none;display:flex;flex-direction:column;align-items:center}
 
 /* ══ GAME — DESKTOP ══ */
-@media(min-width:860px){
-  /* Chain: #s-game → .game-body → .side-panel → .side-panel-cols → .col-rx → .rx-history */
-  #s-game.on{
-    flex-direction:column;
-    height:100vh;height:100dvh;
-    overflow:hidden;
-    display:flex;
-  }
-  .game-body{
-    flex-direction:row;
-    flex:1;
-    height:0; /* force flex child to not overflow parent */
-    align-items:stretch;
-    width:100%;
-    max-width:1400px;
-    margin:0 auto;
-    padding:0;gap:0;
-    overflow:hidden;
-  }
-  /* Board area */
-  .board-area{flex:1;min-width:0;padding:16px;align-items:center;justify-content:center;overflow:hidden;position:relative}
-  /* Floating left column — target on top, boost below, 2x2 grids */
-  .dt-boost-float{
-    display:flex;flex-direction:column;justify-content:center;
-    gap:4px;padding:8px 6px;flex-shrink:0;order:-1;
-  }
-  .boost-section-label{
-    font-size:7px;font-weight:900;color:rgba(168,216,239,.45);
-    text-transform:uppercase;letter-spacing:1.5px;text-align:center;
-    padding:3px 0 1px;
-  }
-  .boost-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-  .left-col-sep{height:1px;background:rgba(255,255,255,.08);margin:4px 2px}
-  .dt-boost-float .btn-boost{width:48px;height:52px}
-  .dt-boost-float .btn-boost .bi{font-size:18px}
-  /* Target bubbles in desktop left column */
-  #dt-target-grid .target-bubble{cursor:default}
-  #dt-target-grid .tb-elem{width:48px;height:48px;border-radius:12px}
-  #dt-target-grid .tb-product{font-size:12px}
-  #dt-target-grid .tb-count{font-size:18px}
-  /* Side panel — stretches full height via align-items:stretch on parent */
-  .side-panel{
-    display:flex;
-    flex-direction:column;
-    flex:0 0 420px;
-    height:100%; /* fill game-body height */
-    background:rgba(255,255,255,.06);
-    border-left:1px solid rgba(255,255,255,.1);
-    overflow:hidden;
-  }
-  /* side-panel-cols takes ALL remaining height after any header in side-panel */
-  .side-panel-cols{
-    display:flex;
-    flex:1;
-    height:0; /* same trick — let flex:1 work correctly */
-    overflow:hidden;
-  }
-  /* David + Fact column */
-  .col-david{
-    flex:0 0 220px;
-    display:flex;flex-direction:column;gap:10px;
-    padding:14px 12px;
-    border-right:1px solid rgba(255,255,255,.08);
-    overflow-y:auto;
-    height:100%;
-  }
-  .col-david::-webkit-scrollbar{width:3px}
-  .col-david::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-  /* Riwayat column — fills ALL remaining width + full height */
-  .col-rx{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    height:100%;
-    overflow:hidden;
-    min-width:180px;
-  }
-  /* rx-history fills col-rx completely, scrolls when items overflow */
-  .rx-history{
-    flex:1;
-    height:0; /* critical: lets flex:1 fill without overflowing */
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-  }
-  .rx-history::-webkit-scrollbar{width:3px}
-  .rx-history::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
-  /* Bottom bar — hide on desktop */
-  .bottom-bar{display:none}
-  #mobile-bar{display:none}
-  /* David card */
-  .david-card{
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;
-    flex-shrink:0;
-  }
-  .david-avatar{width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid rgba(255,255,255,.2);background:#c4e5f5;flex-shrink:0}
-  .david-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top}
-  .david-name{display:block;font-size:11px;font-family:'Fredoka One',cursive;color:rgba(168,216,239,.9);text-align:center}
-  .david-speech{
-    font-size:12px;color:rgba(200,232,248,.9);line-height:1.6;
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-    border-radius:8px;padding:8px 10px;width:100%;flex-shrink:0;
-  }
-  /* Fact zone */
-  .fact-zone{position:static;pointer-events:auto;align-items:stretch;overflow:visible;padding:0;flex-shrink:0}
-  .fact-card{
-    background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.12)!important;
-    box-shadow:none!important;border-radius:10px!important;padding:10px 12px!important;
-  }
-  .fact-reaction{color:#ffd060!important;font-size:13px!important}
-  .fact-title{color:rgba(168,216,239,.9)!important;font-size:11px!important}
-  .fact-body{color:rgba(200,232,248,.8)!important;font-size:11px!important;line-height:1.6!important}
-  .fact-noreact{background:rgba(200,60,60,.12)!important;border-color:rgba(220,100,100,.25)!important}
-  .fact-noreact .fact-reaction{color:#ff9090!important}
-  /* Riwayat items */
-  .rx-history-title{font-size:9px;font-weight:800;color:rgba(122,170,191,.8);text-transform:uppercase;letter-spacing:1px;padding:10px 12px 6px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-  .rx-item{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;gap:6px;flex-shrink:0}
-  .rx-badge{font-size:10px;color:rgba(168,216,239,.7);font-weight:700;flex-shrink:0}
-  .rx-product{color:#ffd060;font-weight:800;flex:1}
-  .rx-pts{color:#60d890;font-weight:900;flex-shrink:0}
-  .rx-empty{font-size:11px;color:rgba(122,170,191,.5);padding:14px 12px;font-style:italic;flex-shrink:0}
-  /* Target bar */
-  .target-bar{background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08)}
-  .target-pill{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:rgba(200,232,248,.8)}
-  .target-pill.done{opacity:.3}
-  .prog-wrap{background:rgba(255,255,255,.1)}
-  .hud-david-mini{display:none}
-  .rx-history .rx-item:nth-child(n+9){display:flex}
-}
+
 /* NO shake animation on desktop david card on mobile */
 .hud-david-mini{width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;border:1.5px solid var(--border);display:block;margin:0 auto 2px;background:var(--sky2)}
 @media(min-width:860px){.hud-david-mini{display:none}}
@@ -909,8 +780,16 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .end-br-sep{height:1px;background:rgba(255,255,255,.1);margin:2px 0}
 .end-br-total{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#ffd700;font-weight:800}
 .end-br-total b{font-family:'Fredoka One',cursive;font-size:20px;color:#ffd700;font-weight:400}
-/* Desktop Pass 1 follow-up: tiered desktop proportions and board-first hierarchy */
+/* Desktop: consolidated layout rules */
 @media(min-width:860px){
+  #s-game.on{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+  .side-panel-cols{display:flex;flex:1;height:0;overflow:hidden}
+  .col-david{flex:0 0 auto;display:flex;flex-direction:column;height:100%;overflow-y:auto;border-right:1px solid rgba(192,223,240,.5)}
+  .col-rx{flex:1;display:flex;flex-direction:column;height:100%;overflow:hidden;min-width:0}
+  .rx-history{flex:1;height:0;overflow-y:auto;display:flex;flex-direction:column}
+  .bottom-bar{display:none}
+  #mobile-bar{display:none}
+  .david-zone{display:none}
   .hud{
     max-width:none;margin:0 auto;padding:9px 18px;gap:14px;
     background:rgba(255,255,255,.82);backdrop-filter:blur(10px);
@@ -924,10 +803,11 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .hud-lbl{font-size:9px;letter-spacing:1.7px}
   .hud-lv{max-width:100%;font-size:13px;letter-spacing:.2px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .prog-wrap{height:4px;background:rgba(0,0,0,.06)}
-  .game-body{max-width:none;gap:0}
+  .game-body{display:flex;flex-direction:row;align-items:stretch;flex:1;height:0;max-width:none;gap:0;overflow:hidden}
   .board-area{padding:20px 18px 20px 34px;align-items:center;justify-content:center}
   .board{border-radius:20px;border-width:2px;padding:10px;box-shadow:0 16px 42px rgba(53,113,148,.18)}
   .dt-boost-float{
+    display:flex;flex-direction:column;
     width:var(--dt-objective-w);align-self:stretch;justify-content:flex-start;gap:10px;
     padding:16px 12px;order:-1;
     background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(240,248,253,.58));
@@ -968,8 +848,10 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .dt-boost-float::-webkit-scrollbar{width:4px}
   .dt-boost-float::-webkit-scrollbar-thumb{background:rgba(122,170,191,.35);border-radius:99px}
   .side-panel{
+    display:flex;flex-direction:column;
     flex:0 0 var(--dt-support-w);background:rgba(255,255,255,.30);
     border-left:1px solid rgba(192,223,240,.62);box-shadow:-8px 0 30px rgba(80,160,210,.04);
+    height:100%;overflow:hidden;
   }
   .col-david{padding:14px 9px;gap:9px;border-right:1px solid rgba(192,223,240,.50)}
   .col-rx{min-width:0}
@@ -1202,6 +1084,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
           <!-- BOOST section -->
           <div class="boost-section-label">BOOSTS</div>
           <div class="boost-grid boost-actions-grid">
+            <button class="btn-boost" onclick="G.boost('hint')" title="Hint">
               <div class="bi">💡</div><div class="bl">Hint</div>
               <span class="bc-badge" id="bc-hint-d">×3</span>
             </button>
