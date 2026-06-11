@@ -28,11 +28,10 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 }
 @media(min-width:860px){
   #s-intro{flex-direction:row;align-items:center;justify-content:center;gap:60px;padding:0 80px;overflow:hidden;width:100%}
-  .intro-logo{animation:none;align-items:center;width:320px;text-align:center}
-  .intro-sub{text-align:center;width:100%}
-  .intro-madeby{width:100%;text-align:center;margin-bottom:0}
-  .intro-title{font-size:60px;text-align:center;width:100%}
-  .intro-emoji{font-size:90px}
+  .intro-logo{animation:none;align-items:center;width:320px}
+  .intro-logo > *{align-self:center;text-align:center;width:100%}
+  .intro-title{font-size:60px}
+  .intro-emoji{font-size:90px;align-self:center}
   .intro-card{max-width:420px}
   .intro-right{display:flex;flex-direction:column;align-items:center;gap:16px}
   #s-intro .intro-pills,.btn-start,.intro-lb-btn{order:unset}
@@ -110,9 +109,11 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .mtl-dot.hard{background:#e08040}
 .mtl-dot.vhard{background:#c040a0}
 .mtl-dot.bonus{background:#40b860}
+/* MAP header: mobile = column centered */
 .map-header{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 .map-title-emoji{font-size:32px;line-height:1}
-.map-title{font-family:'Fredoka One',cursive;font-size:32px;color:var(--ink)}
+.map-title-block{display:flex;flex-direction:column;gap:2px;text-align:center}
+.map-title{font-family:'Fredoka One',cursive;font-size:32px;color:var(--ink);line-height:1.1}
 .map-byline{font-size:12px;color:var(--ink2);line-height:1.6;max-width:340px}
 .map-badge{background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:4px 16px;font-size:11px;font-weight:800;color:var(--ink2)}
 .map-user{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);font-weight:800}
@@ -140,14 +141,15 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     background:rgba(255,255,255,.6);backdrop-filter:blur(8px);
     justify-content:flex-start;
   }
-  /* New logo: emoji big left, title stacked right */
+  /* New logo: emoji big left aligned with title, title+byline stacked right */
   .map-header{
     display:flex;flex-direction:row;align-items:center;
-    gap:12px;text-align:left;
+    gap:10px;text-align:left;
   }
-  .map-title{font-size:26px;line-height:1.1}
-  .map-title-emoji{font-size:44px;line-height:1;flex-shrink:0}
-  .map-byline{font-size:10.5px;text-align:left;max-width:none}
+  .map-title{font-size:22px;line-height:1.15}
+  .map-title-emoji{font-size:46px;line-height:1;flex-shrink:0;align-self:center}
+  .map-title-block{text-align:left}
+  .map-byline{font-size:10px;text-align:left;max-width:none;margin-top:2px}
   .legend-wrap{max-width:none;width:100%}
   .map-chapter-block{display:contents}
   .map-chapter-label{display:none}
@@ -1078,16 +1080,15 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="map-left-col">
     <div class="map-header">
       <div class="map-title-emoji">⚗️</div>
-      <div>
+      <div class="map-title-block">
         <div class="map-title">Chem Crush</div>
         <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong> — bukan yang warnanya sama!</div>
       </div>
     </div>
-      <div class="map-badge"><span data-reaction-count>14</span> reaksi kimia nyata · <span data-level-count>50</span> level</div>
-      <div class="map-user" id="map-user">
-        <span id="map-user-label">👤 <span id="map-uname">Belum login</span></span>
-        <button class="map-login-btn" id="map-login-btn" onclick="G.showUsernameModal()">Ganti</button>
-      </div>
+    <div class="map-badge"><span data-reaction-count>14</span> reaksi kimia nyata · <span data-level-count>50</span> level</div>
+    <div class="map-user" id="map-user">
+      <span id="map-user-label">👤 <span id="map-uname">Belum login</span></span>
+      <button class="map-login-btn" id="map-login-btn" onclick="G.showUsernameModal()">Ganti</button>
     </div>
     <div class="legend-wrap">
       <div class="leg-item"><div class="leg-dot" style="background:#88bbee"></div>H Hidrogen</div>
