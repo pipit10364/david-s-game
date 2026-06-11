@@ -138,18 +138,24 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   }
   .map-right-col{
     flex:1;min-width:0;display:flex;flex-direction:column;
-    padding:24px 28px;gap:12px;overflow-y:auto;
+    padding:24px 28px;gap:20px;overflow-y:auto;
     align-items:stretch;
   }
   .map-title{font-size:32px}
   .map-byline{font-size:11px}
   .legend-wrap{max-width:none;width:100%}
-  .lvl-grid{max-width:none;gap:14px;width:100%}
+  /* Desktop: tiap chapter = 1 blok row tersendiri */
+  .map-chapter-block{display:flex;flex-direction:column;gap:10px}
+  .map-chapter-label{
+    font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+    color:var(--muted);padding:0 0 4px;
+    border-bottom:1.5px solid var(--border);
+  }
+  .lvl-grid{max-width:none;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px;width:100%}
   .lvl-bubble{width:100%;aspect-ratio:1;height:auto;font-size:16px}
+  /* Desktop map-grid: flex column container for chapter blocks */
+  #map-grid{display:flex;flex-direction:column;gap:24px;width:100%}
   .map-lb-btn{align-self:flex-start}
-  .map-chapter-block{display:flex;flex-direction:column;gap:8px;width:100%}
-  .map-chapter-block+.map-chapter-block{padding-top:10px;border-top:1px solid var(--border)}
-  .map-chapter-label{font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:0}
 }
 .legend-wrap{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:10px 14px;width:100%;max-width:380px}
 .leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink2);font-weight:800}
@@ -484,7 +490,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .david-avatar img{width:100%;height:100%;object-fit:contain;object-position:center bottom;transition:opacity .25s ease}
 .david-avatar img.hidden{opacity:0;position:absolute;inset:0}
 .david-name{font-family:'Fredoka One',cursive;font-size:16px;color:var(--ink)}
-.david-speech{background:var(--sky);border:1.5px solid var(--border);border-radius:12px;border-top-left-radius:4px;padding:8px 12px;font-size:11px;color:var(--ink2);line-height:1.6;font-weight:700;text-align:left;width:100%;min-height:48px;transition:all .3s ease;overflow-wrap:break-word}
+.david-speech{background:var(--sky);border:1.5px solid var(--border);border-radius:12px;border-bottom-left-radius:4px;padding:8px 12px;font-size:11px;color:var(--ink2);line-height:1.6;font-weight:700;text-align:left;width:100%;min-height:48px;transition:all .3s ease}
 .david-speech.react{background:var(--gold-light);border-color:#e8c860}
 .david-speech.nope{background:#fff0f0;border-color:#f0a0a0}
 .stats-card{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
@@ -902,16 +908,19 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     border-left:1px solid rgba(192,223,240,.62);box-shadow:-8px 0 30px rgba(80,160,210,.04);
     height:100%;overflow:hidden;
   }
-  .col-david{padding:14px 9px;gap:9px;border-right:1px solid rgba(192,223,240,.50)}
+  .col-david{padding:14px 12px;gap:10px;border-right:1px solid rgba(192,223,240,.50)}
   .col-rx{min-width:0}
-  .side-panel .david-card{padding:14px 12px;border-radius:14px;gap:10px;box-shadow:0 4px 14px rgba(80,160,210,.1);background:#fff;border:1.5px solid rgba(192,223,240,.8)}
-  .side-panel .david-avatar{width:108px;height:108px;border-radius:14px}
-  .side-panel .david-name{font-size:14px;font-weight:900;color:var(--ink)}
-  .side-panel .david-speech{font-size:11px;line-height:1.6;min-height:52px;padding:10px 11px;color:var(--ink2);background:rgba(240,248,253,.8);border:1px solid rgba(192,223,240,.6);border-radius:8px;border-top-left-radius:2px}
+  .side-panel .david-card{padding:14px 12px;border-radius:16px;gap:10px;box-shadow:0 4px 14px rgba(80,160,210,.1);background:#fff;border:1.5px solid rgba(192,223,240,.8)}
+  .side-panel .david-avatar{width:100px;height:100px;border-radius:16px}
+  .side-panel .david-name{font-size:15px;font-weight:900;color:var(--ink);letter-spacing:-.2px}
+  .side-panel .david-speech{font-size:11px;line-height:1.6;min-height:0;padding:9px 11px;color:var(--ink2);background:rgba(240,248,253,.85);border:1px solid rgba(192,223,240,.7);border-radius:10px;border-top-left-radius:3px}
   .side-panel .fact-card{padding:8px 9px!important;border-radius:11px!important;background:rgba(255,255,255,.76)!important;border-color:rgba(192,223,240,.82)!important}
   .side-panel .fact-reaction{font-size:11.5px!important;color:var(--gold)!important}
   .side-panel .fact-title{font-size:9.5px!important;color:var(--ink2)!important}
   .side-panel .fact-body{font-size:9.5px!important;line-height:1.45!important;color:var(--ink2)!important}
+  /* fact-zone inside david-card: no extra margin, fills naturally */
+  .david-card .fact-zone{width:100%;margin:0}
+  .david-card .fact-card{max-width:100%!important}
   .side-panel .rx-history{border:none;border-radius:0;box-shadow:none;background:#fff;padding:0;gap:0}
   .side-panel .rx-history-title{padding:10px 12px 7px;color:var(--ink2);font-size:8.5px;font-weight:900;letter-spacing:1.2px;border-bottom:1.5px solid rgba(192,223,240,.7)}
   .side-panel .rx-item{padding:6px 12px;border-bottom:1px solid rgba(192,223,240,.4);font-size:10.5px}
@@ -930,22 +939,22 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   #dt-target-grid .tb-elem{height:44px}
   .dt-boost-float .btn-boost{height:48px}
   .side-panel-cols{flex-direction:row}
-  .col-david{flex:0 0 150px;height:100%;border-right:1px solid rgba(192,223,240,.5);border-bottom:none;overflow-y:auto;max-height:none}
+  .col-david{flex:0 0 130px;height:100%;border-right:1px solid rgba(192,223,240,.5);border-bottom:none;overflow-y:auto;max-height:none}
   .col-rx{flex:1;height:100%;min-width:0}
-  .side-panel .david-avatar{width:80px;height:80px}
+  .side-panel .david-avatar{width:72px;height:72px}
   .side-panel .david-card{padding:10px;gap:8px}
-  .side-panel .david-name{font-size:12px}.side-panel .david-speech{font-size:10px;line-height:1.45;padding:7px 9px;min-height:44px}
+  .side-panel .david-name{font-size:12px}.side-panel .david-speech{font-size:9.5px;line-height:1.45;padding:7px 9px}
 }
 @media(min-width:1200px) and (max-width:1535px){
   .game-body{--dt-objective-w:clamp(140px,12vw,165px);--dt-support-w:clamp(320px,25vw,380px)}
   .board-area{padding:20px 16px 20px 42px}
-  .col-david{flex:0 0 160px}.col-rx{min-width:126px}
+  .col-david{flex:0 0 146px}.col-rx{min-width:126px}
 }
 @media(min-width:1536px){
   .game-body{--dt-objective-w:clamp(155px,11vw,180px);--dt-support-w:clamp(380px,24vw,440px);max-width:1840px}
   .hud{max-width:1840px}
   .board-area{padding:24px 22px 24px 54px}
-  .col-david{flex:0 0 176px}.col-rx{min-width:146px}
+  .col-david{flex:0 0 162px}.col-rx{min-width:146px}
   #dt-target-grid .tb-elem{height:54px}
 }
 
@@ -1183,8 +1192,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
             </div>
             <div class="david-name">David 🧪</div>
             <div class="david-speech" id="david-speech">Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!</div>
+            <div class="fact-zone" id="fact-zone-desktop"></div>
           </div>
-          <div class="fact-zone" id="fact-zone-desktop"></div>
         </div>
         <div class="col-rx">
           <div class="rx-history" id="rx-history">
@@ -2297,11 +2306,11 @@ const G={
     const allDoneIds=[...new Set([...doneIds,...clearedIds])];
     const maxU=allDoneIds.length>0?Math.max(...allDoneIds)+1:1;
     const typeColor={'Normal':'#60aad0','Hard':'#e08040','Very Hard':'#c040a0','Bonus':'#40b860'};
+    const typeLabel={'Normal':'','Hard':'H','Very Hard':'VH','Bonus':'★'};
     const isDesktop=window.innerWidth>=860;
 
     // Group levels by chapter
-    const chapters=[];
-    const chapterMap={};
+    const chapters=[];const chapterMap={};
     LEVELS.forEach(lv=>{
       if(!chapterMap[lv.chapter]){chapterMap[lv.chapter]=[];chapters.push(lv.chapter);}
       chapterMap[lv.chapter].push(lv);
@@ -2309,62 +2318,54 @@ const G={
 
     chapters.forEach(chapterName=>{
       const lvs=chapterMap[chapterName];
-
+      // Desktop: wrap in a chapter block div
+      let container;
       if(isDesktop){
-        // Per-chapter block with its own label + grid
         const block=document.createElement('div');
         block.className='map-chapter-block';
-
-        const cl=document.createElement('div');
-        cl.className='map-chapter-label';
-        cl.textContent=chapterName;
-        block.appendChild(cl);
-
-        // Grid cols = number of levels in chapter (capped at 8 for readability)
-        const cols=Math.min(lvs.length,8);
+        const label=document.createElement('div');
+        label.className='map-chapter-label';
+        label.textContent=chapterName;
+        block.appendChild(label);
         const grid=document.createElement('div');
         grid.className='lvl-grid';
-        grid.style.gridTemplateColumns=`repeat(${cols},minmax(72px,90px))`;
-        grid.style.display='grid';
-
-        lvs.forEach(lv=>this._buildLvNode(lv,maxU,typeColor,grid));
         block.appendChild(grid);
         g.appendChild(block);
+        container=grid;
       }else{
-        // Mobile: flat list, no chapter labels
-        lvs.forEach(lv=>this._buildLvNode(lv,maxU,typeColor,g));
+        container=g;
       }
-    });
-  },
 
-  _buildLvNode(lv,maxU,typeColor,container){
-    const sid=String(lv.id);
-    const cleared=!!(this.cleared[sid]);
-    const done=(this.stars[sid]||0)>0;
-    const unlocked=lv.id<=maxU||lv.id===1;
-    const cur=lv.id===maxU&&!done;
-    const cls=cleared?'done':cur?'current':unlocked?'unlocked':'';
-    const starCount=this.stars[sid]||0;
-    const tColor=typeColor[lv.type]||'#888';
-    const nd=document.createElement('div');nd.className='lvl-node';
-    const bb=document.createElement('div');
-    bb.className='lvl-bubble'+(cls?' '+cls:'')+(cleared?' lvl-cleared':'');
-    const typeDot=unlocked&&lv.type!=='Normal'?`<span style="position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:${tColor};opacity:.85;display:block"></span>`:'';
-    bb.style.position='relative';
-    if(!unlocked){
-      bb.innerHTML='<span style="font-size:22px">🔒</span>';
-    }else if(cleared){
-      bb.innerHTML=typeDot+'<span style="font-size:13px;font-family:Fredoka One,cursive">'+lv.id+'</span><span style="font-size:11px;color:#ffd700;letter-spacing:1px">'+'★'.repeat(starCount)+'</span>';
-      bb.title='Level ini sudah selesai';
-    }else{
-      bb.innerHTML=typeDot+'<span>'+lv.id+'</span><span style="font-size:9px;opacity:.7">'+lv.elems.slice(0,2).join('·')+'</span>';
-      bb.onclick=()=>G.play(lv.id);
-    }
-    const sd=document.createElement('div');sd.className='lvl-stars';
-    sd.textContent=cleared?'':'';
-    const nm=document.createElement('div');nm.className='lv-name';nm.textContent=lv.name;
-    nd.appendChild(bb);nd.appendChild(sd);nd.appendChild(nm);
-    container.appendChild(nd);
+      lvs.forEach(lv=>{
+        const sid=String(lv.id);
+        const cleared=!!(this.cleared[sid]);
+        const done=(this.stars[sid]||0)>0;
+        const unlocked=lv.id<=maxU||lv.id===1;
+        const cur=lv.id===maxU&&!done;
+        const cls=cleared?'done':cur?'current':unlocked?'unlocked':'';
+        const starCount=this.stars[sid]||0;
+        const tColor=typeColor[lv.type]||'#888';
+        const typeDot=unlocked&&lv.type!=='Normal'?`<span style="position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:${tColor};opacity:.85;display:block"></span>`:'';
+        const nd=document.createElement('div');nd.className='lvl-node';
+        const bb=document.createElement('div');
+        bb.className='lvl-bubble'+(cls?' '+cls:'')+(cleared?' lvl-cleared':'');
+        bb.style.position='relative';
+        if(!unlocked){
+          bb.innerHTML='<span style="font-size:22px">🔒</span>';
+        }else if(cleared){
+          bb.innerHTML=typeDot+'<span style="font-size:13px;font-family:Fredoka One,cursive">'+lv.id+'</span><span style="font-size:11px;color:#ffd700;letter-spacing:1px">'+'★'.repeat(starCount)+'</span>';
+          bb.title='Level ini sudah selesai';
+        }else{
+          bb.innerHTML=typeDot+'<span>'+lv.id+'</span><span style="font-size:9px;opacity:.7">'+lv.elems.slice(0,2).join('·')+'</span>';
+          bb.onclick=()=>G.play(lv.id);
+        }
+        const sd=document.createElement('div');sd.className='lvl-stars';
+        sd.textContent=cleared?'':'';
+        const nm=document.createElement('div');nm.className='lv-name';nm.textContent=lv.name;
+        nd.appendChild(bb);nd.appendChild(sd);nd.appendChild(nm);
+        container.appendChild(nd);
+      });
+    });
   },
 
   // ── PLAY ──
@@ -2463,8 +2464,7 @@ const G={
   },
   davidSay(msg,cls){
     const el=document.getElementById('david-speech');if(!el)return;
-    el.className='david-speech'+(cls?' '+cls:'');
-    el.innerHTML=msg.replace(/\n/g,'<br>');
+    el.className='david-speech'+(cls?' '+cls:'');el.textContent=msg;
   },
 
   // ── BOARD ──
@@ -2828,14 +2828,12 @@ const G={
 
   showFact(rx){
     if(this.isDesktop()){
-      // Desktop: update david-speech bubble directly
-      this.davidSay(`${rx.elems.join(' + ')} → ${rx.product} · ${rx.name}\n${rx.fact}`,'react');
-      this.davidExpr('aha');
-      clearTimeout(this._dtFactTimer);
-      this._dtFactTimer=setTimeout(()=>{
-        this.davidSay('Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!','');
-        this.davidExpr('idle');
-      },4500);
+      // Desktop: fact card in side panel
+      const zone=document.getElementById('fact-zone-desktop');
+      const old=zone.querySelector('.fact-card');if(old)old.remove();
+      const div=document.createElement('div');div.className='fact-card';
+      div.innerHTML=`<div class="fact-reaction">${rx.elems.join(' + ')} → ${rx.product}</div><div class="fact-title">⚗️ ${rx.name}</div><div class="fact-body">${rx.fact}</div>`;
+      zone.appendChild(div);setTimeout(()=>{if(div.parentNode)div.remove();},4500);
     }else{
       // Mobile: David circle + bubble in david-zone
       const zone=document.getElementById('david-zone');if(!zone)return;
@@ -2852,13 +2850,11 @@ const G={
   },
   showNoReact(){
     if(this.isDesktop()){
-      this.davidSay('Tidak bereaksi ❌\nElemen ini tidak membentuk reaksi langsung. Cek Panduan Reaksi! 📖','nope');
-      this.davidExpr('wow');
-      clearTimeout(this._dtFactTimer);
-      this._dtFactTimer=setTimeout(()=>{
-        this.davidSay('Halo! Swap dua elemen yang bisa bereaksi. Kimia itu seru, ayo mulai!','');
-        this.davidExpr('idle');
-      },2200);
+      const zone=document.getElementById('fact-zone-desktop');
+      const old=zone.querySelector('.fact-card');if(old)old.remove();
+      const div=document.createElement('div');div.className='fact-card fact-noreact';
+      div.innerHTML=`<div class="fact-reaction">Tidak bereaksi ❌</div><div class="fact-body">Elemen ini tidak membentuk reaksi langsung. Cek Panduan Reaksi! 📖</div>`;
+      zone.appendChild(div);setTimeout(()=>{if(div.parentNode)div.remove();},2200);
     }else{
       const zone=document.getElementById('david-zone');if(!zone)return;
       zone.classList.remove('dz-empty');
