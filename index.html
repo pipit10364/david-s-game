@@ -252,31 +252,60 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .tb-count{font-family:'Fredoka One',cursive;font-size:16px;color:#fff;font-weight:700;line-height:1;transition:all .3s ease}
 .tb-done{color:#40c870!important}
 .target-done .tb-elem{background:rgba(64,200,112,.25)!important;border-color:rgba(64,200,112,.6)!important}
-  /* Mobile inline targets — 2-column grid, compact ala aespa */
+  /* Mobile target bar — compact scrollable row, aespa style */
   .hud-targets-inline{
-    display:grid;grid-template-columns:repeat(2,auto);gap:2px 4px;
-    align-items:start;
+    display:flex;flex-direction:row;gap:4px;
+    overflow-x:auto;overflow-y:visible;
+    align-items:center;
+    padding:3px 10px 3px;
+    width:100%;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    /* fade edges hint there's more */
+    -webkit-mask-image:linear-gradient(to right,transparent 0,black 10px,black 90%,transparent 100%);
+    mask-image:linear-gradient(to right,transparent 0,black 10px,black 90%,transparent 100%);
   }
+  .hud-targets-inline::-webkit-scrollbar{display:none}
   .hud-target-pill{
     display:flex;flex-direction:row;align-items:center;gap:3px;
-    background:var(--sky);border:1.5px solid var(--border);
-    border-radius:8px;padding:2px 6px;min-width:36px;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:20px;
+    padding:2px 7px 2px 5px;
+    flex-shrink:0;
+    white-space:nowrap;
   }
   .hud-target-icon{
-    font-family:'Fredoka One',cursive;font-size:10px;color:var(--ink2);
-    line-height:1;text-align:center;flex-shrink:0;
+    font-family:'Nunito',sans-serif;font-weight:400;
+    font-size:10px;color:rgba(255,255,255,.75);
+    line-height:1;flex-shrink:0;letter-spacing:0;
   }
   .hud-target-num{
-    font-family:'Fredoka One',cursive;font-size:11px;color:var(--ink);
-    line-height:1;font-weight:900;
+    font-family:'Nunito',sans-serif;font-weight:700;
+    font-size:11px;color:#fff;line-height:1;
   }
-  .hud-target-pill.ht-done{background:#e8f8ee;border-color:#60c880}
-  .hud-target-pill.ht-done .hud-target-icon{color:#206040}
-  .hud-target-pill.ht-done .hud-target-num{color:#206040}
-  /* Hide desktop target bar — targets shown in left column dt-target-grid instead */
+  .hud-target-pill.ht-done{
+    background:rgba(64,200,112,.25);
+    border-color:rgba(64,200,112,.5);
+  }
+  .hud-target-pill.ht-done .hud-target-icon{color:rgba(120,240,150,.9)}
+  .hud-target-pill.ht-done .hud-target-num{color:#80f0a0}
+  /* score target pill — slightly different tint */
+  .hud-target-pill.ht-score{background:rgba(255,200,60,.12);border-color:rgba(255,200,60,.3)}
+  .hud-target-pill.ht-score .hud-target-icon{color:rgba(255,200,60,.8)}
+  .hud-target-pill.ht-score .hud-target-num{color:#ffd040}
+  /* Target bar wrapper — dark strip below HUD row */
+  .hud-target-strip{
+    display:flex;align-items:center;
+    background:rgba(0,0,0,.18);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    flex-shrink:0;min-height:26px;
+  }
+  /* Hide desktop target bar on mobile */
   .target-bar-desktop-only{display:none!important}
   /* Hide mobile inline targets on desktop */
   @media(min-width:860px){
+    .hud-target-strip{display:none}
     .hud-targets-inline{display:none}
   }
 .prog-wrap{width:100%;height:3px;background:rgba(0,0,0,.08);flex-shrink:0}
@@ -1142,13 +1171,16 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
         <div class="hud-val" id="h-score">0</div>
         <div class="hud-lbl">Skor</div>
       </div>
-      <!-- Right: Reaksi (desktop) + 2-col targets (mobile) -->
+      <!-- Right: Reaksi (desktop only) -->
       <div class="hud-right">
         <div class="hud-block hud-rx-desktop"><div class="hud-val" id="h-rx-dt">0</div><div class="hud-lbl">Reaksi</div></div>
-        <div class="hud-targets-inline" id="hud-targets-inline"></div>
       </div>
     </div>
     <button class="hud-icon-btn hud-guide" onclick="G.openGuide()" title="Panduan Reaksi">📖</button>
+  </div>
+  <!-- Mobile-only target strip — compact scrollable pills below HUD -->
+  <div class="hud-target-strip">
+    <div class="hud-targets-inline" id="hud-targets-inline"></div>
   </div>
   <!-- Progress: ultra-thin line, no height wasted -->
   <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
@@ -2929,23 +2961,31 @@ const G={
     };
 
     // Helper: make a mobile inline pill (icon + number side by side)
-    const addInline=(container,icon,remaining,done)=>{
+    const addInline=(container,icon,label,remaining,done,extraClass='')=>{
       if(!container)return;
       const pill=document.createElement('div');
-      pill.className='hud-target-pill'+(done?' ht-done':'');
-      pill.innerHTML=`<span class="hud-target-icon">${icon}</span><span class="hud-target-num">${done?'✓':remaining}</span>`;
+      pill.className='hud-target-pill'+(done?' ht-done':'')+(extraClass?' '+extraClass:'');
+      const display=done?'✓':remaining;
+      pill.innerHTML=`<span class="hud-target-icon">${icon}</span><span class="hud-target-num">${display}</span>`;
+      pill.title=label;
       container.appendChild(pill);
     };
 
     // Clear all containers
     [desktopGrid,desktopBar,mobileInline].forEach(c=>{if(c)c.innerHTML='';});
 
-    // Build targets — reactions shown on desktop grid only (not mobile), then specific
+    // Build targets
     if(t.reactions){
       const done=this.reactions>=(t.reactions||0);
       const remaining=Math.max(0,(t.reactions||0)-this.reactions);
       addBubble(desktopGrid,'⚗️',remaining,done,'rgba(160,96,240,.15)','rgba(160,96,240,.35)');
-      // Not added to mobileInline — Reaksi count already visible in HUD
+      addInline(mobileInline,'⚗️',`Reaksi ≥${t.reactions}`,remaining,done);
+    }
+    if(t.score){
+      const done=this.score>=(t.score||0);
+      const remaining=done?0:t.score;
+      addBubble(desktopGrid,'★',remaining,done,'rgba(255,200,60,.12)','rgba(255,200,60,.3)');
+      addInline(mobileInline,'★',`Skor ≥${t.score}`,done?'✓':t.score,done,'ht-score');
     }
     if(t.specific&&t.specific.length>0){
       t.specific.forEach(s=>{
@@ -2956,7 +2996,7 @@ const G={
         const label=rx?rx.product:s.rx;
         addBubble(desktopGrid,label,remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)',done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)');
         addBubble(desktopBar,label,remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,255,255,.08)',done?'rgba(64,200,112,.5)':'rgba(255,255,255,.18)');
-        addInline(mobileInline,label,remaining,done);
+        addInline(mobileInline,label,`${label} ×${s.count}`,remaining,done);
       });
     }
 
@@ -2967,7 +3007,7 @@ const G={
       const done=remaining===0;
       addBubble(desktopGrid,'🔲',remaining,done,done?'rgba(64,200,112,.2)':'rgba(100,180,255,.15)',done?'rgba(64,200,112,.5)':'rgba(100,180,255,.4)');
       addBubble(desktopBar,'🔲',remaining,done,done?'rgba(64,200,112,.2)':'rgba(100,180,255,.15)',done?'rgba(64,200,112,.5)':'rgba(100,180,255,.4)');
-      addInline(mobileInline,'🔲',remaining,done);
+      addInline(mobileInline,'🔲','Kaca tersisa',remaining,done);
     }
 
     // Graduation cap target
@@ -2980,7 +3020,7 @@ const G={
       const done=remaining===0;
       addBubble(desktopGrid,'🎓',remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,215,0,.12)',done?'rgba(64,200,112,.5)':'rgba(255,215,0,.5)');
       addBubble(desktopBar,'🎓',remaining,done,done?'rgba(64,200,112,.2)':'rgba(255,215,0,.12)',done?'rgba(64,200,112,.5)':'rgba(255,215,0,.5)');
-      addInline(mobileInline,'🎓',remaining,done);
+      addInline(mobileInline,'🎓','Toga tersisa',remaining,done);
     }
   },
   checkEnd(){
