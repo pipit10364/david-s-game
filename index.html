@@ -528,6 +528,29 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .dz-fact{font-size:10.5px;color:rgba(200,232,248,.85);line-height:1.5;margin-top:3px}
 
 /* ══ END SCREEN INLINE LEADERBOARD ══ */
+.end-lb-wrap{
+  width:100%;max-width:480px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.end-lb-rows-inner{
+  max-height:50vh;overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.end-my-pos{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  background:rgba(212,138,8,.22);
+  border-top:1px solid rgba(255,200,60,.25);
+  border-bottom:1px solid rgba(255,200,60,.25);
+}
+.end-my-pos .end-lb-rank{font-family:'Fredoka One',cursive;font-size:13px;color:#ffd700;width:28px;text-align:center}
+.end-my-pos .end-lb-user{flex:1;font-weight:800;font-size:12px;color:#fff}
+.end-my-pos .end-lb-user small{display:block;font-size:9px;font-weight:600;opacity:.6;letter-spacing:.5px}
+.end-my-pos .end-lb-score{font-family:'Fredoka One',cursive;font-size:14px;color:#ffd700}
 .end-lb-section{
   width:100%;
   background:rgba(255,255,255,.06);
@@ -822,9 +845,15 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @media(min-width:860px){
   #s-end{flex-direction:row;align-items:flex-start;justify-content:center;padding:48px 40px;gap:28px;height:100vh;height:100dvh}
   .end-card{max-width:380px;flex-shrink:0}
-  .end-right{flex:1;max-width:380px;align-self:stretch;height:100%}
+  /* Desktop: hide mobile LB wrap, show side LB */
+  #end-lb-wrap{display:none!important}
+  #end-btns-lose{display:flex!important}
+  .end-desktop-only{display:flex!important}
+  /* Move win buttons into card on desktop */
+  #end-btns-win-desktop{display:flex}
   .end-lb-section{flex:1;min-height:0}
-  #end-lb-rows{flex:1;max-height:none}
+  #end-lb-rows-dt{flex:1;max-height:calc(100vh - 200px);overflow-y:auto}
+  #end-lb-section-dt{flex:1;max-width:380px;align-self:stretch;flex-direction:column}
 }
 .end-title{font-family:'Fredoka One',cursive;font-size:26px;color:#fff;text-align:center}
 .end-stars{font-size:38px;letter-spacing:8px;text-align:center;display:flex;justify-content:center;gap:6px}
@@ -1335,6 +1364,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 <!-- ══ END SCREEN ══ -->
 <div id="s-end" class="screen">
+  <!-- Score card: always shown -->
   <div class="end-card">
     <div class="end-title" id="end-title">🎉 Sintesis Berhasil!</div>
     <div class="end-stars" id="end-stars"></div>
@@ -1350,18 +1380,32 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     </div>
     <div id="end-hs" class="end-hs" style="display:none">🏆 Rekor Baru! <span id="end-hs-val"></span></div>
     <div id="end-prev" class="end-prev" style="display:none">High score sebelumnya: <strong id="end-prev-val" style="color:#fff"></strong></div>
+    <!-- Lose buttons only -->
+    <div class="end-btns" id="end-btns-lose" style="display:none">
+      <button class="btn-end-p" onclick="G.endBtn2()">🔄 Coba Lagi</button>
+      <button class="btn-end-t" onclick="G.toMap()">← Ke Map</button>
+    </div>
   </div>
 
-  <!-- Leaderboard: shown directly, all players, scrollable -->
-  <div class="end-right">
-    <div class="end-lb-section" id="end-lb-section">
-      <div class="end-lb-head">🏆 Leaderboard</div>
-      <div id="end-lb-rows"><div class="end-lb-loading">⏳ Memuat...</div></div>
+  <!-- Leaderboard: only shown on WIN, scrollable, all players -->
+  <div id="end-lb-wrap" class="end-lb-wrap" style="display:none">
+    <div class="end-lb-head">🏆 Leaderboard</div>
+    <div id="end-lb-rows" class="end-lb-rows-inner">
+      <div class="end-lb-loading">⏳ Memuat...</div>
     </div>
-    <div class="end-btns">
+    <!-- My position sticky row if outside top 1000 -->
+    <div id="end-my-pos" class="end-my-pos" style="display:none"></div>
+    <!-- Win buttons: at bottom of leaderboard -->
+    <div class="end-btns" id="end-btns-win">
       <button class="btn-end-p" id="end-btn1" onclick="G.endBtn1()">Level Berikutnya →</button>
       <button class="btn-end-t" onclick="G.toMap()">← Ke Map</button>
     </div>
+  </div>
+
+  <!-- Desktop only: side LB (kept for desktop side-by-side layout) -->
+  <div class="end-lb-section end-desktop-only" id="end-lb-section-dt" style="display:none">
+    <div class="end-lb-head">🏆 Leaderboard</div>
+    <div id="end-lb-rows-dt"><div class="end-lb-loading">⏳ Memuat...</div></div>
   </div>
 </div>
 
@@ -1452,7 +1496,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 //  Set ke `false` setelah David upload foto wisuda di Instagram
 //  untuk membuka akses game ke semua orang.
 // ═══════════════════════════════════════════════════════════════
-const GAME_LOCKED = true;
+const GAME_LOCKED = false;
 const PREVIEW_KEY = 'pipit2025'; // ganti sesuka kamu
 const _urlParams = new URLSearchParams(window.location.search);
 const _isPreview = _urlParams.get('preview') === PREVIEW_KEY;
@@ -1639,7 +1683,7 @@ try{
 async function fbGetLB(){
   if(!_db)return null;
   try{
-    const q=query(collection(_db,'chemcrush_lb'),orderBy('score','desc'),limit(500));
+    const q=query(collection(_db,'chemcrush_lb'),orderBy('score','desc'),limit(1000));
     const snap=await Promise.race([
       getDocs(q),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),7000))
@@ -3219,45 +3263,71 @@ const G={
     }
     this.show('s-end');
 
-    // ── Inline leaderboard: always shown, all players, scrollable ──
-    const lbSection=document.getElementById('end-lb-section');
-    const lbRows=document.getElementById('end-lb-rows');
-    if(FB_ON&&lbRows){
-      lbRows.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+    // ── Show/hide correct buttons ──
+    document.getElementById('end-btns-lose').style.display='none';
+    const lbWrap=document.getElementById('end-lb-wrap');
+    const lbRowsMobile=document.getElementById('end-lb-rows');
+    const lbRowsDt=document.getElementById('end-lb-rows-dt');
+    const lbSectionDt=document.getElementById('end-lb-section-dt');
+    const myPosEl=document.getElementById('end-my-pos');
+
+    const renderLB=(entries,container)=>{
+      if(!container)return;
+      if(!entries||!entries.length){container.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
+      const medals=['🥇','🥈','🥉'];
+      const MAX_DISPLAY=1000;
+      container.innerHTML='';
+      let myRankIdx=-1;
+      entries.slice(0,MAX_DISPLAY).forEach((e,i)=>{
+        const isMe=G.username&&(e.username==='@'+G.username);
+        if(isMe)myRankIdx=i;
+        const div=document.createElement('div');div.className='end-lb-row'+(isMe?' me':'');
+        const rc=i===0?'g':i===1?'s':i===2?'b':'';
+        div.innerHTML=`<div class="end-lb-rank ${rc}">${medals[i]||(i+1)}</div><div class="end-lb-user">${e.username}${isMe?' 👈':''}</div><div class="end-lb-score">${e.score.toLocaleString()}</div>`;
+        container.appendChild(div);
+        // Auto-scroll to my row on mobile
+        if(isMe&&container===lbRowsMobile){
+          setTimeout(()=>div.scrollIntoView({behavior:'smooth',block:'center'}),300);
+        }
+      });
+      // My position row if outside top 1000
+      if(myPosEl){
+        const totalAbove=entries.filter(e=>e.score>G.score).length;
+        const myRank=totalAbove+1;
+        if(myRankIdx===-1&&G.username){
+          myPosEl.style.display='flex';
+          myPosEl.innerHTML=`<div class="end-lb-rank">📍</div><div class="end-lb-user">@${G.username}<small>Posisi kamu${myRank>MAX_DISPLAY?' · 1000+':' · #'+myRank}</small></div><div class="end-lb-score">${G.score.toLocaleString()}</div>`;
+        } else {
+          myPosEl.style.display='none';
+        }
+      }
+    };
+
+    if(FB_ON){
+      const isDesktop=this.isDesktop();
+      if(!isDesktop&&lbWrap){
+        lbWrap.style.display='flex';
+        if(lbRowsMobile)lbRowsMobile.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+      }
+      if(isDesktop&&lbSectionDt){
+        lbSectionDt.style.display='flex';
+        if(lbRowsDt)lbRowsDt.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+      }
       fbGetLB().then(entries=>{
-        if(!entries||!entries.length){lbRows.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
-        const medals=['🥇','🥈','🥉'];
-        lbRows.innerHTML='';
-        entries.forEach((e,i)=>{
-          const isMe=G.username&&(e.username==='@'+G.username);
-          const div=document.createElement('div');div.className='end-lb-row'+(isMe?' me':'');
-          const rc=i===0?'g':i===1?'s':i===2?'b':'';
-          div.innerHTML=`<div class="end-lb-rank ${rc}">${medals[i]||(i+1)}</div><div class="end-lb-user">${e.username}${isMe?' 👈':''}</div><div class="end-lb-score">${e.score.toLocaleString()}</div>`;
-          lbRows.appendChild(div);
-        });
+        if(!isDesktop)renderLB(entries,lbRowsMobile);
+        else renderLB(entries,lbRowsDt);
       });
     }
 
     // ── Firebase submit in background (non-blocking) ──
     if(this.username&&FB_ON){
       fbSubmit(this.username,this.score,lv.id).then(lbIn=>{
-        // Refresh leaderboard if score was submitted
         if(lbIn){
-          const lbRows=document.getElementById('end-lb-rows');
-          if(lbRows){
-            fbGetLB().then(entries=>{
-              if(!entries||!entries.length)return;
-              const medals=['🥇','🥈','🥉'];
-              lbRows.innerHTML='';
-              entries.forEach((e,i)=>{
-                const isMe=G.username&&(e.username==='@'+G.username);
-                const div=document.createElement('div');div.className='end-lb-row'+(isMe?' me':'');
-                const rc=i===0?'g':i===1?'s':i===2?'b':'';
-                div.innerHTML=`<div class="end-lb-rank ${rc}">${medals[i]||(i+1)}</div><div class="end-lb-user">${e.username}${isMe?' 👈':''}</div><div class="end-lb-score">${e.score.toLocaleString()}</div>`;
-                lbRows.appendChild(div);
-              });
-            });
-          }
+          fbGetLB().then(entries=>{
+            const isDesktop=this.isDesktop();
+            if(!isDesktop)renderLB(entries,lbRowsMobile);
+            else renderLB(entries,lbRowsDt);
+          });
         }
       }).catch(()=>{});
     }
