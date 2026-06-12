@@ -1489,7 +1489,7 @@ const LEVELS=[
   {id:3, chapter:'First Principles', type:'Normal', name:'Simple Rule', moves:29, elems:['H','O','Na','Cl','C'], cols:6, rows:7, target:{reactions:7,specific:[{rx:'H2O',count:2}]}, obstacles:[[2,3],[3,3]], glass:[]},
   {id:4, chapter:'First Principles', type:'Normal', name:'Stable Pattern', moves:30, elems:['Na','Cl','Ca','K'], cols:7, rows:6, target:{reactions:8,score:1350,specific:[{rx:'NaCl',count:3}]}, obstacles:[[3,2],[3,3]], glass:[]},
   {id:5, chapter:'First Principles', type:'Hard', name:'Measured Start', moves:29, elems:['Fe','O','S','C','N'], cols:7, rows:7, target:{reactions:9,score:1500,specific:[{rx:'Fe2O3',count:2}]}, obstacles:[[3,2],[2,3],[4,3],[3,4]], glass:[]},
-  {id:6, chapter:'First Principles', type:'Bonus', name:'Foundation Reaction', moves:36, elems:['H','O','Na','Cl','C','N'], cols:7, rows:7, target:{reactions:10,score:1600,specific:[{rx:'H2O',count:2},{rx:'NaCl',count:2}]}, obstacles:[], glass:[]},
+  {id:6, chapter:'First Principles', type:'Bonus', name:'Foundation Reaction', moves:40, elems:['H','O','Na','Cl','C','N'], cols:7, rows:7, target:{score:2000}, obstacles:[], glass:[]},
 
   // Chapter 2: Controlled Trials — introduce glass as a controlled experimental condition.
   {id:7, chapter:'Controlled Trials', type:'Normal', name:'Clear Condition', moves:32, elems:['H','O','Na','Cl','C','N'], cols:7, rows:7, target:{reactions:9,score:1600,specific:[{rx:'H2O',count:2}]}, obstacles:[], glass:[[3,3],[3,2],[3,4],[2,3]]},
@@ -1497,7 +1497,7 @@ const LEVELS=[
   {id:9, chapter:'Controlled Trials', type:'Normal', name:'Repeatable Result', moves:31, elems:['H','O','C','N','S'], cols:7, rows:7, target:{reactions:10,score:1900,specific:[{rx:'NH3',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,3],[4,3]], glass:[[1,1],[5,1],[1,5],[5,5]]},
   {id:10, chapter:'Controlled Trials', type:'Hard', name:'Calibrated Reaction', moves:30, elems:['H','O','Na','Cl','C','N'], cols:7, rows:8, target:{reactions:12,score:2300,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:2}]}, obstacles:[[3,3],[3,4]], glass:[[2,2],[2,3],[2,4],[4,2],[4,3],[4,4]]},
   {id:11, chapter:'Controlled Trials', type:'Normal', name:'Trial Pattern', moves:34, elems:['Na','Cl','Ca','K','O'], cols:8, rows:7, target:{reactions:11,score:2100,specific:[{rx:'KCl',count:2},{rx:'CaO',count:2}]}, obstacles:[[3,3],[4,3]], glass:[[1,1],[6,1],[1,5],[6,5]]},
-  {id:12, chapter:'Controlled Trials', type:'Bonus', name:'First Breakthrough', moves:38, elems:['H','O','Na','Cl','C','N'], cols:8, rows:7, target:{reactions:12,score:2200,specific:[{rx:'H2O',count:2},{rx:'CO2',count:2}]}, obstacles:[], glass:[[1,3],[6,3]]},
+  {id:12, chapter:'Controlled Trials', type:'Bonus', name:'First Breakthrough', moves:42, elems:['H','O','Na','Cl','C','N'], cols:8, rows:7, target:{score:2800}, obstacles:[], glass:[]},
 
   // Chapter 3: Material Transformations — focus oxides, sulfides, chlorides, and lattice-like constraints.
   {id:13, chapter:'Material Transformations', type:'Normal', name:'Oxide Layer', moves:34, elems:['Fe','O','Ca','K','Na'], cols:8, rows:7, target:{reactions:11,score:2200,specific:[{rx:'Fe2O3',count:2},{rx:'CaO',count:2}]}, obstacles:[[3,2],[4,4]], glass:[[2,3],[3,3],[4,3],[5,3]]},
@@ -1505,7 +1505,7 @@ const LEVELS=[
   {id:15, chapter:'Material Transformations', type:'Hard', name:'Sulfide Grain', moves:32, elems:['Fe','S','H','O','C','N'], cols:8, rows:8, target:{reactions:12,score:2500,specific:[{rx:'FeS',count:2},{rx:'H2S',count:2}]}, obstacles:[[2,3],[5,4],[3,5],[4,2]], glass:[[3,3],[4,3],[3,4],[4,4],[3,2]]},
   {id:16, chapter:'Material Transformations', type:'Normal', name:'Phase Boundary', moves:35, elems:['Fe','O','Ca','S','Na','Cl'], cols:8, rows:8, target:{reactions:13,score:2600,specific:[{rx:'Fe2O3',count:2},{rx:'CaCl2',count:2}]}, obstacles:[[3,3],[4,4]], glass:[[1,2],[1,3],[1,4],[6,2],[6,3],[6,4]]},
   {id:17, chapter:'Material Transformations', type:'Very Hard', name:'Transformation Point', moves:32, elems:['Fe','O','Ca','S','Na','Cl','K'], cols:8, rows:8, target:{reactions:14,score:3100,specific:[{rx:'Fe2O3',count:3},{rx:'CaCl2',count:2},{rx:'FeS',count:2}]}, obstacles:[[2,2],[5,2],[2,5],[5,5],[3,1],[4,6]], glass:[[3,3],[4,3],[3,4],[4,4],[1,1],[6,6]]},
-  {id:18, chapter:'Material Transformations', type:'Bonus', name:'Crystal Clear', moves:40, elems:['Fe','O','Ca','S','Na','Cl'], cols:8, rows:8, target:{reactions:13,score:2500,specific:[{rx:'CaO',count:2},{rx:'NaCl',count:2}]}, obstacles:[], glass:[[1,3],[6,4]]},
+  {id:18, chapter:'Material Transformations', type:'Bonus', name:'Crystal Clear', moves:44, elems:['Fe','O','Ca','S','Na','Cl'], cols:8, rows:8, target:{score:3200}, obstacles:[], glass:[]},
 
   // Chapter 4: Nano-Scale Control — caps become precision obstacles with careful repeated hits.
   {id:19, chapter:'Nano-Scale Control', type:'Normal', name:'Nano Gate', moves:36, elems:['H','O','Na','Cl','C','N'], cols:8, rows:8, target:{reactions:12,score:2300,specific:[{rx:'H2O',count:2},{rx:'NaCl',count:2}]}, obstacles:[], glass:[[3,4],[5,4]], caps:[[4,4]], capHits:2},
@@ -1514,7 +1514,7 @@ const LEVELS=[
   {id:22, chapter:'Nano-Scale Control', type:'Normal', name:'Small Scale', moves:34, elems:['H','O','C','N','S'], cols:7, rows:8, target:{reactions:11,score:2300,specific:[{rx:'NH3',count:2},{rx:'SO2',count:2}]}, obstacles:[[3,2],[3,5]], glass:[[1,2],[5,2],[1,5]], caps:[[3,3]], capHits:3},
   {id:23, chapter:'Nano-Scale Control', type:'Hard', name:'Patterned Layer', moves:33, elems:['Na','Cl','K','Ca','O'], cols:8, rows:8, target:{reactions:13,score:2800,specific:[{rx:'KCl',count:2},{rx:'CaO',count:2},{rx:'NaCl',count:2}]}, obstacles:[[2,4],[5,3]], glass:[[1,2],[2,2],[5,2],[6,2],[1,5],[6,5]], caps:[[3,3],[4,3],[3,4]], capHits:2},
   {id:24, chapter:'Nano-Scale Control', type:'Very Hard', name:'Controlled Interface', moves:34, elems:['Fe','O','Ca','S','Na','Cl','K'], cols:9, rows:8, target:{reactions:15,score:3400,specific:[{rx:'Fe2O3',count:3},{rx:'CaCl2',count:2},{rx:'KCl',count:2}]}, obstacles:[[2,2],[6,2],[2,5],[6,5]], glass:[[3,2],[4,2],[5,2],[2,4],[6,4],[4,5]], caps:[[4,3],[4,4],[3,3],[5,4]], capHits:3},
-  {id:25, chapter:'Nano-Scale Control', type:'Bonus', name:'Clean Surface', moves:42, elems:['H','O','Na','Cl','Ca','Fe'], cols:8, rows:8, target:{reactions:13,score:2600,specific:[{rx:'H2O',count:2},{rx:'CaO',count:2}]}, obstacles:[], glass:[[1,1],[6,6]], caps:[[4,4]], capHits:2},
+  {id:25, chapter:'Nano-Scale Control', type:'Bonus', name:'Clean Surface', moves:46, elems:['H','O','Na','Cl','Ca','Fe'], cols:8, rows:8, target:{score:3400}, obstacles:[], glass:[]},
 
   // Chapter 5: Pressure Cell — familiar mechanics under tighter move pressure.
   {id:26, chapter:'Pressure Cell', type:'Normal', name:'Compressed Path', moves:30, elems:['H','O','Na','Cl','C','N'], cols:8, rows:8, target:{reactions:11,score:2300,specific:[{rx:'H2O',count:3}]}, obstacles:[[3,1],[3,3],[4,4],[4,6]], glass:[]},
@@ -1523,7 +1523,7 @@ const LEVELS=[
   {id:29, chapter:'Pressure Cell', type:'Normal', name:'Quiet Calculation', moves:31, elems:['H','O','C','N','S'], cols:7, rows:8, target:{reactions:11,score:2400,specific:[{rx:'CO2',count:2},{rx:'SO2',count:2}]}, obstacles:[], glass:[[1,1],[5,1],[3,6]], caps:[[1,4]], capHits:2},
   {id:30, chapter:'Pressure Cell', type:'Very Hard', name:'Critical Move', moves:29, elems:['H','O','Na','Cl','C','N','Fe','S'], cols:9, rows:8, target:{reactions:15,score:3400,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'FeS',count:2}]}, obstacles:[[4,2],[3,3],[5,4],[4,5]], glass:[[2,2],[2,3],[2,4],[6,2],[6,3],[6,4]], caps:[[4,3],[4,4]], capHits:3},
   {id:31, chapter:'Pressure Cell', type:'Hard', name:'Last Move Logic', moves:30, elems:['Fe','O','Ca','S','Na','Cl'], cols:8, rows:8, target:{reactions:13,score:3000,specific:[{rx:'Fe2O3',count:2},{rx:'CaCl2',count:2}]}, obstacles:[[3,1],[4,2],[3,3],[4,4],[3,5],[4,6]], glass:[[1,1],[6,1],[1,6],[6,6]]},
-  {id:32, chapter:'Pressure Cell', type:'Bonus', name:'Deep Breath', moves:42, elems:['H','O','Na','Cl','C','N'], cols:8, rows:8, target:{reactions:12,score:2400,specific:[{rx:'H2O',count:2},{rx:'CO2',count:2}]}, obstacles:[], glass:[]},
+  {id:32, chapter:'Pressure Cell', type:'Bonus', name:'Deep Breath', moves:46, elems:['H','O','Na','Cl','C','N'], cols:8, rows:8, target:{score:3600}, obstacles:[], glass:[]},
 
   // Chapter 6: The Precision Standard — clean execution, efficient score targets, and dense specific goals.
   {id:33, chapter:'The Precision Standard', type:'Normal', name:'Exact Standard', moves:34, elems:['H','O','Na','Cl','C','N'], cols:8, rows:8, target:{reactions:13,score:3000,specific:[{rx:'H2O',count:3},{rx:'NH3',count:2}]}, obstacles:[], glass:[[1,1],[6,1],[1,6],[6,6]]},
@@ -1533,7 +1533,7 @@ const LEVELS=[
   {id:37, chapter:'The Precision Standard', type:'Hard', name:'Calibrated Chain', moves:33, elems:['H','O','Na','Cl','C','N','Ca'], cols:9, rows:8, target:{reactions:15,score:3500,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'CaCl2',count:2}]}, obstacles:[[3,2],[5,3],[3,5],[5,6]], glass:[[2,2],[2,3],[2,4],[6,2],[6,3],[6,4]]},
   {id:38, chapter:'The Precision Standard', type:'Very Hard', name:'Precision Standard', moves:34, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'], cols:9, rows:9, target:{reactions:17,score:4200,specific:[{rx:'H2O',count:3},{rx:'Fe2O3',count:3},{rx:'CaCl2',count:2},{rx:'NH3',count:2}]}, obstacles:[[3,3],[5,3],[3,5],[5,5],[4,1],[4,7]], glass:[[2,2],[4,2],[6,2],[2,4],[6,4],[2,6],[4,6],[6,6]], caps:[[4,4],[3,4],[5,4]], capHits:3},
   {id:39, chapter:'The Precision Standard', type:'Normal', name:'Elegant Solution', moves:36, elems:['Na','Cl','Ca','K','O','Fe'], cols:8, rows:8, target:{reactions:13,score:3000,specific:[{rx:'NaCl',count:2},{rx:'CaO',count:2},{rx:'KCl',count:2}]}, obstacles:[[0,3],[7,4]], glass:[[1,1],[6,1],[1,6]]},
-  {id:40, chapter:'The Precision Standard', type:'Bonus', name:'Clear Distinction', moves:44, elems:['H','O','Na','Cl','C','N','Ca'], cols:9, rows:8, target:{reactions:14,score:2800,specific:[{rx:'H2O',count:2},{rx:'NaCl',count:2}]}, obstacles:[], glass:[]},
+  {id:40, chapter:'The Precision Standard', type:'Bonus', name:'Clear Distinction', moves:48, elems:['H','O','Na','Cl','C','N','Ca'], cols:9, rows:8, target:{score:4000}, obstacles:[], glass:[]},
 
   // Chapter 7: Peer Review — recombine previously learned skills under scrutiny.
   {id:41, chapter:'Peer Review', type:'Normal', name:'Review Panel', moves:36, elems:['H','O','Na','Cl','C','N','Ca','Fe'], cols:9, rows:8, target:{reactions:15,score:3400,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'Fe2O3',count:2}]}, obstacles:[[4,3],[4,4]], glass:[[1,1],[7,1],[1,6],[7,6]]},
@@ -1542,7 +1542,7 @@ const LEVELS=[
   {id:44, chapter:'Peer Review', type:'Hard', name:'Reproducible Work', moves:35, elems:['H','O','Na','Cl','C','N','Ca','S'], cols:9, rows:9, target:{reactions:16,score:3900,specific:[{rx:'NaCl',count:3},{rx:'CaCl2',count:2},{rx:'SO2',count:2},{rx:'NH3',count:2}]}, obstacles:[[3,3],[5,3],[3,5],[5,5]], glass:[[4,4],[1,1],[7,1],[1,7],[7,7],[4,2]], caps:[[4,3],[4,5]], capHits:3},
   {id:45, chapter:'Peer Review', type:'Very Hard', name:'Under Review', moves:34, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:18,score:4600,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'Fe2O3',count:2},{rx:'CaCl2',count:2},{rx:'KCl',count:2}]}, obstacles:[[3,3],[5,3],[3,5],[5,5],[1,4],[7,4]], glass:[[2,2],[4,2],[6,2],[2,4],[6,4],[2,6],[4,6],[6,6]], caps:[[4,4],[3,4],[5,4],[4,5]], capHits:3},
   {id:46, chapter:'Peer Review', type:'Normal', name:'Final Revision', moves:37, elems:['Fe','O','Ca','S','Na','Cl'], cols:8, rows:8, target:{reactions:13,score:3000,specific:[{rx:'FeS',count:2},{rx:'CaCl2',count:2}]}, obstacles:[[2,2],[5,5]], glass:[[1,3],[6,3],[3,6]]},
-  {id:47, chapter:'Peer Review', type:'Bonus', name:'Accepted Pattern', moves:45, elems:['H','O','Na','Cl','C','N','Ca','Fe'], cols:9, rows:8, target:{reactions:14,score:3000,specific:[{rx:'H2O',count:2},{rx:'Fe2O3',count:2}]}, obstacles:[], glass:[]},
+  {id:47, chapter:'Peer Review', type:'Bonus', name:'Accepted Pattern', moves:50, elems:['H','O','Na','Cl','C','N','Ca','Fe'], cols:9, rows:8, target:{score:4500}, obstacles:[], glass:[]},
 
   // Chapter 8: Final Synthesis — cumulative finale using familiar systems only.
   {id:48, chapter:'Final Synthesis', type:'Hard', name:'Final Interface', moves:38, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'], cols:9, rows:9, target:{reactions:17,score:4300,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'FeS',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,3],[5,3],[3,5],[5,5]], glass:[[1,1],[7,1],[1,7],[7,7],[4,3],[4,5]], caps:[[4,4],[4,2]], capHits:3},
@@ -3010,10 +3010,19 @@ const G={
       addInline(mobileInline,'⚗️',`Reaksi ≥${t.reactions}`,remaining,done);
     }
     if(t.score){
+      const isBonus=this.lv&&this.lv.type==='Bonus';
       const done=this.score>=(t.score||0);
       const remaining=done?0:t.score;
       addBubble(desktopGrid,'★',remaining,done,'rgba(255,200,60,.12)','rgba(255,200,60,.3)');
-      addInline(mobileInline,'★',`Skor ≥${t.score}`,done?'✓':t.score,done,'ht-score');
+      if(!isBonus){
+        addInline(mobileInline,'★',`Skor ≥${t.score}`,done?'✓':t.score,done,'ht-score');
+      } else {
+        // Bonus: show free-play pill instead of score target
+        const pill=document.createElement('div');
+        pill.className='hud-target-pill ht-score';
+        pill.innerHTML=`<span class="hud-target-icon">✨</span><span class="hud-target-num">Kumpulkan!</span>`;
+        if(mobileInline)mobileInline.appendChild(pill);
+      }
     }
     if(t.specific&&t.specific.length>0){
       t.specific.forEach(s=>{
@@ -3053,6 +3062,7 @@ const G={
   },
   checkEnd(){
     const t=this.lv.target;
+    const isBonus=this.lv.type==='Bonus';
     const rxOk=!t.reactions||(this.reactions>=t.reactions);
     const scOk=!t.score||(this.score>=t.score);
     const spOk=!t.specific||t.specific.every(s=>(this.specificProgress[s.rx]||0)>=s.count);
@@ -3062,7 +3072,6 @@ const G={
     const capsOk=!(this.lv.caps&&this.lv.caps.length>0)||
       this.lv.caps.every(([col,row])=>{
         const cell=this.board[row]&&this.board[row][col];
-        // Cap is collected when cap===0 and cell has elem (converted to element)
         return cell&&cell.cap===0&&(cell.elem||cell.capDone);
       });
     if(rxOk&&scOk&&spOk&&glassOk&&capsOk){
@@ -3070,7 +3079,12 @@ const G={
       return true;
     }
     if(this.moves<=0){
-      try{this.lose();}catch(e){console.error('lose() error:',e);this.toMap();}
+      // Bonus level: moves habis = auto win (kumpulkan sebanyaknya)
+      if(isBonus){
+        try{this.win();}catch(e){console.error('win() error:',e);this.show('s-end');}
+      }else{
+        try{this.lose();}catch(e){console.error('lose() error:',e);this.toMap();}
+      }
       return true;
     }
     return false;
