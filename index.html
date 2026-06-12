@@ -42,9 +42,14 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 /* ── LEVEL TYPE NOTIFICATION ── */
 .lvl-notify-overlay{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.lvl-notify-box{display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 48px;border-radius:20px;background:rgba(10,20,35,.72);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);animation:lvlNotifyIn .35s cubic-bezier(.34,1.4,.64,1) forwards,lvlNotifyOut .4s ease-in 1.6s forwards}
-.lvl-notify-type{font-family:'Fredoka One',cursive;font-size:36px;letter-spacing:1px;line-height:1;text-transform:uppercase}
-.lvl-notify-sub{font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;opacity:.75}
+.lvl-notify-box{display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 32px;border-radius:16px;background:rgba(10,20,35,.72);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);animation:lvlNotifyIn .35s cubic-bezier(.34,1.4,.64,1) forwards,lvlNotifyOut .4s ease-in 1.6s forwards}
+.lvl-notify-type{font-family:'Fredoka One',cursive;font-size:24px;letter-spacing:1px;line-height:1;text-transform:uppercase}
+.lvl-notify-sub{font-family:'Nunito',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;opacity:.75}
+@media(min-width:860px){
+  .lvl-notify-box{padding:28px 52px;border-radius:20px;gap:6px}
+  .lvl-notify-type{font-size:38px}
+  .lvl-notify-sub{font-size:13px;letter-spacing:2px}
+}
 .lvl-notify-hard .lvl-notify-type{color:#ff8040;text-shadow:0 0 24px rgba(255,128,64,.8),0 0 48px rgba(255,128,64,.4)}
 .lvl-notify-hard .lvl-notify-sub{color:#ffb080}
 .lvl-notify-veryhard .lvl-notify-type{color:#d060ff;text-shadow:0 0 24px rgba(200,80,255,.9),0 0 52px rgba(200,80,255,.45)}
@@ -541,6 +546,22 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .end-lb-score{font-family:'Fredoka One',cursive;font-size:16px;color:#a8d8ef}
 .end-lb-loading{padding:16px;text-align:center;font-size:12px;color:rgba(255,255,255,.4);font-weight:700}
 #s-end{overflow-y:auto;padding-bottom:24px}
+/* Mobile: score page and LB page as separate views */
+.end-page{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+#end-page-score{display:flex}
+#end-page-lb{display:none;width:100%;flex-direction:column;align-items:center;gap:12px}
+.btn-end-lb-mobile{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:'Fredoka One',cursive;font-size:15px;border-radius:999px;padding:10px 28px;cursor:pointer;width:100%;max-width:280px}
+.btn-end-lb-mobile:hover{background:rgba(255,255,255,.2)}
+.btn-end-back-mobile{background:transparent;border:none;color:rgba(255,255,255,.5);font-size:12px;font-weight:700;cursor:pointer;padding:4px 0;letter-spacing:1px}
+#end-page-lb .end-lb-head{font-family:'Fredoka One',cursive;font-size:20px;color:#ffd700;text-align:center;padding:8px 0 4px}
+/* Mobile: hide desktop LB, show mobile LB button */
+.end-desktop-only{display:none!important}
+.end-mobile-only{display:flex!important}
+@media(min-width:860px){
+  .end-desktop-only{display:flex!important}
+  .end-mobile-only{display:none!important}
+  #end-page-lb{display:none!important} /* desktop never shows LB page */
+}
 
 /* Mobile bottom safe area */
 @media(max-width:859px){
@@ -1303,28 +1324,41 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 <!-- ══ END SCREEN ══ -->
 <div id="s-end" class="screen">
-  <div class="end-card">
-    <div class="end-title" id="end-title">🎉 Sintesis Berhasil!</div>
-    <div class="end-stars" id="end-stars"></div>
-    <div class="end-score-box">
-      <div><div class="end-score-label">Skor Level Ini</div><div class="end-score-val" id="end-score">0</div></div>
+  <!-- Page 1: Score (mobile) / always visible (desktop) -->
+  <div id="end-page-score" class="end-page">
+    <div class="end-card">
+      <div class="end-title" id="end-title">🎉 Sintesis Berhasil!</div>
+      <div class="end-stars" id="end-stars"></div>
+      <div class="end-score-box">
+        <div><div class="end-score-label">Skor Level Ini</div><div class="end-score-val" id="end-score">0</div></div>
+      </div>
+      <div class="end-breakdown" id="end-breakdown">
+        <div class="end-br"><span>⚗️ Reaksi</span><b id="eb-rx">+0</b></div>
+        <div class="end-br"><span>🔥 Combo bonus</span><b id="eb-combo">+0</b></div>
+        <div class="end-br" id="eb-mult-row" style="display:none"><span>✨ Multiplier</span><b id="eb-mult" style="color:#ffd040"></b></div>
+        <div class="end-br-sep"></div>
+        <div class="end-br-total"><span>🎯 Bonus moves sisa</span><b id="eb-moves">+0</b></div>
+      </div>
+      <div id="end-hs" class="end-hs" style="display:none">🏆 Rekor Baru! <span id="end-hs-val"></span></div>
+      <div id="end-prev" class="end-prev" style="display:none">High score sebelumnya: <strong id="end-prev-val" style="color:#fff"></strong></div>
+      <div class="end-btns">
+        <button class="btn-end-p" id="end-btn1" onclick="G.endBtn1()">Level Berikutnya →</button>
+        <button class="btn-end-t" onclick="G.toMap()">← Ke Map</button>
+      </div>
     </div>
-    <div class="end-breakdown" id="end-breakdown">
-      <div class="end-br"><span>⚗️ Reaksi</span><b id="eb-rx">+0</b></div>
-      <div class="end-br"><span>🔥 Combo bonus</span><b id="eb-combo">+0</b></div>
-      <div class="end-br" id="eb-mult-row" style="display:none"><span>✨ Multiplier</span><b id="eb-mult" style="color:#ffd040"></b></div>
-      <div class="end-br-sep"></div>
-      <div class="end-br-total"><span>🎯 Bonus moves sisa</span><b id="eb-moves">+0</b></div>
-    </div>
-    <div id="end-hs" class="end-hs" style="display:none">🏆 Rekor Baru! <span id="end-hs-val"></span></div>
-    <div id="end-prev" class="end-prev" style="display:none">High score sebelumnya: <strong id="end-prev-val" style="color:#fff"></strong></div>
-    <div class="end-btns">
-      <button class="btn-end-p" id="end-btn1" onclick="G.endBtn1()">Level Berikutnya →</button>
-      <button class="btn-end-t" onclick="G.toMap()">← Ke Map</button>
-    </div>
+    <!-- Mobile only: button to go to LB page -->
+    <button class="btn-end-lb-mobile end-mobile-only" id="btn-to-lb" onclick="G.showEndLBPage()">🏆 Lihat Leaderboard</button>
   </div>
-  <!-- Inline leaderboard (Qurban-style, loads automatically) -->
-  <div class="end-lb-section" id="end-lb-section" style="display:none">
+
+  <!-- Page 2: Leaderboard (mobile only, shown on demand) -->
+  <div id="end-page-lb" class="end-page">
+    <div class="end-lb-head">🏆 Leaderboard</div>
+    <div id="end-lb-rows-mobile" class="end-lb-section" style="width:100%;max-width:420px"><div class="end-lb-loading">⏳ Memuat...</div></div>
+    <button class="btn-end-back-mobile" onclick="G.showEndScorePage()">← Kembali ke Skor</button>
+  </div>
+
+  <!-- Desktop only: inline LB beside score card -->
+  <div class="end-lb-section end-desktop-only" id="end-lb-section" style="display:none">
     <div class="end-lb-head">🏆 Leaderboard</div>
     <div id="end-lb-rows"><div class="end-lb-loading">⏳ Memuat...</div></div>
   </div>
@@ -3172,12 +3206,11 @@ const G={
     }
     this.show('s-end');
 
-    // ── Inline leaderboard: show section, fetch in background ──
+    // ── Inline leaderboard: desktop only shows automatically ──
     const lbSection=document.getElementById('end-lb-section');
     const lbRows=document.getElementById('end-lb-rows');
-    const showLB=FB_ON&&lbSection;
-    if(showLB){
-      lbSection.style.display= this.isDesktop() ? 'flex' : 'block';
+    if(FB_ON&&lbSection&&this.isDesktop()){
+      lbSection.style.display='flex';
       lbRows.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
       fbGetLB().then(entries=>{
         if(!entries||!entries.length){lbRows.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
@@ -3192,6 +3225,11 @@ const G={
         });
       });
     }
+    // Reset mobile end screen to score page
+    const epScore=document.getElementById('end-page-score');
+    const epLB=document.getElementById('end-page-lb');
+    if(epScore)epScore.style.display='flex';
+    if(epLB)epLB.style.display='none';
 
     // ── Firebase submit in background (non-blocking) ──
     if(this.username&&FB_ON){
@@ -3216,6 +3254,35 @@ const G={
         }
       }).catch(()=>{});
     }
+  },
+
+  // ── MOBILE END SCREEN PAGES ──
+  showEndLBPage(){
+    document.getElementById('end-page-score').style.display='none';
+    const epLB=document.getElementById('end-page-lb');
+    epLB.style.display='flex';
+    document.getElementById('s-end').scrollTop=0;
+    if(!FB_ON)return;
+    const mobileRows=document.getElementById('end-lb-rows-mobile');
+    if(mobileRows)mobileRows.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+    fbGetLB().then(entries=>{
+      if(!mobileRows)return;
+      if(!entries||!entries.length){mobileRows.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
+      const medals=['🥇','🥈','🥉'];
+      mobileRows.innerHTML='';
+      entries.forEach((e,i)=>{
+        const isMe=G.username&&(e.username==='@'+G.username);
+        const div=document.createElement('div');div.className='end-lb-row'+(isMe?' me':'');
+        const rc=i===0?'g':i===1?'s':i===2?'b':'';
+        div.innerHTML=`<div class="end-lb-rank ${rc}">${medals[i]||(i+1)}</div><div class="end-lb-user">${e.username}${isMe?' 👈':''}</div><div class="end-lb-score">${e.score.toLocaleString()}</div>`;
+        mobileRows.appendChild(div);
+      });
+    });
+  },
+  showEndScorePage(){
+    document.getElementById('end-page-score').style.display='flex';
+    document.getElementById('end-page-lb').style.display='none';
+    document.getElementById('s-end').scrollTop=0;
   },
 
   endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next){this._boostCarry=true;this.play(next.id);}else this.toMap();},
