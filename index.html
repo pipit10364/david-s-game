@@ -40,6 +40,19 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 @keyframes riseBub{from{transform:translateY(110vh)}to{transform:translateY(-200px)}}
 .intro-logo{display:flex;flex-direction:column;align-items:center;gap:6px;animation:popIn .55s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+/* ── LEVEL TYPE NOTIFICATION ── */
+.lvl-notify-overlay{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.lvl-notify-box{display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 48px;border-radius:20px;background:rgba(10,20,35,.72);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);animation:lvlNotifyIn .35s cubic-bezier(.34,1.4,.64,1) forwards,lvlNotifyOut .4s ease-in 1.6s forwards}
+.lvl-notify-type{font-family:'Fredoka One',cursive;font-size:36px;letter-spacing:1px;line-height:1;text-transform:uppercase}
+.lvl-notify-sub{font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;opacity:.75}
+.lvl-notify-hard .lvl-notify-type{color:#ff8040;text-shadow:0 0 24px rgba(255,128,64,.8),0 0 48px rgba(255,128,64,.4)}
+.lvl-notify-hard .lvl-notify-sub{color:#ffb080}
+.lvl-notify-veryhard .lvl-notify-type{color:#d060ff;text-shadow:0 0 24px rgba(200,80,255,.9),0 0 52px rgba(200,80,255,.45)}
+.lvl-notify-veryhard .lvl-notify-sub{color:#e0a0ff}
+.lvl-notify-bonus .lvl-notify-type{color:#40d880;text-shadow:0 0 24px rgba(64,220,128,.8),0 0 48px rgba(64,220,128,.4)}
+.lvl-notify-bonus .lvl-notify-sub{color:#80f0b0}
+@keyframes lvlNotifyIn{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+@keyframes lvlNotifyOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.92)}}
 .intro-emoji{font-size:70px;filter:drop-shadow(0 0 32px rgba(100,200,255,.5))}
 .intro-title{font-family:'Fredoka One',cursive;font-size:50px;color:#fff;letter-spacing:-1px;text-shadow:0 2px 28px rgba(100,200,255,.35)}
 .intro-sub{font-size:11px;color:#7aaabf;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:2px}
@@ -1299,6 +1312,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <div class="end-breakdown" id="end-breakdown">
       <div class="end-br"><span>⚗️ Reaksi</span><b id="eb-rx">+0</b></div>
       <div class="end-br"><span>🔥 Combo bonus</span><b id="eb-combo">+0</b></div>
+      <div class="end-br" id="eb-mult-row" style="display:none"><span>✨ Multiplier</span><b id="eb-mult" style="color:#ffd040"></b></div>
       <div class="end-br-sep"></div>
       <div class="end-br-total"><span>🎯 Bonus moves sisa</span><b id="eb-moves">+0</b></div>
     </div>
@@ -2425,6 +2439,21 @@ const G={
     this.davidExpr('idle');this.scheduleIdle();
     // Tutorial: auto-hint on level 1 first play
     if(lv.id===1&&!this.tutDone){setTimeout(()=>this.showTutorial(),900);}
+    // Level type notification (Hard / Very Hard / Bonus)
+    const _notifyType=lv.type;
+    if(_notifyType==='Hard'||_notifyType==='Very Hard'||_notifyType==='Bonus'){
+      const _typeMap={
+        'Hard':{cls:'lvl-notify-hard',label:'Hard Level',sub:'Poin × 2 di akhir'},
+        'Very Hard':{cls:'lvl-notify-veryhard',label:'Very Hard',sub:'Poin × 3 di akhir'},
+        'Bonus':{cls:'lvl-notify-bonus',label:'Bonus Level',sub:'Kumpulkan poin sebanyaknya'}
+      };
+      const _n=_typeMap[_notifyType];
+      const _ov=document.createElement('div');
+      _ov.className='lvl-notify-overlay';
+      _ov.innerHTML=`<div class="lvl-notify-box ${_n.cls}"><div class="lvl-notify-type">${_n.label}</div><div class="lvl-notify-sub">${_n.sub}</div></div>`;
+      document.body.appendChild(_ov);
+      setTimeout(()=>_ov.remove(),2200);
+    }
   },
 
   // ── GUIDE ──
@@ -3054,6 +3083,15 @@ const G={
     this.movesBonus=this.moves*20;
     this.score+=this.movesBonus;
 
+    // Type multiplier: Hard x2, Very Hard x3, Bonus x2
+    const _typeMultMap={'Hard':2,'Very Hard':3,'Bonus':2};
+    const _typeMult=_typeMultMap[lv.type]||1;
+    let typeBonus=0;
+    if(_typeMult>1){
+      typeBonus=this.score*(_typeMult-1);
+      this.score=this.score*_typeMult;
+    }
+
     let stars=this.moves>=Math.floor(lv.moves*.5)?3:this.moves>=Math.floor(lv.moves*.15)?2:1;
     const prev=this.stars[lv.id]||0;
     if(stars>prev)this.stars[lv.id]=stars;
@@ -3085,6 +3123,18 @@ const G={
     const rxEl=document.getElementById('eb-rx');if(rxEl)rxEl.textContent='+'+this.rxBaseScore.toLocaleString();
     const cbEl=document.getElementById('eb-combo');if(cbEl)cbEl.textContent=this.comboBonus>0?'🔥 +'+this.comboBonus.toLocaleString():'—';
     const mvEl=document.getElementById('eb-moves');if(mvEl)mvEl.textContent=this.movesBonus>0?'+'+this.movesBonus.toLocaleString():'—';
+    // Type multiplier row
+    const multRow=document.getElementById('eb-mult-row');
+    const multEl=document.getElementById('eb-mult');
+    if(multRow&&multEl){
+      if(_typeMult>1){
+        multRow.style.display='flex';
+        const multLabel={'Hard':'Hard ×2','Very Hard':'Very Hard ×3','Bonus':'Bonus ×2'}[lv.type]||'';
+        multEl.textContent=multLabel+' +'+typeBonus.toLocaleString();
+      }else{
+        multRow.style.display='none';
+      }
+    }
 
     const hsEl=document.getElementById('end-hs'),prevEl=document.getElementById('end-prev');
     if(isNewHS&&prevScore>0){
