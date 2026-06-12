@@ -21,6 +21,13 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 /* Game screen: use dvh so Chrome mobile browser bars don't eat the layout */
 #s-game.on{min-height:unset;height:100vh;height:100dvh}
 
+/* ══ LOCKED / COMING SOON ══ */
+#s-locked{
+  background:linear-gradient(160deg,#0e1a2e 0%,#1a3a50 50%,#0e2a1a 100%);
+  justify-content:center;align-items:center;padding:32px 20px;gap:0;
+  position:relative;overflow:hidden;
+}
+
 /* ══ INTRO ══ */
 #s-intro{
   background:linear-gradient(160deg,#0e2233 0%,#1a3a50 45%,#0e2233 100%);
@@ -522,11 +529,11 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ END SCREEN INLINE LEADERBOARD ══ */
 .end-lb-section{
-  width:100%;max-width:360px;
+  width:100%;
   background:rgba(255,255,255,.06);
   border:1.5px solid rgba(255,255,255,.12);
   border-radius:20px;overflow:hidden;
-  flex-shrink:0;
+  display:flex;flex-direction:column;
 }
 .end-lb-section .end-lb-head{
   padding:14px 16px;
@@ -536,7 +543,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   border-bottom:1px solid rgba(255,255,255,.08);
   flex-shrink:0;
 }
-.end-lb-section #end-lb-rows{overflow-y:auto;flex:1}
+/* All players visible via scroll — generous height like Qurban game */
+#end-lb-rows{overflow-y:auto;max-height:min(320px,40vh)}
 .end-lb-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
 .end-lb-row:last-child{border-bottom:none}
 .end-lb-row.me{background:rgba(212,138,8,.18)}
@@ -545,23 +553,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .end-lb-user{flex:1;font-weight:800;font-size:13px;color:#fff}
 .end-lb-score{font-family:'Fredoka One',cursive;font-size:16px;color:#a8d8ef}
 .end-lb-loading{padding:16px;text-align:center;font-size:12px;color:rgba(255,255,255,.4);font-weight:700}
+.end-right{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
 #s-end{overflow-y:auto;padding-bottom:24px}
-/* Mobile: score page and LB page as separate views */
-.end-page{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
-#end-page-score{display:flex}
-#end-page-lb{display:none;width:100%;flex-direction:column;align-items:center;gap:12px}
-.btn-end-lb-mobile{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);color:#fff;font-family:'Fredoka One',cursive;font-size:15px;border-radius:999px;padding:10px 28px;cursor:pointer;width:100%;max-width:280px}
-.btn-end-lb-mobile:hover{background:rgba(255,255,255,.2)}
-.btn-end-back-mobile{background:transparent;border:none;color:rgba(255,255,255,.5);font-size:12px;font-weight:700;cursor:pointer;padding:4px 0;letter-spacing:1px}
-#end-page-lb .end-lb-head{font-family:'Fredoka One',cursive;font-size:20px;color:#ffd700;text-align:center;padding:8px 0 4px}
-/* Mobile: hide desktop LB, show mobile LB button */
-.end-desktop-only{display:none!important}
-.end-mobile-only{display:flex!important}
-@media(min-width:860px){
-  .end-desktop-only{display:flex!important}
-  .end-mobile-only{display:none!important}
-  #end-page-lb{display:none!important} /* desktop never shows LB page */
-}
 
 /* Mobile bottom safe area */
 @media(max-width:859px){
@@ -825,12 +818,13 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ END SCREEN ══ */
 #s-end{background:linear-gradient(160deg,#0e2233,#1a3a50);justify-content:center;align-items:center;padding:32px 20px;gap:16px;overflow-y:auto}
-.end-card{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);border-radius:24px;padding:24px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(10px)}
+.end-card{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);border-radius:24px;padding:24px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(10px)}
 @media(min-width:860px){
-  #s-end{flex-direction:row;align-items:flex-start;justify-content:center;padding:48px 40px;gap:28px}
+  #s-end{flex-direction:row;align-items:flex-start;justify-content:center;padding:48px 40px;gap:28px;height:100vh;height:100dvh}
   .end-card{max-width:380px;flex-shrink:0}
-  .end-lb-section{flex:1;max-width:380px;align-self:stretch}
-  #s-end .end-lb-section{display:flex!important;flex-direction:column}
+  .end-right{flex:1;max-width:380px;align-self:stretch;height:100%}
+  .end-lb-section{flex:1;min-height:0}
+  #end-lb-rows{flex:1;max-height:none}
 }
 .end-title{font-family:'Fredoka One',cursive;font-size:26px;color:#fff;text-align:center}
 .end-stars{font-size:38px;letter-spacing:8px;text-align:center;display:flex;justify-content:center;gap:6px}
@@ -1049,6 +1043,23 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 <body>
 
 <canvas id="confetti-canvas"></canvas>
+
+<!-- ══ LOCKED / COMING SOON ══ -->
+<div id="s-locked" class="screen">
+  <div class="bub" style="width:70px;height:70px;left:8%;animation-duration:9s;animation-delay:0s"></div>
+  <div class="bub" style="width:110px;height:110px;left:72%;animation-duration:14s;animation-delay:2s"></div>
+  <div class="bub" style="width:45px;height:45px;left:38%;animation-duration:7s;animation-delay:1s"></div>
+  <div class="bub" style="width:90px;height:90px;left:85%;animation-duration:11s;animation-delay:4s"></div>
+  <div class="bub" style="width:55px;height:55px;left:18%;animation-duration:10s;animation-delay:.5s"></div>
+  <div class="bub" style="width:35px;height:35px;left:55%;animation-duration:6s;animation-delay:3s"></div>
+  <div class="grad-card">
+    <div style="font-size:64px;animation:chibiFloat 3s ease-in-out infinite">🎓</div>
+    <div class="grad-title">Coming Soon</div>
+    <div class="grad-sub">Chem Crush · A Tribute for David</div>
+    <div class="grad-msg">Game ini akan terbuka begitu David resmi upload foto wisudanya di Instagram! Sampai saat itu tiba, kita semua nunggu bareng-bareng ya 🎉</div>
+    <div style="font-size:11px;color:rgba(168,216,239,.6);text-align:center;font-weight:700;letter-spacing:1px">Pantengin terus IG-nya 👀</div>
+  </div>
+</div>
 
 <!-- ══ INTRO ══ -->
 <div id="s-intro" class="screen on">
@@ -1324,43 +1335,33 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 <!-- ══ END SCREEN ══ -->
 <div id="s-end" class="screen">
-  <!-- Page 1: Score (mobile) / always visible (desktop) -->
-  <div id="end-page-score" class="end-page">
-    <div class="end-card">
-      <div class="end-title" id="end-title">🎉 Sintesis Berhasil!</div>
-      <div class="end-stars" id="end-stars"></div>
-      <div class="end-score-box">
-        <div><div class="end-score-label">Skor Level Ini</div><div class="end-score-val" id="end-score">0</div></div>
-      </div>
-      <div class="end-breakdown" id="end-breakdown">
-        <div class="end-br"><span>⚗️ Reaksi</span><b id="eb-rx">+0</b></div>
-        <div class="end-br"><span>🔥 Combo bonus</span><b id="eb-combo">+0</b></div>
-        <div class="end-br" id="eb-mult-row" style="display:none"><span>✨ Multiplier</span><b id="eb-mult" style="color:#ffd040"></b></div>
-        <div class="end-br-sep"></div>
-        <div class="end-br-total"><span>🎯 Bonus moves sisa</span><b id="eb-moves">+0</b></div>
-      </div>
-      <div id="end-hs" class="end-hs" style="display:none">🏆 Rekor Baru! <span id="end-hs-val"></span></div>
-      <div id="end-prev" class="end-prev" style="display:none">High score sebelumnya: <strong id="end-prev-val" style="color:#fff"></strong></div>
-      <div class="end-btns">
-        <button class="btn-end-p" id="end-btn1" onclick="G.endBtn1()">Level Berikutnya →</button>
-        <button class="btn-end-t" onclick="G.toMap()">← Ke Map</button>
-      </div>
+  <div class="end-card">
+    <div class="end-title" id="end-title">🎉 Sintesis Berhasil!</div>
+    <div class="end-stars" id="end-stars"></div>
+    <div class="end-score-box">
+      <div><div class="end-score-label">Skor Level Ini</div><div class="end-score-val" id="end-score">0</div></div>
     </div>
-    <!-- Mobile only: button to go to LB page -->
-    <button class="btn-end-lb-mobile end-mobile-only" id="btn-to-lb" onclick="G.showEndLBPage()">🏆 Lihat Leaderboard</button>
+    <div class="end-breakdown" id="end-breakdown">
+      <div class="end-br"><span>⚗️ Reaksi</span><b id="eb-rx">+0</b></div>
+      <div class="end-br"><span>🔥 Combo bonus</span><b id="eb-combo">+0</b></div>
+      <div class="end-br" id="eb-mult-row" style="display:none"><span>✨ Multiplier</span><b id="eb-mult" style="color:#ffd040"></b></div>
+      <div class="end-br-sep"></div>
+      <div class="end-br-total"><span>🎯 Bonus moves sisa</span><b id="eb-moves">+0</b></div>
+    </div>
+    <div id="end-hs" class="end-hs" style="display:none">🏆 Rekor Baru! <span id="end-hs-val"></span></div>
+    <div id="end-prev" class="end-prev" style="display:none">High score sebelumnya: <strong id="end-prev-val" style="color:#fff"></strong></div>
   </div>
 
-  <!-- Page 2: Leaderboard (mobile only, shown on demand) -->
-  <div id="end-page-lb" class="end-page">
-    <div class="end-lb-head">🏆 Leaderboard</div>
-    <div id="end-lb-rows-mobile" class="end-lb-section" style="width:100%;max-width:420px"><div class="end-lb-loading">⏳ Memuat...</div></div>
-    <button class="btn-end-back-mobile" onclick="G.showEndScorePage()">← Kembali ke Skor</button>
-  </div>
-
-  <!-- Desktop only: inline LB beside score card -->
-  <div class="end-lb-section end-desktop-only" id="end-lb-section" style="display:none">
-    <div class="end-lb-head">🏆 Leaderboard</div>
-    <div id="end-lb-rows"><div class="end-lb-loading">⏳ Memuat...</div></div>
+  <!-- Leaderboard: shown directly, all players, scrollable -->
+  <div class="end-right">
+    <div class="end-lb-section" id="end-lb-section">
+      <div class="end-lb-head">🏆 Leaderboard</div>
+      <div id="end-lb-rows"><div class="end-lb-loading">⏳ Memuat...</div></div>
+    </div>
+    <div class="end-btns">
+      <button class="btn-end-p" id="end-btn1" onclick="G.endBtn1()">Level Berikutnya →</button>
+      <button class="btn-end-t" onclick="G.toMap()">← Ke Map</button>
+    </div>
   </div>
 </div>
 
@@ -1446,6 +1447,16 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 </div>
 
 <script type="module">
+// ═══════════════════════════════════════════════════════════════
+//  🔒 GAME LOCK — Coming Soon gate
+//  Set ke `false` setelah David upload foto wisuda di Instagram
+//  untuk membuka akses game ke semua orang.
+// ═══════════════════════════════════════════════════════════════
+const GAME_LOCKED = true;
+const PREVIEW_KEY = 'pipit2025'; // ganti sesuka kamu
+const _urlParams = new URLSearchParams(window.location.search);
+const _isPreview = _urlParams.get('preview') === PREVIEW_KEY;
+
 // ─── ELEMENTS ───
 const ELEMENTS={
   H:{sym:'H',name:'Hidrogen'},O:{sym:'O',name:'Oksigen'},
@@ -1628,7 +1639,7 @@ try{
 async function fbGetLB(){
   if(!_db)return null;
   try{
-    const q=query(collection(_db,'chemcrush_lb'),orderBy('score','desc'),limit(20));
+    const q=query(collection(_db,'chemcrush_lb'),orderBy('score','desc'),limit(500));
     const snap=await Promise.race([
       getDocs(q),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),7000))
@@ -1754,19 +1765,21 @@ const Confetti={
   canvas:null,ctx:null,parts:[],on:false,raf:null,
   colors:['#ffd700','#3aae5c','#6090e0','#f06030','#a060d0','#ff6090','#40c8c0','#ff9030'],
   init(){this.canvas=document.getElementById('confetti-canvas');this.ctx=this.canvas.getContext('2d');},
-  start(){
+  start(intensity='normal'){
     if(!this.canvas)this.init();
     this.canvas.style.display='block';
     this.canvas.width=window.innerWidth;this.canvas.height=window.innerHeight;
     this.parts=[];
-    for(let i=0;i<120;i++)this.parts.push({
+    const count=intensity==='big'?120:50;
+    const dur=intensity==='big'?4000:2000;
+    for(let i=0;i<count;i++)this.parts.push({
       x:Math.random()*this.canvas.width,y:-20-Math.random()*100,
       vx:(Math.random()-.5)*5,vy:2+Math.random()*5,
       sz:5+Math.random()*9,rot:Math.random()*360,rotV:(Math.random()-.5)*12,
       color:this.colors[Math.floor(Math.random()*this.colors.length)],
       shape:Math.random()>.5?'r':'c',alpha:1,
     });
-    this.on=true;this.animate();setTimeout(()=>this.stop(),4000);
+    this.on=true;this.animate();setTimeout(()=>this.stop(),dur);
   },
   stop(){this.on=false;if(this.raf)cancelAnimationFrame(this.raf);if(this.canvas)this.canvas.style.display='none';},
   animate(){
@@ -3149,7 +3162,7 @@ const G={
     this.cleared[lv.id]=true;
     this.save();
 
-    Confetti.start();
+    Confetti.start((isNewHS||(stars===3&&prev<3))?'big':'normal');
     SFX.win();
     this.davidExpr('aha');
     const mw=document.getElementById('modal-wrap');
@@ -3206,11 +3219,10 @@ const G={
     }
     this.show('s-end');
 
-    // ── Inline leaderboard: desktop only shows automatically ──
+    // ── Inline leaderboard: always shown, all players, scrollable ──
     const lbSection=document.getElementById('end-lb-section');
     const lbRows=document.getElementById('end-lb-rows');
-    if(FB_ON&&lbSection&&this.isDesktop()){
-      lbSection.style.display='flex';
+    if(FB_ON&&lbRows){
       lbRows.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
       fbGetLB().then(entries=>{
         if(!entries||!entries.length){lbRows.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
@@ -3225,11 +3237,6 @@ const G={
         });
       });
     }
-    // Reset mobile end screen to score page
-    const epScore=document.getElementById('end-page-score');
-    const epLB=document.getElementById('end-page-lb');
-    if(epScore)epScore.style.display='flex';
-    if(epLB)epLB.style.display='none';
 
     // ── Firebase submit in background (non-blocking) ──
     if(this.username&&FB_ON){
@@ -3254,35 +3261,6 @@ const G={
         }
       }).catch(()=>{});
     }
-  },
-
-  // ── MOBILE END SCREEN PAGES ──
-  showEndLBPage(){
-    document.getElementById('end-page-score').style.display='none';
-    const epLB=document.getElementById('end-page-lb');
-    epLB.style.display='flex';
-    document.getElementById('s-end').scrollTop=0;
-    if(!FB_ON)return;
-    const mobileRows=document.getElementById('end-lb-rows-mobile');
-    if(mobileRows)mobileRows.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
-    fbGetLB().then(entries=>{
-      if(!mobileRows)return;
-      if(!entries||!entries.length){mobileRows.innerHTML='<div class="end-lb-loading">Belum ada data.</div>';return;}
-      const medals=['🥇','🥈','🥉'];
-      mobileRows.innerHTML='';
-      entries.forEach((e,i)=>{
-        const isMe=G.username&&(e.username==='@'+G.username);
-        const div=document.createElement('div');div.className='end-lb-row'+(isMe?' me':'');
-        const rc=i===0?'g':i===1?'s':i===2?'b':'';
-        div.innerHTML=`<div class="end-lb-rank ${rc}">${medals[i]||(i+1)}</div><div class="end-lb-user">${e.username}${isMe?' 👈':''}</div><div class="end-lb-score">${e.score.toLocaleString()}</div>`;
-        mobileRows.appendChild(div);
-      });
-    });
-  },
-  showEndScorePage(){
-    document.getElementById('end-page-score').style.display='flex';
-    document.getElementById('end-page-lb').style.display='none';
-    document.getElementById('s-end').scrollTop=0;
   },
 
   endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next){this._boostCarry=true;this.play(next.id);}else this.toMap();},
@@ -3588,7 +3566,7 @@ const G={
 
   // ── GRADUATION CELEBRATION ──
   showGrad(){
-    Confetti.start();SFX.win();
+    Confetti.start('big');SFX.win();
     // Pick a random message
     const msg=GRAD_MSGS[Math.floor(Math.random()*GRAD_MSGS.length)];
     document.getElementById('grad-msg').textContent=msg;
@@ -3724,6 +3702,12 @@ window.SFX=SFX;
 updateStaticCounts();
 buildGuide();
 Confetti.init();
+
+// 🔒 Coming Soon gate
+if(GAME_LOCKED && !_isPreview){
+  document.getElementById('s-intro').classList.remove('on');
+  document.getElementById('s-locked').classList.add('on');
+}
 
 // Account modal keyboard, PIN visibility, and inline-error helpers
 ['un-input','pin-input','pin-confirm-input'].forEach(id=>{
