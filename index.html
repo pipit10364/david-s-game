@@ -227,14 +227,13 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 /* Mobile: compact font sizes */
 .hud-val{font-family:'Fredoka One',cursive;font-size:16px;color:var(--ink);line-height:1}
 .hud-lbl{font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:800}
-/* Mobile Reaksi under Moves */
-.hud-rx-mobile{display:block}
-/* Desktop: separate block, bigger fonts */
+/* Mobile Reaksi in hud-right */
 .hud-rx-desktop{display:none;flex-direction:column;align-items:center}
 @media(min-width:860px){
   .hud-val{font-size:22px}
   .hud-lbl{font-size:8px;letter-spacing:1.5px}
-  .hud-rx-mobile{display:none!important}
+  /* On desktop hide the first block (h-rx) and show hud-rx-desktop */
+  .hud-right .hud-block:first-child{display:none!important}
   .hud-rx-desktop{display:flex}
 }
 .hud-lbl{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:800}
@@ -1159,10 +1158,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="hud">
     <button class="hud-icon-btn hud-back" onclick="G.toMap()" title="Kembali ke Map">←</button>
     <div class="hud-mid">
-      <!-- Left: Moves + Reaksi stacked -->
+      <!-- Left: Moves only -->
       <div class="hud-block hud-left-block">
         <div class="hud-val" id="h-moves">20</div><div class="hud-lbl">Moves</div>
-        <div class="hud-val hud-rx-mobile" id="h-rx">0</div><div class="hud-lbl hud-rx-mobile">Reaksi</div>
       </div>
       <!-- Center: Avatar + Level + Score -->
       <div class="hud-block hud-center-block">
@@ -1171,8 +1169,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
         <div class="hud-val" id="h-score">0</div>
         <div class="hud-lbl">Skor</div>
       </div>
-      <!-- Right: Reaksi (desktop only) -->
+      <!-- Right: Reaksi (mobile + desktop) -->
       <div class="hud-right">
+        <div class="hud-block"><div class="hud-val" id="h-rx">0</div><div class="hud-lbl">Reaksi</div></div>
         <div class="hud-block hud-rx-desktop"><div class="hud-val" id="h-rx-dt">0</div><div class="hud-lbl">Reaksi</div></div>
       </div>
     </div>
