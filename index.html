@@ -597,20 +597,34 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:20px 16px 40px;
 }
-/* Page transition */
-#end-page-lb{animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both}
+/* LB page specifically: no scroll on page itself, inner handles it */
+#end-page-lb{
+  overflow:hidden;
+  padding:16px;
+  animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both;
+}
 @keyframes endPageIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-/* LB page inner */
-.end-lb-page-inner{width:100%;max-width:480px;display:flex;flex-direction:column;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden}
-.end-lb-page-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Fredoka One',cursive;font-size:17px;color:#ffd700}
+/* LB page inner — fills screen height, buttons pinned to bottom */
+.end-lb-page-inner{
+  width:100%;max-width:480px;
+  display:flex;flex-direction:column;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:16px;overflow:hidden;
+  /* Fill available vertical space so btns stay pinned */
+  flex:1;min-height:0;
+  max-height:calc(100dvh - 40px);
+}
+.end-lb-page-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Fredoka One',cursive;font-size:17px;color:#ffd700;flex-shrink:0}
 .end-lb-back-btn{background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:800;cursor:pointer;padding:4px 8px;border-radius:8px;letter-spacing:.5px}
 .end-lb-back-btn:hover{background:rgba(255,255,255,.1);color:#fff}
-.end-lb-rows-inner{max-height:52vh;overflow-y:auto;overscroll-behavior:contain}
-.end-btns-lb{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08)}
+/* Rows: flex-grow so they fill space between header and buttons */
+.end-lb-rows-inner{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.end-btns-lb{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;background:rgba(0,0,0,.15)}
 /* Progress bar hint on score page */
-.end-lb-hint{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px;opacity:.6}
-.end-lb-hint span{font-size:10px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,.6)}
-.end-lb-hint-bar{width:120px;height:3px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+.end-lb-hint{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px;opacity:.85}
+.end-lb-hint span{font-size:11px;font-weight:800;letter-spacing:.5px;color:rgba(255,215,0,.85)}
+.end-lb-hint-bar{width:160px;height:4px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
 .end-lb-hint-fill{height:100%;width:0%;background:#ffd700;border-radius:99px;transition:width 3s linear}
 /* Mobile bottom safe area */
 @media(max-width:859px){
