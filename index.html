@@ -535,6 +535,11 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   border-radius:16px;
   overflow:hidden;
   display:flex;flex-direction:column;
+  animation:lbSlideIn .5s cubic-bezier(.34,1.2,.64,1) both;
+}
+@keyframes lbSlideIn{
+  from{opacity:0;transform:translateY(32px)}
+  to{opacity:1;transform:translateY(0)}
 }
 .end-lb-rows-inner{
   max-height:50vh;overflow-y:auto;
@@ -3305,18 +3310,23 @@ const G={
 
     if(FB_ON){
       const isDesktop=this.isDesktop();
+      // Prefetch LB data immediately in background
+      const _lbPrefetch=FB_ON?fbGetLB():Promise.resolve(null);
+
       if(!isDesktop&&lbWrap){
-        lbWrap.style.display='flex';
-        if(lbRowsMobile)lbRowsMobile.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+        // Mobile: reveal LB after 3s delay with slide-in animation
+        setTimeout(()=>{
+          lbWrap.style.display='flex';
+          lbWrap.scrollIntoView({behavior:'smooth',block:'start'});
+          if(lbRowsMobile)lbRowsMobile.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+          _lbPrefetch.then(entries=>renderLB(entries,lbRowsMobile));
+        },3000);
       }
       if(isDesktop&&lbSectionDt){
         lbSectionDt.style.display='flex';
         if(lbRowsDt)lbRowsDt.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
+        _lbPrefetch.then(entries=>renderLB(entries,lbRowsDt));
       }
-      fbGetLB().then(entries=>{
-        if(!isDesktop)renderLB(entries,lbRowsMobile);
-        else renderLB(entries,lbRowsDt);
-      });
     }
 
     // ── Firebase submit in background (non-blocking) ──
