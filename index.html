@@ -617,7 +617,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   .bottom-bar{padding-bottom:max(5px,env(safe-area-inset-bottom,5px))}
 }
 @media(max-width:859px){
-  #s-end{padding:0!important;position:relative}
+  #s-end{padding:0!important;position:relative;min-height:unset;height:100vh;height:100dvh}
   .end-mobile-wrap{position:absolute;inset:0;height:100%}
 }
 @media(min-width:860px){
@@ -3402,7 +3402,7 @@ const G={
         const fill=document.getElementById('end-lb-hint-fill');
         if(hint){hint.style.display='flex';setTimeout(()=>{if(fill)fill.style.width='100%';},50);}
         // Auto-switch to LB page after 3s
-        setTimeout(()=>{
+        this._lbTimer=setTimeout(()=>{
           G.showEndLBPage();
           if(lbRowsMobile)lbRowsMobile.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
           _lbPrefetch.then(entries=>renderLB(entries,lbRowsMobile));
