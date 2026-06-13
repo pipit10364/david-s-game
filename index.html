@@ -596,9 +596,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:20px 16px 40px;
+  visibility:hidden;opacity:0;pointer-events:none;z-index:0;
 }
+.end-mobile-page.is-active{visibility:visible;opacity:1;pointer-events:auto;z-index:2}
 /* Page transition */
-#end-page-lb{animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both;justify-content:center}
+#end-page-lb{justify-content:center}
+#end-page-lb.is-active{animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both}
 @keyframes endPageIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 /* LB page inner */
 .end-lb-page-inner{width:100%;max-width:480px;display:flex;flex-direction:column;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;align-self:center}
@@ -1411,7 +1414,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div id="end-mobile-wrap" class="end-mobile-wrap">
 
     <!-- Page 1: Score -->
-    <div id="end-page-score" class="end-mobile-page">
+    <div id="end-page-score" class="end-mobile-page is-active">
       <div class="end-card">
         <div class="end-title" id="end-title">🎉 Sintesis Berhasil!</div>
         <div class="end-stars" id="end-stars"></div>
@@ -1441,7 +1444,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     </div>
 
     <!-- Page 2: Leaderboard (win only) -->
-    <div id="end-page-lb" class="end-mobile-page" style="display:none">
+    <div id="end-page-lb" class="end-mobile-page">
       <div class="end-lb-page-inner">
         <div class="end-lb-page-head">
           <button class="end-lb-back-btn" onclick="G.showEndScorePage()">← Skor</button>
@@ -3357,6 +3360,7 @@ const G={
       setTimeout(()=>this.showGrad(),600);
       return;
     }
+    this.showEndScorePage();
     this.show('s-end');
 
     // ── Show/hide correct buttons ──
@@ -3428,14 +3432,17 @@ const G={
   },
 
   showEndLBPage(){
-    document.getElementById('end-page-score').style.display='none';
+    const score=document.getElementById('end-page-score');
     const p=document.getElementById('end-page-lb');
-    if(p){p.style.display='flex';}
+    if(score){score.classList.remove('is-active');score.style.display='';}
+    if(p){p.style.display='';p.classList.add('is-active');}
     document.getElementById('s-end').scrollTop=0;
   },
   showEndScorePage(){
-    document.getElementById('end-page-lb').style.display='none';
-    document.getElementById('end-page-score').style.display='flex';
+    const lb=document.getElementById('end-page-lb');
+    const score=document.getElementById('end-page-score');
+    if(lb){lb.classList.remove('is-active');lb.style.display='';}
+    if(score){score.style.display='';score.classList.add('is-active');}
     document.getElementById('s-end').scrollTop=0;
   },
   endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next){this._boostCarry=true;this.play(next.id);}else this.toMap();},
