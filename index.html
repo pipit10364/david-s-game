@@ -597,41 +597,27 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:20px 16px 40px;
 }
-/* LB page specifically: no scroll on page itself, inner handles it */
-#end-page-lb{
-  overflow:hidden;
-  padding:16px;
-  animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both;
-}
+/* Page transition */
+#end-page-lb{animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both}
 @keyframes endPageIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-/* LB page inner — fills screen height, buttons pinned to bottom */
-.end-lb-page-inner{
-  width:100%;max-width:480px;
-  display:flex;flex-direction:column;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:16px;overflow:hidden;
-  /* Fill available vertical space so btns stay pinned */
-  flex:1;min-height:0;
-  max-height:calc(100dvh - 40px);
-}
-.end-lb-page-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Fredoka One',cursive;font-size:17px;color:#ffd700;flex-shrink:0}
+/* LB page inner */
+.end-lb-page-inner{width:100%;max-width:480px;display:flex;flex-direction:column;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden}
+.end-lb-page-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Fredoka One',cursive;font-size:17px;color:#ffd700}
 .end-lb-back-btn{background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:800;cursor:pointer;padding:4px 8px;border-radius:8px;letter-spacing:.5px}
 .end-lb-back-btn:hover{background:rgba(255,255,255,.1);color:#fff}
-/* Rows: flex-grow so they fill space between header and buttons */
-.end-lb-rows-inner{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
-.end-btns-lb{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;background:rgba(0,0,0,.15)}
+.end-lb-rows-inner{max-height:52vh;overflow-y:auto;overscroll-behavior:contain}
+.end-btns-lb{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08)}
 /* Progress bar hint on score page */
-.end-lb-hint{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px;opacity:.85}
-.end-lb-hint span{font-size:11px;font-weight:800;letter-spacing:.5px;color:rgba(255,215,0,.85)}
-.end-lb-hint-bar{width:160px;height:4px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+.end-lb-hint{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px;opacity:.6}
+.end-lb-hint span{font-size:10px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,.6)}
+.end-lb-hint-bar{width:120px;height:3px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
 .end-lb-hint-fill{height:100%;width:0%;background:#ffd700;border-radius:99px;transition:width 3s linear}
 /* Mobile bottom safe area */
 @media(max-width:859px){
   .bottom-bar{padding-bottom:max(5px,env(safe-area-inset-bottom,5px))}
 }
 @media(max-width:859px){
-  #s-end{padding:0!important}
+  #s-end{padding:0!important;position:relative}
   .end-mobile-wrap{position:absolute;inset:0;height:100%}
 }
 @media(min-width:860px){
@@ -895,7 +881,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .rg-note{padding:10px 12px;font-size:10px;color:var(--muted);font-style:italic;text-align:center;border-top:1px solid var(--border)}
 
 /* ══ END SCREEN ══ */
-#s-end{background:linear-gradient(160deg,#0e2233,#1a3a50);justify-content:center;align-items:center;padding:32px 20px;gap:16px;overflow:hidden;height:100vh;height:100dvh}
+#s-end{background:linear-gradient(160deg,#0e2233,#1a3a50);justify-content:center;align-items:center;padding:32px 20px;gap:16px;overflow:hidden;height:100vh;height:100dvh;position:relative}
 .end-card{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);border-radius:24px;padding:24px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(10px)}
 @media(min-width:860px){
   #s-end{flex-direction:row;align-items:flex-start;justify-content:center;padding:48px 40px;gap:28px;height:100vh;height:100dvh}
