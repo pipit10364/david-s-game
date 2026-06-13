@@ -582,29 +582,21 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .end-lb-score{font-family:'Fredoka One',cursive;font-size:16px;color:#a8d8ef}
 .end-lb-loading{padding:16px;text-align:center;font-size:12px;color:rgba(255,255,255,.4);font-weight:700}
 .end-right{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
-#s-end{overflow:hidden;padding-bottom:0}
+#s-end{overflow-y:auto;padding-bottom:24px}
 
 /* ══ END SCREEN TWO-PAGE MOBILE ══ */
-/* Container fills full screen, clips children */
-.end-mobile-wrap{
-  position:relative;width:100%;height:100%;
-  display:block;overflow:hidden;flex-shrink:0;
-}
-/* Each page: absolute, full screen, own scroll */
+.end-mobile-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:0}
 .end-mobile-page{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:20px 16px 40px;
-  visibility:hidden;opacity:0;pointer-events:none;z-index:0;
+  width:100%;display:none;
+  flex-direction:column;align-items:center;
+  padding:20px 16px 40px;gap:12px;
 }
-.end-mobile-page.is-active{visibility:visible;opacity:1;pointer-events:auto;z-index:2}
+.end-mobile-page.active{display:flex}
 /* Page transition */
-#end-page-lb{justify-content:center}
-#end-page-lb.is-active{animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both}
+#end-page-lb{animation:endPageIn .45s cubic-bezier(.34,1.1,.64,1) both}
 @keyframes endPageIn{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 /* LB page inner */
-.end-lb-page-inner{width:100%;max-width:480px;display:flex;flex-direction:column;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;align-self:center}
+.end-lb-page-inner{width:100%;max-width:480px;display:flex;flex-direction:column;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden}
 .end-lb-page-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Fredoka One',cursive;font-size:17px;color:#ffd700}
 .end-lb-back-btn{background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:800;cursor:pointer;padding:4px 8px;border-radius:8px;letter-spacing:.5px}
 .end-lb-back-btn:hover{background:rgba(255,255,255,.1);color:#fff}
@@ -618,11 +610,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 /* Mobile bottom safe area */
 @media(max-width:859px){
   .bottom-bar{padding-bottom:max(5px,env(safe-area-inset-bottom,5px))}
-}
-@media(max-width:859px){
-  #s-end{padding:0!important;position:relative;min-height:unset;height:100vh;height:100dvh}
-  .end-mobile-wrap{position:absolute;inset:0;height:100%;z-index:1}
-  .end-desktop-only{display:none!important}
 }
 @media(min-width:860px){
   .end-mobile-wrap{display:none!important}
@@ -885,7 +872,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .rg-note{padding:10px 12px;font-size:10px;color:var(--muted);font-style:italic;text-align:center;border-top:1px solid var(--border)}
 
 /* ══ END SCREEN ══ */
-#s-end{background:linear-gradient(160deg,#0e2233,#1a3a50);justify-content:center;align-items:center;padding:32px 20px;gap:16px;overflow:hidden;height:100vh;height:100dvh;position:relative}
+#s-end{background:linear-gradient(160deg,#0e2233,#1a3a50);justify-content:center;align-items:center;padding:32px 20px;gap:16px;overflow-y:auto}
 .end-card{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.14);border-radius:24px;padding:24px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px;backdrop-filter:blur(10px)}
 @media(min-width:860px){
   #s-end{flex-direction:row;align-items:flex-start;justify-content:center;padding:48px 40px;gap:28px;height:100vh;height:100dvh}
@@ -1414,7 +1401,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div id="end-mobile-wrap" class="end-mobile-wrap">
 
     <!-- Page 1: Score -->
-    <div id="end-page-score" class="end-mobile-page is-active">
+    <div id="end-page-score" class="end-mobile-page active">
       <div class="end-card">
         <div class="end-title" id="end-title">🎉 Sintesis Berhasil!</div>
         <div class="end-stars" id="end-stars"></div>
@@ -1716,7 +1703,7 @@ const LEVELS=[
   // Chapter 8: Final Synthesis — cumulative finale using familiar systems only.
   {id:48, chapter:'Final Synthesis', type:'Hard', name:'Final Interface', moves:38, elems:['H','O','Na','Cl','C','N','Ca','Fe','S'], cols:9, rows:9, target:{reactions:17,score:4300,specific:[{rx:'H2O',count:3},{rx:'NaCl',count:3},{rx:'FeS',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,3],[5,3],[3,5],[5,5]], glass:[[1,1],[7,1],[1,7],[7,7],[4,3],[4,5]], caps:[[4,4],[4,2]], capHits:3},
   {id:49, chapter:'Final Synthesis', type:'Very Hard', name:'Complete Structure', moves:37, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:19,score:5000,specific:[{rx:'Fe2O3',count:3},{rx:'CaCl2',count:3},{rx:'KCl',count:2},{rx:'NH3',count:2},{rx:'SO2',count:2}]}, obstacles:[[3,3],[5,3],[3,5],[5,5],[4,1],[4,7]], glass:[[2,2],[4,2],[6,2],[2,4],[6,4],[2,6],[4,6],[6,6]], caps:[[4,4],[3,4],[5,4],[4,5]], capHits:4},
-  {id:50, chapter:'Final Synthesis', type:'Very Hard', name:'Final Synthesis', moves:42, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:20,score:5400,specific:[{rx:'H2O',count:4},{rx:'NaCl',count:3},{rx:'Fe2O3',count:3},{rx:'CaCl2',count:3},{rx:'NH3',count:2},{rx:'CO2',count:2}]}, obstacles:[[3,3],[5,3],[3,5],[5,5],[4,2],[2,4],[6,4],[4,6]], glass:[[1,1],[4,1],[7,1],[1,4],[7,4],[1,7],[4,7],[7,7]], caps:[[4,4],[3,4],[5,4],[4,3],[4,5]], capHits:4},
+  {id:50, chapter:'Final Synthesis', type:'Very Hard', name:'Final Synthesis', moves:42, elems:['H','O','Na','Cl','C','N','Ca','Fe','S','K'], cols:9, rows:9, target:{reactions:20,score:5400,specific:[{rx:'H2O',count:4},{rx:'NaCl',count:3},{rx:'Fe2O3',count:3},{rx:'CaCl2',count:3},{rx:'NH3',count:2},{rx:'CO2',count:2}]}, obstacles:[], glass:[[0,0],[8,0],[0,4],[8,4],[0,8],[8,8],[4,0],[4,8],[2,2],[6,2],[2,6],[6,6]], caps:[[4,4],[3,4],[5,4],[4,3],[4,5]], capHits:4},
 ];
 
 const SAVE='chemcrush_v5'; // legacy localStorage key, kept for one-time migration
@@ -3360,7 +3347,6 @@ const G={
       setTimeout(()=>this.showGrad(),600);
       return;
     }
-    this.showEndScorePage();
     this.show('s-end');
 
     // ── Show/hide correct buttons ──
@@ -3407,7 +3393,7 @@ const G={
         const fill=document.getElementById('end-lb-hint-fill');
         if(hint){hint.style.display='flex';setTimeout(()=>{if(fill)fill.style.width='100%';},50);}
         // Auto-switch to LB page after 3s
-        this._lbTimer=setTimeout(()=>{
+        setTimeout(()=>{
           G.showEndLBPage();
           if(lbRowsMobile)lbRowsMobile.innerHTML='<div class="end-lb-loading">⏳ Memuat leaderboard...</div>';
           _lbPrefetch.then(entries=>renderLB(entries,lbRowsMobile));
@@ -3432,17 +3418,14 @@ const G={
   },
 
   showEndLBPage(){
-    const score=document.getElementById('end-page-score');
+    document.getElementById('end-page-score').style.display='none';
     const p=document.getElementById('end-page-lb');
-    if(score){score.classList.remove('is-active');score.style.display='';}
-    if(p){p.style.display='';p.classList.add('is-active');}
+    if(p){p.style.display='flex';}
     document.getElementById('s-end').scrollTop=0;
   },
   showEndScorePage(){
-    const lb=document.getElementById('end-page-lb');
-    const score=document.getElementById('end-page-score');
-    if(lb){lb.classList.remove('is-active');lb.style.display='';}
-    if(score){score.style.display='';score.classList.add('is-active');}
+    document.getElementById('end-page-lb').style.display='none';
+    document.getElementById('end-page-score').style.display='flex';
     document.getElementById('s-end').scrollTop=0;
   },
   endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next){this._boostCarry=true;this.play(next.id);}else this.toMap();},
