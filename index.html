@@ -618,7 +618,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 }
 @media(max-width:859px){
   #s-end{padding:0!important;position:relative;min-height:unset;height:100vh;height:100dvh}
-  .end-mobile-wrap{position:absolute;inset:0;height:100%}
+  .end-mobile-wrap{position:absolute;inset:0;height:100%;z-index:1}
+  .end-desktop-only{display:none!important}
 }
 @media(min-width:860px){
   .end-mobile-wrap{display:none!important}
