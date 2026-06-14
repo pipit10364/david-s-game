@@ -124,7 +124,39 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ MAP ══ */
 #s-map{padding:0;gap:0;background:linear-gradient(160deg,#d0ecf8,#e8f6fc);align-items:stretch;width:100%}
-.map-left-col{display:flex;flex-direction:column;gap:14px;padding:20px 16px;align-items:center}
+.map-coin-display{font-family:'Fredoka One',cursive;font-size:13px;color:var(--ink2);background:rgba(255,200,60,.12);border:1.5px solid rgba(255,200,60,.3);border-radius:999px;padding:5px 14px;text-align:center;width:100%}
+.map-store-btn{background:linear-gradient(135deg,rgba(255,200,60,.15),rgba(255,160,40,.1));border-color:rgba(255,200,60,.4)!important;color:var(--ink)!important}
+.map-store-btn:hover{background:linear-gradient(135deg,rgba(255,200,60,.25),rgba(255,160,40,.2))!important}
+#s-store{background:linear-gradient(160deg,#0e2233,#1a3a50);flex-direction:column;align-items:stretch;padding:0;overflow-y:auto}
+.store-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.store-back{background:none;border:none;color:rgba(255,255,255,.7);font-size:13px;font-weight:800;cursor:pointer;padding:4px 8px}
+.store-back:hover{color:#fff}
+.store-title{font-family:'Fredoka One',cursive;font-size:20px;color:#fff}
+.store-coin-badge{font-family:'Fredoka One',cursive;font-size:14px;color:#ffd700;background:rgba(255,200,60,.15);border:1.5px solid rgba(255,200,60,.3);border-radius:999px;padding:4px 12px}
+.store-body{display:flex;flex-direction:column;gap:8px;padding:16px;max-width:600px;width:100%;margin:0 auto}
+.store-section-label{font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);padding:12px 0 6px}
+.store-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:600px){.store-grid{grid-template-columns:repeat(4,1fr)}}
+.store-item{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:16px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:all .15s}
+.store-item:hover{background:rgba(255,255,255,.12);border-color:rgba(255,200,60,.4);transform:translateY(-2px)}
+.store-item.cant-afford{opacity:.5;cursor:not-allowed}
+.store-item.cant-afford:hover{transform:none;background:rgba(255,255,255,.07)}
+.store-item-icon{font-size:28px;line-height:1}
+.store-item-name{font-family:'Fredoka One',cursive;font-size:14px;color:#fff;text-align:center}
+.store-item-desc{font-size:9.5px;color:rgba(255,255,255,.55);text-align:center;line-height:1.4}
+.store-item-qty{font-size:9px;color:rgba(255,255,255,.4);text-align:center}
+.store-item-price{display:flex;align-items:center;gap:4px;background:rgba(255,200,60,.15);border:1px solid rgba(255,200,60,.3);border-radius:999px;padding:3px 10px;font-family:'Fredoka One',cursive;font-size:12px;color:#ffd700;margin-top:2px}
+.store-item-price.pack{background:rgba(80,200,120,.15);border-color:rgba(80,200,120,.3);color:#60e890}
+.store-coming-soon{background:rgba(255,255,255,.04);border:1.5px dashed rgba(255,255,255,.12);border-radius:16px;padding:24px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.store-cs-emoji{font-size:36px}
+.store-cs-title{font-family:'Fredoka One',cursive;font-size:20px;color:rgba(255,255,255,.5)}
+.store-cs-sub{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;max-width:280px}
+.store-cs-tiers{display:flex;flex-direction:column;gap:6px;width:100%}
+.store-cs-tier{font-size:11px;color:rgba(255,255,255,.4);background:rgba(255,255,255,.04);border-radius:8px;padding:6px 12px;text-align:left}
+.hud-coin{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:11px;color:#ffd700;background:rgba(255,200,60,.15);border:1px solid rgba(255,200,60,.25);border-radius:999px;padding:2px 8px;flex-shrink:0}
+.store-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(10,20,35,.92);border:1px solid rgba(255,200,60,.4);color:#ffd700;font-family:'Fredoka One',cursive;font-size:14px;border-radius:999px;padding:8px 20px;z-index:9999;pointer-events:none;animation:toastIn .3s ease,toastOut .3s ease 1.7s forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
 .map-right-col{padding:0 16px 32px;display:flex;flex-direction:column;align-items:stretch;width:100%}
 /* Type legend */
 .map-type-legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
@@ -1252,6 +1284,8 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
       <div class="mtl-item"><span class="mtl-dot bonus"></span>Bonus</div>
     </div>
     <button class="map-lb-btn" onclick="G.showLB('map')">🏆 Leaderboard</button>
+    <button class="map-lb-btn map-store-btn" onclick="G.showStore()">🛒 Store</button>
+    <div class="map-coin-display" id="map-coin-display">🪙 <span id="map-coin-val">0</span> koin</div>
   </div>
   <!-- Right col (desktop) / below (mobile): level grid -->
   <div class="map-right-col">
@@ -1526,6 +1560,38 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
   <div class="lb-card" id="lb-card"><div class="lb-loading">Memuat...</div></div>
 </div>
 
+<!-- ══ STORE ══ -->
+<div id="s-store" class="screen">
+  <div class="store-topbar">
+    <button class="store-back" onclick="G.closeStore()">← Kembali</button>
+    <div class="store-title">🛒 Store</div>
+    <div class="store-coin-badge">🪙 <span id="store-coin-val">0</span></div>
+  </div>
+  <div class="store-body">
+    <!-- Boosts section -->
+    <div class="store-section-label">BOOSTS</div>
+    <div class="store-grid" id="store-boost-grid"></div>
+    <!-- Packs section -->
+    <div class="store-section-label">PAKET HEMAT</div>
+    <div class="store-grid" id="store-pack-grid"></div>
+    <!-- David photos section -->
+    <div class="store-section-label">FOTO DAVID</div>
+    <div class="store-coming-soon">
+      <div class="store-cs-emoji">📸</div>
+      <div class="store-cs-title">Coming Soon</div>
+      <div class="store-cs-sub">Foto eksklusif David Dwi Sanjaya tersedia setelah kamu kumpulkan cukup koin!</div>
+      <div class="store-cs-tiers">
+        <div class="store-cs-tier">🥉 Graduation Day · 50k koin</div>
+        <div class="store-cs-tier">🥈 Lab Mode · 150k koin</div>
+        <div class="store-cs-tier">🥇 Toronto Life · 300k koin</div>
+        <div class="store-cs-tier">💎 Scientist · 500k koin</div>
+        <div class="store-cs-tier">✨ My Time 🎧🖤 · 750k koin</div>
+        <div class="store-cs-tier">👑 David Dwi Sanjaya · 1jt koin</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ WIN/LOSE MODAL ══ -->
 <div class="modal-bg" id="modal-wrap">
   <div class="modal">
@@ -1712,6 +1778,19 @@ const ACTIVE_ACCOUNT='chemcrush_v6_active_account';
 const MIGRATED_SAVE='chemcrush_v6_migrated_from_v5';
 const GUEST_ACCOUNT='guest';
 const DEFAULT_BOOST_CHARGES={hint:3,shuffle:2,hammer:2,energizer:1};
+const DEFAULT_COINS=0;
+
+// Store item catalog
+const STORE_BOOSTS=[
+  {id:'hint',    name:'Hint',      icon:'💡', desc:'Tampilkan 1 pasangan yang bisa bereaksi',  price:500,  qty:3},
+  {id:'shuffle', name:'Shuffle',   icon:'🔀', desc:'Acak ulang semua elemen di board',          price:800,  qty:2},
+  {id:'hammer',  name:'Hammer',    icon:'🔨', desc:'Hancurkan 1 elemen pilihan',                price:1200, qty:1},
+  {id:'energizer',name:'Energizer',icon:'⚡', desc:'Tambah 5 moves sekarang',                   price:1500, qty:1},
+];
+const STORE_PACKS=[
+  {id:'pack_starter', name:'Starter Pack', icon:'🎒', desc:'3 Hint + 2 Shuffle + 1 Hammer',    price:2500,  boosts:{hint:3,shuffle:2,hammer:1}},
+  {id:'pack_pro',     name:'Pro Pack',     icon:'🚀', desc:'5 Hint + 3 Shuffle + 2 Hammer + 2 Energizer', price:6000, boosts:{hint:5,shuffle:3,hammer:2,energizer:2}},
+];
 
 function normalizeUsername(value){
   return (value||'').trim().replace(/^@/,'').toLowerCase().replace(/[^a-z0-9._]/g,'');
@@ -1980,6 +2059,7 @@ const G={
   accountMode:'login',pinUnlocked:false,pendingLegacyUsername:null,lastRecoveryCode:null,awaitingRecoveryContinue:false,pendingRecoveryUsername:null,
   streak:0,
   boostCharges:{hint:3,shuffle:2,hammer:2,energizer:1},
+  coins:0,
   rxBaseScore:0,comboBonus:0,movesBonus:0,
   tutDone:false,
   specificProgress:{},
@@ -2002,7 +2082,7 @@ const G={
     return {
       schemaVersion:6,
       stars:{},scores:{},username:uname||null,tutDone:false,cleared:{},
-      boostCharges:{...DEFAULT_BOOST_CHARGES}
+      boostCharges:{...DEFAULT_BOOST_CHARGES},coins:0
     };
   },
   snapshotProfile(){
@@ -2014,7 +2094,8 @@ const G={
       username:uname||null,
       tutDone:!!this.tutDone,
       cleared:{...(this.cleared||{})},
-      boostCharges:{...DEFAULT_BOOST_CHARGES,...(this.boostCharges||{})}
+      boostCharges:{...DEFAULT_BOOST_CHARGES,...(this.boostCharges||{})},
+      coins:this.coins||0
     };
   },
   applyProfile(profile){
@@ -2027,7 +2108,8 @@ const G={
     this.tutDone=!!p.tutDone;
     this.cleared=norm(p.cleared);
     this.boostCharges={...DEFAULT_BOOST_CHARGES,...(p.boostCharges||{})};
-  },
+    this.coins=p.coins||0;
+    this.updateCoinDisplay();  },
   loadLocalProfile(accountId){
     if(!accountId)return null;
     try{
@@ -2055,7 +2137,8 @@ const G={
       username:normalizeUsername(profileOverride.username)||null,
       tutDone:!!profileOverride.tutDone,
       cleared:{...(profileOverride.cleared||{})},
-      boostCharges:{...DEFAULT_BOOST_CHARGES,...(profileOverride.boostCharges||{})}
+      boostCharges:{...DEFAULT_BOOST_CHARGES,...(profileOverride.boostCharges||{})},
+      coins:profileOverride.coins||0
     }:this.snapshotProfile();
     if(targetAccountId===GUEST_ACCOUNT)profile.username=null;
     else if(targetAccountId.startsWith('user:'))profile.username=targetAccountId.slice(5);
@@ -2076,7 +2159,7 @@ const G={
       stars,scores,cleared,
       username:uname||null,
       tutDone:!!(remote&&remote.tutDone),
-      boostCharges:{...DEFAULT_BOOST_CHARGES,...((remote&&remote.boostCharges)||{})}
+      boostCharges:{...DEFAULT_BOOST_CHARGES,...((remote&&remote.boostCharges)||{})},coins:(remote&&remote.coins)||0
     };
   },
   tryMigrateLegacySave(){
@@ -2108,7 +2191,7 @@ const G={
     this.debugAccount('save:start',{accountId,username:profile.username});
     this.saveLocalOnly(accountId);
     if(accountId!==GUEST_ACCOUNT&&profile.username){
-      fbSaveProgress(profile.username,{stars:profile.stars,scores:profile.scores,cleared:profile.cleared,tutDone:profile.tutDone,boostCharges:profile.boostCharges});
+      fbSaveProgress(profile.username,{stars:profile.stars,scores:profile.scores,cleared:profile.cleared,tutDone:profile.tutDone,boostCharges:profile.boostCharges,coins:profile.coins||0});
     }
     this.debugAccount('save:end',{accountId,username:profile.username});
   },
@@ -2505,6 +2588,7 @@ const G={
   toMap(){
     clearTimeout(this._lbTimer);Confetti.stop();
     this.show('s-map');clearTimeout(this.idleTimer);this.buildMap();
+    this.updateCoinDisplay();
     const nameEl=document.getElementById('map-uname');
     const btnEl=document.getElementById('map-login-btn');
     if(this.username&&this.currentAccountId!==GUEST_ACCOUNT){
@@ -2871,6 +2955,10 @@ const G={
     this.rxBaseScore+=rx.pts;
     this.comboBonus+=earnedPts-rx.pts;
     this.score+=earnedPts;
+    // Earn coins: 10% of points per reaction
+    const coinsEarned=Math.floor(earnedPts/10);
+    this.coins=(this.coins||0)+coinsEarned;
+    this.updateCoinDisplay();
     this.reactions++;
     // Track specific reaction progress
     if(this.specificProgress.hasOwnProperty(rx.id)){
@@ -3431,6 +3519,92 @@ const G={
   endBtn1(){clearTimeout(this._lbTimer);Confetti.stop();const next=LEVELS.find(l=>l.id===this.lv.id+1);if(next){this._boostCarry=true;this.play(next.id);}else this.toMap();},
   endBtn2(){clearTimeout(this._lbTimer);Confetti.stop();this.play(this.lv.id);},
 
+  // ── COINS ──
+  updateCoinDisplay(){
+    const c=this.coins||0;
+    const fmt=c>=1000000?(c/1000000).toFixed(1)+'jt':c>=1000?(c/1000).toFixed(1)+'k':c;
+    document.querySelectorAll('#map-coin-val,#store-coin-val').forEach(el=>el&&(el.textContent=fmt));
+  },
+  showToast(msg){
+    document.querySelectorAll('.store-toast').forEach(t=>t.remove());
+    const t=document.createElement('div');t.className='store-toast';t.textContent=msg;
+    document.body.appendChild(t);setTimeout(()=>t.remove(),2100);
+  },
+
+  // ── STORE ──
+  showStore(fromBoostId){
+    this._storeFromBoost=fromBoostId||null;
+    this.show('s-store');
+    this.renderStore();
+  },
+  closeStore(){
+    if(this._storeFromBoost){this.show('s-game');}
+    else{this.show('s-map');}
+    this._storeFromBoost=null;
+    this.saveProfile();
+  },
+  renderStore(){
+    this.updateCoinDisplay();
+    const coins=this.coins||0;
+    // Boosts grid
+    const bg=document.getElementById('store-boost-grid');
+    if(bg){
+      bg.innerHTML='';
+      STORE_BOOSTS.forEach(item=>{
+        const canAfford=coins>=item.price;
+        const div=document.createElement('div');
+        div.className='store-item'+(canAfford?'':' cant-afford');
+        div.innerHTML=`
+          <div class="store-item-icon">${item.icon}</div>
+          <div class="store-item-name">${item.name}</div>
+          <div class="store-item-desc">${item.desc}</div>
+          <div class="store-item-qty">Kamu punya: ${this.boostCharges[item.id]||0}</div>
+          <div class="store-item-price">🪙 ${item.price.toLocaleString()}</div>
+        `;
+        if(canAfford)div.onclick=()=>this.buyBoost(item);
+        bg.appendChild(div);
+      });
+    }
+    // Packs grid
+    const pg=document.getElementById('store-pack-grid');
+    if(pg){
+      pg.innerHTML='';
+      STORE_PACKS.forEach(item=>{
+        const canAfford=coins>=item.price;
+        const div=document.createElement('div');
+        div.className='store-item'+(canAfford?'':' cant-afford');
+        const boostStr=Object.entries(item.boosts).map(([k,v])=>`${v} ${k}`).join(' + ');
+        div.innerHTML=`
+          <div class="store-item-icon">${item.icon}</div>
+          <div class="store-item-name">${item.name}</div>
+          <div class="store-item-desc">${item.desc}</div>
+          <div class="store-item-qty">${boostStr}</div>
+          <div class="store-item-price pack">🪙 ${item.price.toLocaleString()}</div>
+        `;
+        if(canAfford)div.onclick=()=>this.buyPack(item);
+        pg.appendChild(div);
+      });
+    }
+  },
+  buyBoost(item){
+    if((this.coins||0)<item.price){this.showToast('Koin tidak cukup!');return;}
+    this.coins-=item.price;
+    this.boostCharges[item.id]=(this.boostCharges[item.id]||0)+item.qty;
+    this.showToast(`✅ ${item.qty}× ${item.name} dibeli!`);
+    this.renderStore();
+    this.saveProfile();
+  },
+  buyPack(item){
+    if((this.coins||0)<item.price){this.showToast('Koin tidak cukup!');return;}
+    this.coins-=item.price;
+    Object.entries(item.boosts).forEach(([k,v])=>{
+      this.boostCharges[k]=(this.boostCharges[k]||0)+v;
+    });
+    this.showToast(`✅ ${item.name} dibeli!`);
+    this.renderStore();
+    this.saveProfile();
+  },
+
   // ── LOSE ──
   lose(){
     clearTimeout(this.idleTimer);this.busy=true;this.isWin=false;
@@ -3471,7 +3645,9 @@ const G={
     if(type==='energizer'&&this.energizerMode){this.energizerMode=false;this.renderBoard();this.davidSay('Energizer dibatalkan.','');return;}
     if((this.boostCharges[type]||0)<=0){
       const names={hint:'Hint',shuffle:'Shuffle',hammer:'Hammer',energizer:'Energizer'};
-      this.davidSay(`${names[type]} sudah habis!`,'nope');return;
+      this.davidSay(`${names[type]} habis! Beli di Store yuk.`,'nope');
+      setTimeout(()=>this.showStore(type),1200);
+      return;
     }
     SFX.boost();
     if(type==='hint'){
