@@ -124,16 +124,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ MAP ══ */
 #s-map{padding:0;gap:0;background:linear-gradient(160deg,#d0ecf8,#e8f6fc);align-items:stretch;width:100%}
-.map-fab-coin{
-  background:rgba(255,240,180,.95);border:1.5px solid rgba(255,200,60,.4);
-  border-radius:999px;padding:4px 8px;
-  font-family:'Fredoka One',cursive;font-size:11px;color:#a06000;
-  text-align:center;white-space:nowrap;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
-}
-/* Hide on mobile, show on desktop */
-.map-desktop-only{display:none!important}
-@media(min-width:860px){.map-desktop-only{display:flex!important}};background:rgba(255,200,60,.12);border:1.5px solid rgba(255,200,60,.3);border-radius:999px;padding:5px 14px;text-align:center;width:100%}
 .map-store-btn{background:linear-gradient(135deg,rgba(255,200,60,.15),rgba(255,160,40,.1));border-color:rgba(255,200,60,.4)!important;color:var(--ink)!important}
 .map-store-btn:hover{background:linear-gradient(135deg,rgba(255,200,60,.25),rgba(255,160,40,.2))!important}
 #s-store{background:linear-gradient(160deg,#0e2233,#1a3a50);flex-direction:column;align-items:stretch;padding:0;overflow-y:auto}
@@ -186,26 +176,21 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .map-user strong{color:var(--ink)}
 .map-login-btn{background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:800;color:var(--ink2);cursor:pointer;transition:background .15s}
 .map-login-btn:hover{background:var(--sky2)}
-/* Mobile floating action icons — top right of map */
-.map-fab-wrap{
-  position:fixed;top:12px;right:12px;
-  display:flex;flex-direction:column;gap:8px;
-  z-index:200;
-}
-.map-fab{
-  width:42px;height:42px;border-radius:50%;
-  background:rgba(255,255,255,.92);
-  border:1.5px solid var(--border);
-  box-shadow:0 2px 10px rgba(0,0,0,.12);
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;cursor:pointer;
-  transition:transform .15s,box-shadow .15s;
-  text-decoration:none;
-}
-.map-fab:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,0,0,.18)}
-.map-fab.store{background:rgba(255,240,180,.95);border-color:rgba(255,200,60,.4)}
-/* Hide FABs on desktop (desktop uses sidebar buttons) */
-@media(min-width:860px){.map-fab-wrap{display:none}}
+.map-left-col{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 16px 12px;width:100%}
+.map-progress-badge{order:1}
+.map-player-card{order:2;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(255,255,255,.72);border:1.5px solid var(--border);border-radius:18px;padding:9px 10px;width:100%;max-width:380px;box-shadow:var(--shadow)}
+.map-player-main{display:flex;align-items:center;gap:9px;min-width:0}
+.map-player-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--panel2);border:1px solid var(--border);flex-shrink:0}
+.map-player-copy{display:flex;flex-direction:column;gap:1px;min-width:0;text-align:left}
+.map-player-label{font-size:8px;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase;font-weight:900}
+.map-player-copy strong{font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.map-player-meta{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.map-player-coins{font-family:'Fredoka One',cursive;font-size:12px;color:#a06000;background:rgba(255,200,60,.13);border:1px solid rgba(255,200,60,.28);border-radius:999px;padding:5px 9px;white-space:nowrap}
+.map-action-row{order:3;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:380px}
+.map-action-row .map-lb-btn{min-height:44px;padding:8px 10px}
+.map-reference{order:5;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:380px;opacity:.72}
+.map-reference .legend-wrap{padding:8px 10px}
+.map-reference .leg-item,.map-reference .mtl-item{font-size:9px}
 @media(min-width:700px) and (max-width:859px){
   #s-map{padding:28px 32px 40px}
   .map-title{font-size:38px}
@@ -221,12 +206,20 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     width:100%;
   }
   .map-left-col{
-    flex:0 0 260px;display:flex;flex-direction:column;
-    padding:32px 20px;gap:16px;overflow-y:auto;
+    flex:0 0 300px;display:flex;flex-direction:column;
+    padding:28px 20px;gap:12px;overflow-y:auto;
     border-right:1.5px solid var(--border);
     background:rgba(255,255,255,.6);backdrop-filter:blur(8px);
     justify-content:center;
   }
+  .map-player-card,.map-action-row,.map-reference{max-width:none}
+  .map-player-card{padding:10px}
+  .map-player-copy strong{max-width:110px}
+  .map-action-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .map-action-row .map-lb-btn{font-size:11px;min-height:42px}
+  .map-reference{gap:6px;margin-top:2px;opacity:.62}
+  .map-reference .legend-wrap{padding:8px}
+  .map-reference .map-type-legend{gap:6px}
   /* Logo: emoji left, "Chem\nCrush" stacked right, byline below the pair */
   .map-header{
     display:flex;flex-direction:column;align-items:flex-start;gap:8px;
@@ -262,6 +255,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .leg-dot{width:12px;height:12px;border-radius:4px;flex-shrink:0}
 /* Mobile map grid: 5 columns — scoped to mobile only */
 @media(max-width:859px){
+  .map-reference{display:none}
   #map-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%;max-width:380px}
   #map-grid .lvl-bubble{width:100%;height:auto;aspect-ratio:1;font-size:13px}
   #map-grid .lv-name{max-width:none;font-size:8px}
@@ -1277,12 +1271,6 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 <!-- ══ MAP ══ -->
 <div id="s-map" class="screen">
-  <!-- Mobile floating action buttons (hidden on desktop) -->
-  <div class="map-fab-wrap">
-    <button class="map-fab" onclick="G.showLB('map')" title="Leaderboard">🏆</button>
-    <button class="map-fab store" onclick="G.showStore()" title="Store">🛒</button>
-    <div class="map-fab-coin" id="map-fab-coin">🪙<span id="map-coin-val">0</span></div>
-  </div>
   <!-- Left col (desktop) / top (mobile) -->
   <div class="map-left-col">
     <div class="map-header">
@@ -1294,33 +1282,48 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
       </div>
       <div class="map-byline">Swap elemen yang bisa <strong>bereaksi satu sama lain</strong> — bukan yang warnanya sama!</div>
     </div>
-    <div class="map-badge"><span data-reaction-count>14</span> reaksi kimia nyata · <span data-level-count>50</span> level</div>
-    <div class="map-user" id="map-user">
-      <span id="map-user-label">👤 <span id="map-uname">Belum login</span></span>
-      <button class="map-login-btn" id="map-login-btn" onclick="G.showUsernameModal()">Ganti</button>
+
+    <div class="map-badge map-progress-badge"><span data-reaction-count>14</span> reaksi kimia nyata · <span data-level-count>50</span> level</div>
+
+    <div class="map-player-card" id="map-user">
+      <div class="map-player-main">
+        <span class="map-player-avatar" aria-hidden="true">👤</span>
+        <div class="map-player-copy">
+          <span class="map-player-label">Player</span>
+          <strong id="map-uname">Belum login</strong>
+        </div>
+      </div>
+      <div class="map-player-meta">
+        <span class="map-player-coins">🪙 <span id="map-coin-val">0</span></span>
+        <button class="map-login-btn" id="map-login-btn" onclick="G.showUsernameModal()">Ganti</button>
+      </div>
     </div>
-    <div class="legend-wrap">
-      <div class="leg-item"><div class="leg-dot" style="background:#88bbee"></div>H Hidrogen</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#f09090"></div>O Oksigen</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#aaaaaa"></div>C Karbon</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#70cc70"></div>Cl Klorin</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#e8c840"></div>Na Natrium</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#aa88ee"></div>N Nitrogen</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#f0a850"></div>Ca Kalsium</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#d08050"></div>Fe Besi</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#d8c020"></div>S Sulfur</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#9090e0"></div>K Kalium</div>
+
+    <div class="map-action-row">
+      <button class="map-lb-btn" onclick="G.showLB('map')">🏆 Leaderboard</button>
+      <button class="map-lb-btn map-store-btn" onclick="G.showStore()">🛒 Store</button>
     </div>
-    <!-- Type legend -->
-    <div class="map-type-legend">
-      <div class="mtl-item"><span class="mtl-dot normal"></span>Normal</div>
-      <div class="mtl-item"><span class="mtl-dot hard"></span>Hard</div>
-      <div class="mtl-item"><span class="mtl-dot vhard"></span>Very Hard</div>
-      <div class="mtl-item"><span class="mtl-dot bonus"></span>Bonus</div>
+
+    <div class="map-reference">
+      <div class="legend-wrap">
+        <div class="leg-item"><div class="leg-dot" style="background:#88bbee"></div>H Hidrogen</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f09090"></div>O Oksigen</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#aaaaaa"></div>C Karbon</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#70cc70"></div>Cl Klorin</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#e8c840"></div>Na Natrium</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#aa88ee"></div>N Nitrogen</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#f0a850"></div>Ca Kalsium</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#d08050"></div>Fe Besi</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#d8c020"></div>S Sulfur</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#9090e0"></div>K Kalium</div>
+      </div>
+      <div class="map-type-legend">
+        <div class="mtl-item"><span class="mtl-dot normal"></span>Normal</div>
+        <div class="mtl-item"><span class="mtl-dot hard"></span>Hard</div>
+        <div class="mtl-item"><span class="mtl-dot vhard"></span>Very Hard</div>
+        <div class="mtl-item"><span class="mtl-dot bonus"></span>Bonus</div>
+      </div>
     </div>
-    <button class="map-lb-btn map-desktop-only" onclick="G.showLB('map')">🏆 Leaderboard</button>
-    <button class="map-lb-btn map-store-btn map-desktop-only" onclick="G.showStore()">🛒 Store</button>
-    <div class="map-coin-display map-desktop-only" id="map-coin-display">🪙 <span id="map-coin-val">0</span> koin</div>
   </div>
   <!-- Right col (desktop) / below (mobile): level grid -->
   <div class="map-right-col">
