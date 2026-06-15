@@ -124,7 +124,16 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ MAP ══ */
 #s-map{padding:0;gap:0;background:linear-gradient(160deg,#d0ecf8,#e8f6fc);align-items:stretch;width:100%}
-.map-coin-display{font-family:'Fredoka One',cursive;font-size:13px;color:var(--ink2);background:rgba(255,200,60,.12);border:1.5px solid rgba(255,200,60,.3);border-radius:999px;padding:5px 14px;text-align:center;width:100%}
+.map-fab-coin{
+  background:rgba(255,240,180,.95);border:1.5px solid rgba(255,200,60,.4);
+  border-radius:999px;padding:4px 8px;
+  font-family:'Fredoka One',cursive;font-size:11px;color:#a06000;
+  text-align:center;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+/* Hide on mobile, show on desktop */
+.map-desktop-only{display:none!important}
+@media(min-width:860px){.map-desktop-only{display:flex!important}};background:rgba(255,200,60,.12);border:1.5px solid rgba(255,200,60,.3);border-radius:999px;padding:5px 14px;text-align:center;width:100%}
 .map-store-btn{background:linear-gradient(135deg,rgba(255,200,60,.15),rgba(255,160,40,.1));border-color:rgba(255,200,60,.4)!important;color:var(--ink)!important}
 .map-store-btn:hover{background:linear-gradient(135deg,rgba(255,200,60,.25),rgba(255,160,40,.2))!important}
 #s-store{background:linear-gradient(160deg,#0e2233,#1a3a50);flex-direction:column;align-items:stretch;padding:0;overflow-y:auto}
@@ -173,10 +182,30 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .map-title{font-family:'Fredoka One',cursive;font-size:32px;color:var(--ink);line-height:1.1}
 .map-byline{font-size:12px;color:var(--ink2);line-height:1.6;max-width:340px}
 .map-badge{background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:4px 16px;font-size:11px;font-weight:800;color:var(--ink2)}
-.map-user{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);font-weight:800}
+.map-user{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--ink2);font-weight:800;width:100%}
 .map-user strong{color:var(--ink)}
 .map-login-btn{background:var(--panel);border:1.5px solid var(--border);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:800;color:var(--ink2);cursor:pointer;transition:background .15s}
 .map-login-btn:hover{background:var(--sky2)}
+/* Mobile floating action icons — top right of map */
+.map-fab-wrap{
+  position:fixed;top:12px;right:12px;
+  display:flex;flex-direction:column;gap:8px;
+  z-index:200;
+}
+.map-fab{
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.92);
+  border:1.5px solid var(--border);
+  box-shadow:0 2px 10px rgba(0,0,0,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+  text-decoration:none;
+}
+.map-fab:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.map-fab.store{background:rgba(255,240,180,.95);border-color:rgba(255,200,60,.4)}
+/* Hide FABs on desktop (desktop uses sidebar buttons) */
+@media(min-width:860px){.map-fab-wrap{display:none}}
 @media(min-width:700px) and (max-width:859px){
   #s-map{padding:28px 32px 40px}
   .map-title{font-size:38px}
@@ -1248,6 +1277,12 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 <!-- ══ MAP ══ -->
 <div id="s-map" class="screen">
+  <!-- Mobile floating action buttons (hidden on desktop) -->
+  <div class="map-fab-wrap">
+    <button class="map-fab" onclick="G.showLB('map')" title="Leaderboard">🏆</button>
+    <button class="map-fab store" onclick="G.showStore()" title="Store">🛒</button>
+    <div class="map-fab-coin" id="map-fab-coin">🪙<span id="map-coin-val">0</span></div>
+  </div>
   <!-- Left col (desktop) / top (mobile) -->
   <div class="map-left-col">
     <div class="map-header">
@@ -1283,9 +1318,9 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
       <div class="mtl-item"><span class="mtl-dot vhard"></span>Very Hard</div>
       <div class="mtl-item"><span class="mtl-dot bonus"></span>Bonus</div>
     </div>
-    <button class="map-lb-btn" onclick="G.showLB('map')">🏆 Leaderboard</button>
-    <button class="map-lb-btn map-store-btn" onclick="G.showStore()">🛒 Store</button>
-    <div class="map-coin-display" id="map-coin-display">🪙 <span id="map-coin-val">0</span> koin</div>
+    <button class="map-lb-btn map-desktop-only" onclick="G.showLB('map')">🏆 Leaderboard</button>
+    <button class="map-lb-btn map-store-btn map-desktop-only" onclick="G.showStore()">🛒 Store</button>
+    <div class="map-coin-display map-desktop-only" id="map-coin-display">🪙 <span id="map-coin-val">0</span> koin</div>
   </div>
   <!-- Right col (desktop) / below (mobile): level grid -->
   <div class="map-right-col">
@@ -2109,6 +2144,31 @@ const G={
     this.cleared=norm(p.cleared);
     this.boostCharges={...DEFAULT_BOOST_CHARGES,...(p.boostCharges||{})};
     this.coins=p.coins||0;
+    // Retroactive catch-up: if coins===0 but has cleared levels, estimate coins earned
+    if(this.coins===0){
+      const clearedIds=Object.keys(this.cleared||{}).filter(k=>this.cleared[k]);
+      if(clearedIds.length>0){
+        let retroCoins=0;
+        clearedIds.forEach(sid=>{
+          const lv=LEVELS.find(l=>String(l.id)===sid);
+          if(!lv)return;
+          const stars=this.stars[sid]||2;
+          // Estimate: base from level number + stars bonus
+          retroCoins+=Math.floor(lv.id*200 + stars*500);
+          // Hard/VH/Bonus multiplier
+          if(lv.type==='Hard')retroCoins+=lv.id*100;
+          if(lv.type==='Very Hard')retroCoins+=lv.id*200;
+          if(lv.type==='Bonus')retroCoins+=lv.id*100;
+        });
+        this.coins=retroCoins;
+        // Save retroactive coins immediately
+        setTimeout(()=>{
+          if(this.username)fbSaveProgress(this.username,this.snapshotProfile()).catch(()=>{});
+          this.saveLocalOnly();
+        },1000);
+        console.log(`[CatchUp] Retroactive coins: ${retroCoins} for ${clearedIds.length} cleared levels`);
+      }
+    }
     this.updateCoinDisplay();  },
   loadLocalProfile(accountId){
     if(!accountId)return null;
@@ -3522,8 +3582,14 @@ const G={
   // ── COINS ──
   updateCoinDisplay(){
     const c=this.coins||0;
-    const fmt=c>=1000000?(c/1000000).toFixed(1)+'jt':c>=1000?(c/1000).toFixed(1)+'k':c;
-    document.querySelectorAll('#map-coin-val,#store-coin-val').forEach(el=>el&&(el.textContent=fmt));
+    const fmt=c>=1000000?(c/1000000).toFixed(1)+'jt':c>=1000?(c/1000).toFixed(1)+'k':String(c);
+    // Update all coin displays
+    ['map-coin-val','store-coin-val'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.textContent=fmt;
+    });
+    // FAB coin badge
+    const fab=document.getElementById('map-fab-coin');
+    if(fab)fab.innerHTML=`🪙${fmt}`;
   },
   showToast(msg){
     document.querySelectorAll('.store-toast').forEach(t=>t.remove());
