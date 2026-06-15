@@ -962,11 +962,17 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 
 /* ══ LEADERBOARD ══ */
 #s-lb{padding:20px 16px 40px;gap:14px;background:linear-gradient(160deg,#0e2233,#1a3a50)}
-.lb-topbar{display:flex;align-items:center;width:100%;max-width:420px;position:relative}
-.lb-back{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:8px 14px;font-size:12px;font-weight:800;color:#7aaabf;cursor:pointer}
-.lb-title-row{flex:1;text-align:center}
-.lb-title{font-family:'Fredoka One',cursive;font-size:24px;color:#fff}
-.lb-subtitle{font-size:10px;color:#7aaabf;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+.lb-topbar{display:flex;align-items:center;width:100%;max-width:420px;position:relative;gap:8px}
+.lb-back{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:999px;padding:5px 12px;font-size:11px;font-weight:800;color:#7aaabf;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.lb-back:hover{background:rgba(255,255,255,.15);color:#fff}
+.lb-title-row{flex:1;text-align:center;min-width:0}
+.lb-title{font-family:'Fredoka One',cursive;font-size:22px;color:#fff;line-height:1.1}
+.lb-subtitle{font-size:9px;color:#7aaabf;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+@media(max-width:859px){
+  .lb-topbar{max-width:100%}
+  .lb-title{font-size:18px}
+  .lb-subtitle{font-size:8px}
+}
 .lb-card{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:20px;width:100%;max-width:420px;overflow:hidden}
 .lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
 .lb-row:last-child{border-bottom:none}
@@ -1882,12 +1888,13 @@ async function fbSubmit(username,score,level){
     const isNewLevel=!(String(level) in perLevel);
     if(isNewLevel){perLevel[level]=score;}
     const newLevelCount=Object.keys(perLevel).length;
+    const maxLevel=Math.max(...Object.keys(perLevel).map(Number));
     const levelCountChanged=newLevelCount!==(ex.level||0);
     const total=Object.values(perLevel).reduce((a,b)=>a+b,0);
     if(isNewLevel||!ex.score||levelCountChanged){
       await setDoc(ref,{
         username:'@'+username,score:total,
-        perLevel,level:newLevelCount,ts:Date.now()
+        perLevel,level:maxLevel,ts:Date.now()
       });
       return isNewLevel;
     }
