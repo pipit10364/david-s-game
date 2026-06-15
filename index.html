@@ -1878,16 +1878,18 @@ async function fbSubmit(username,score,level){
     ]);
     const ex=snap.exists()?snap.data():{};
     const perLevel=ex.perLevel||{};
-    const prevBest=perLevel[level]||0;
-    let updated=false;
-    if(score>prevBest){perLevel[level]=score;updated=true;}
+    // First-clear wins: only record score if this level has never been cleared before
+    const isNewLevel=!(String(level) in perLevel);
+    if(isNewLevel){perLevel[level]=score;}
+    const newLevelCount=Object.keys(perLevel).length;
+    const levelCountChanged=newLevelCount!==(ex.level||0);
     const total=Object.values(perLevel).reduce((a,b)=>a+b,0);
-    if(updated||!ex.score){
+    if(isNewLevel||!ex.score||levelCountChanged){
       await setDoc(ref,{
         username:'@'+username,score:total,
-        perLevel,level:Object.keys(perLevel).length,ts:Date.now()
+        perLevel,level:newLevelCount,ts:Date.now()
       });
-      return updated;
+      return isNewLevel;
     }
     return false;
   }catch(e){console.warn('fbSubmit:',e.message);return false;}
@@ -3409,9 +3411,9 @@ const G={
     let stars=this.moves>=Math.floor(lv.moves*.5)?3:this.moves>=Math.floor(lv.moves*.15)?2:1;
     const prev=this.stars[lv.id]||0;
     if(stars>prev)this.stars[lv.id]=stars;
-    const prevScore=this.scores[lv.id]||0;
-    const isNewHS=this.score>prevScore;
-    if(isNewHS)this.scores[lv.id]=this.score;
+    const isFirstClear=!(lv.id in this.scores)||!this.cleared[lv.id];
+    if(isFirstClear)this.scores[lv.id]=this.score;
+    const isNewHS=isFirstClear;
     this.cleared[lv.id]=true;
     this.save();
 
