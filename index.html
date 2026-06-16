@@ -152,6 +152,23 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
 .store-cs-sub{font-size:11px;color:rgba(255,255,255,.35);line-height:1.6;max-width:280px}
 .store-cs-tiers{display:flex;flex-direction:column;gap:6px;width:100%}
 .store-cs-tier{font-size:11px;color:rgba(255,255,255,.4);background:rgba(255,255,255,.04);border-radius:8px;padding:6px 12px;text-align:left}
+/* Photo store items */
+.store-photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:600px){.store-photo-grid{grid-template-columns:repeat(3,1fr)}}
+.store-photo-item{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .15s;position:relative}
+.store-photo-item:hover:not(.locked):not(.owned){background:rgba(255,255,255,.12);border-color:rgba(255,200,60,.4);transform:translateY(-2px)}
+.store-photo-item.locked{opacity:.5;cursor:not-allowed}
+.store-photo-item.owned{border-color:rgba(80,200,120,.5);cursor:default}
+.store-photo-thumb{width:100%;aspect-ratio:1;object-fit:cover;object-position:center top;display:block;background:rgba(255,255,255,.05)}
+.store-photo-body{padding:10px 8px;display:flex;flex-direction:column;gap:5px;align-items:center;text-align:center}
+.store-photo-name{font-family:'Fredoka One',cursive;font-size:13px;color:#fff}
+.store-photo-locked-label{font-size:9px;color:rgba(255,255,255,.4);font-weight:800}
+.store-photo-badge-owned{font-size:9px;font-weight:900;color:#60e890;letter-spacing:.5px}
+.store-photo-price{display:flex;align-items:center;gap:4px;background:rgba(255,200,60,.15);border:1px solid rgba(255,200,60,.3);border-radius:999px;padding:3px 10px;font-family:'Fredoka One',cursive;font-size:12px;color:#ffd700}
+.store-photo-btn{width:100%;background:linear-gradient(135deg,rgba(80,200,120,.25),rgba(60,160,100,.2));border:1px solid rgba(80,200,120,.4);border-radius:8px;padding:6px 0;font-family:'Fredoka One',cursive;font-size:12px;color:#60e890;cursor:pointer;margin-top:2px;transition:background .15s}
+.store-photo-btn:hover{background:linear-gradient(135deg,rgba(80,200,120,.4),rgba(60,160,100,.3))}
+.store-locked-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);font-size:28px}
+.store-photo-unlock-hint{font-size:10px;color:rgba(255,200,60,.7);font-weight:800;text-align:center;padding:8px 10px;background:rgba(255,200,60,.06);border:1px solid rgba(255,200,60,.15);border-radius:10px;line-height:1.5}
 .hud-coin{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:11px;color:#ffd700;background:rgba(255,200,60,.15);border:1px solid rgba(255,200,60,.25);border-radius:999px;padding:2px 8px;flex-shrink:0}
 .store-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(10,20,35,.92);border:1px solid rgba(255,200,60,.4);color:#ffd700;font-family:'Fredoka One',cursive;font-size:14px;border-radius:999px;padding:8px 20px;z-index:9999;pointer-events:none;animation:toastIn .3s ease,toastOut .3s ease 1.7s forwards}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -1620,10 +1637,7 @@ html,body{width:100%;min-height:100vh;background:var(--sky);font-family:'Nunito'
     <div class="store-grid" id="store-pack-grid"></div>
     <!-- David photos section -->
     <div class="store-section-label">FOTO DAVID</div>
-    <div class="store-coming-soon">
-      <div class="store-cs-emoji">📸</div>
-      <div class="store-cs-title">Coming Soon</div>
-    </div>
+    <div id="store-photo-section"></div>
   </div>
 </div>
 
@@ -1825,6 +1839,18 @@ const STORE_BOOSTS=[
 const STORE_PACKS=[
   {id:'pack_starter', name:'Starter Pack', icon:'🎒', desc:'3 Hint + 2 Shuffle + 1 Hammer',    price:2500,  boosts:{hint:3,shuffle:2,hammer:1}},
   {id:'pack_pro',     name:'Pro Pack',     icon:'🚀', desc:'5 Hint + 3 Shuffle + 2 Hammer + 2 Energizer', price:6000, boosts:{hint:5,shuffle:3,hammer:2,energizer:2}},
+];
+
+const STORE_PHOTOS=[
+  {id:'orlando1', name:'Orlando Park 1', icon:'🎢',
+   url:'https://raw.githubusercontent.com/pipit10364/David/main/david%20at%20orlando%20park%20part%201.png',
+   filename:'david-orlando-park-1.png', price:50000},
+  {id:'orlando2', name:'Orlando Park 2', icon:'🌴',
+   url:'https://raw.githubusercontent.com/pipit10364/David/main/david%20orlando%20park%20part%202.png',
+   filename:'david-orlando-park-2.png', price:50000},
+  {id:'graduation', name:'Graduation Day', icon:'🎓',
+   url:'https://raw.githubusercontent.com/pipit10364/David/main/david%20graduation%20day.png',
+   filename:'david-graduation-day.png', price:50000},
 ];
 
 function normalizeUsername(value){
@@ -2133,7 +2159,8 @@ const G={
       tutDone:!!this.tutDone,
       cleared:{...(this.cleared||{})},
       boostCharges:{...DEFAULT_BOOST_CHARGES,...(this.boostCharges||{})},
-      coins:this.coins||0
+      coins:this.coins||0,
+      ownedPhotos:{...(this.ownedPhotos||{})}
     };
   },
   applyProfile(profile){
@@ -2147,6 +2174,7 @@ const G={
     this.cleared=norm(p.cleared);
     this.boostCharges={...DEFAULT_BOOST_CHARGES,...(p.boostCharges||{})};
     this.coins=p.coins||0;
+    this.ownedPhotos=p.ownedPhotos||{};
     // Retroactive catch-up: if coins===0 but has cleared levels, estimate coins earned
     if(this.coins===0){
       const clearedIds=Object.keys(this.cleared||{}).filter(k=>this.cleared[k]);
@@ -2254,7 +2282,7 @@ const G={
     this.debugAccount('save:start',{accountId,username:profile.username});
     this.saveLocalOnly(accountId);
     if(accountId!==GUEST_ACCOUNT&&profile.username){
-      fbSaveProgress(profile.username,{stars:profile.stars,scores:profile.scores,cleared:profile.cleared,tutDone:profile.tutDone,boostCharges:profile.boostCharges,coins:profile.coins||0});
+      fbSaveProgress(profile.username,{stars:profile.stars,scores:profile.scores,cleared:profile.cleared,tutDone:profile.tutDone,boostCharges:profile.boostCharges,coins:profile.coins||0,ownedPhotos:profile.ownedPhotos||{}});
     }
     this.debugAccount('save:end',{accountId,username:profile.username});
   },
@@ -3654,6 +3682,47 @@ const G={
         pg.appendChild(div);
       });
     }
+    // Photos grid
+    const ps=document.getElementById('store-photo-section');
+    if(ps){
+      ps.innerHTML='';
+      const allCleared=Object.keys(this.cleared||{}).filter(k=>this.cleared[k]).length>=LEVELS.length;
+      if(!allCleared){
+        const hint=document.createElement('div');
+        hint.className='store-photo-unlock-hint';
+        hint.textContent='🔒 Selesaikan semua 50 level untuk membuka Foto David!';
+        ps.appendChild(hint);
+      } else {
+        const grid=document.createElement('div');
+        grid.className='store-photo-grid';
+        STORE_PHOTOS.forEach(photo=>{
+          const owned=!!(this.ownedPhotos&&this.ownedPhotos[photo.id]);
+          const canAfford=coins>=photo.price;
+          const div=document.createElement('div');
+          div.className='store-photo-item'+(owned?' owned':'')+((!owned&&!canAfford)?' cant-afford':'');
+          if(owned){
+            div.innerHTML=`
+              <img class="store-photo-thumb" src="${photo.url}" alt="${photo.name}" loading="lazy">
+              <div class="store-photo-body">
+                <div class="store-photo-name">${photo.icon} ${photo.name}</div>
+                <div class="store-photo-badge-owned">✅ Sudah dimiliki</div>
+                <button class="store-photo-btn" data-photo-id="${photo.id}">⬇️ Download</button>
+              </div>`;
+            div.querySelector('button').onclick=(e)=>{e.stopPropagation();this.downloadPhoto(photo);};
+          } else {
+            div.innerHTML=`
+              <img class="store-photo-thumb" src="${photo.url}" alt="${photo.name}" loading="lazy">
+              <div class="store-photo-body">
+                <div class="store-photo-name">${photo.icon} ${photo.name}</div>
+                <div class="store-photo-price">🪙 ${photo.price.toLocaleString()}</div>
+              </div>`;
+            if(canAfford)div.onclick=()=>this.buyPhoto(photo);
+          }
+          grid.appendChild(div);
+        });
+        ps.appendChild(grid);
+      }
+    }
   },
   buyBoost(item){
     if((this.coins||0)<item.price){this.showToast('Koin tidak cukup!');return;}
@@ -3672,6 +3741,35 @@ const G={
     this.showToast(`✅ ${item.name} dibeli!`);
     this.renderStore();
     this.saveProfile();
+  },
+  buyPhoto(photo){
+    if((this.coins||0)<photo.price){this.showToast('Koin tidak cukup!');return;}
+    if(this.ownedPhotos&&this.ownedPhotos[photo.id]){this.showToast('Foto sudah dimiliki!');return;}
+    this.coins-=photo.price;
+    if(!this.ownedPhotos)this.ownedPhotos={};
+    this.ownedPhotos[photo.id]=true;
+    this.showToast(`✅ ${photo.name} dibeli! Tekan Download untuk simpan.`);
+    this.renderStore();
+    this.saveProfile();
+  },
+  async downloadPhoto(photo){
+    this.showToast('⏳ Menyiapkan foto...');
+    try{
+      const res=await fetch(photo.url);
+      if(!res.ok)throw new Error('fetch failed');
+      const blob=await res.blob();
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;a.download=photo.filename;
+      document.body.appendChild(a);a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),5000);
+      this.showToast(`✅ ${photo.name} tersimpan!`);
+    }catch(e){
+      // Fallback: open in new tab if fetch blocked by CORS
+      window.open(photo.url,'_blank');
+      this.showToast('📂 Foto dibuka di tab baru — simpan manual ya!');
+    }
   },
 
   // ── LOSE ──
